@@ -1,0 +1,93 @@
+/* File: styles/style.css */
+/* styling order layout:
+
+- variables
+- tags
+- ids
+- classes
+
+*/
+
+:root {
+  --primary-color: #008080;       /* Classic Teal */
+  --primary-hover: #0d9488;       /* Darker teal for hover */
+  --secondary-color: #7adfd4;     /* Soft Teal */
+  --accent-color: #fcd34d;        /* Warm Amber for Highlights */
+  --background-color: #d1f0ed;    /* Teal Mist Background */
+  --text-color: #003c3c;          /* Deep Teal for Text */
+  --success-color: #10b981;       /* Emerald Green (for positive alerts) */
+  --error-color: #ef4444;         /* Soft Red (for errors/warnings) */
+  --icon-color: #14b8a6;          /* Teal */
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: 'Poppins', sans-serif;
+  padding-top: 75px; /* Adjusted for fixed navbar */
+}
+
+h1, h2, h3
+{
+  color: var(--primary-color);
+}
+
+p
+{
+    color: var(--text-color);
+}
+
+.navbar {
+  background-color: var(--background-color);
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-accent {
+  background-color: var(--accent-color);
+  color: black;
+}
+
+.btn-accent:hover, .btn-accent:focus {
+  border-color: var(--accent-color);
+}
+
+.icon-theme {
+  color: var(--icon-color);
+}
+
+.icon-theme:hover {
+  color: #0f766e; /* Even darker teal */
+  transition: color 0.3s ease;
+}
+
+.text-secondary {
+  color: var(--secondary-color);
+}
+
+.alert-success {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.alert-error {
+  background-color: var(--error-color);
+  color: white;
+}
+
+.glass-card {
+  backdrop-filter: blur(15px);
+  background: rgba(255, 255, 255, 0.1); /* semi-transparent */
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  padding: 20px;
+}
