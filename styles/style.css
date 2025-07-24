@@ -9,19 +9,19 @@
 */
 
 :root {
-  --primary-color: #008080;       /* Classic Teal */
-  --primary-hover: #0d9488;       /* Darker teal for hover */
+  --primary-color:#34373c;       /* Charcoal Gray or Gunmetal */
+  --primary-hover: #63c187;       /*  soft, medium-light green with a touch of blue*/
   --secondary-color: #7adfd4;     /* Soft Teal */
   --accent-color: #fcd34d;        /* Warm Amber for Highlights */
-  --background-color: #d1f0ed;    /* Teal Mist Background */
-  --text-color: #003c3c;          /* Deep Teal for Text */
+  --background-color:linear-gradient(90deg,#5ebfe5 5%,#75a0eb 100%);   /* Light Blue Gradient Background */
+  --text-color:#FFFFF9;          /*  Ivory White for Text */
   --success-color: #10b981;       /* Emerald Green (for positive alerts) */
   --error-color: #ef4444;         /* Soft Red (for errors/warnings) */
-  --icon-color: #14b8a6;          /* Teal */
+  --icon-color: #035c51;          /*  deep Teal */
 }
 
 body {
-  background-color: var(--background-color);
+  background: var(--background-color);
   color: var(--text-color);
   font-family: 'Poppins', sans-serif;
   padding-top: 75px; /* Adjusted for fixed navbar */
@@ -38,12 +38,15 @@ p
 }
 
 .navbar {
-  background-color: var(--background-color);
+  background-color:var(--text-color); 
+}
+.nav-link{
+  color:#050505;
 }
 
 .btn-primary {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
+  background-color:#10B981; /*Emerald Green */
+  border-color:#10B981; /*Emerald Green */
 }
 
 .btn-primary:hover, .btn-primary:focus {
@@ -60,6 +63,11 @@ p
   border-color: var(--accent-color);
 }
 
+
+
+#icons-cards{
+  box-shadow: var(--error-color);
+}
 .icon-theme {
   color: var(--icon-color);
 }
@@ -90,4 +98,44 @@ p
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   padding: 20px;
+}
+
+#services-main-title{
+  text-align: center;
+  padding-top:3rem;
+  font-size: 2.5rem;
+}
+
+#services-subtitle{
+  text-align: center;
+  padding-bottom: 2rem;
+}
+
+#services-cards{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 equal-width columns */
+  gap:0.2rem; /* spacing between grid items */
+  padding-left: 15rem;
+  padding-right: 15rem;
+  background-color: rgba(255, 255, 255, 0.1); /* semi-transparent */
+
+}
+
+.main-card {
+  width: 18rem;
+  margin: 1rem;
+  background-color: var(--primary-color);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card-img-top {
+  width: 100%;
+  height:200px;
+  border-radius: 10px;
+}
+
+.cards{
+  padding: 1rem;
+  text-align: center;
 }
