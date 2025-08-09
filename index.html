@@ -598,6 +598,13 @@
                             setTimeout(() => {
                                 const modal = bootstrap.Modal.getInstance(document.getElementById('authModal'));
                                 if (modal) modal.hide();
+
+                                // Redirect based on user type
+                                if (key.includes('customer')) {
+                                    window.location.href = 'public/customer-dashboard.html';
+                                } else if (key.includes('provider')) {
+                                    window.location.href = 'public/provider-dashboard.html';
+                                }
                             }, 2000);
                         });
                     }
@@ -634,3 +641,4 @@
         </script>
     </body>
 </html>
+
