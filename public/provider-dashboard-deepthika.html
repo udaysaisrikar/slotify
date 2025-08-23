@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServiceProvider Dashboard - Slotify</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .dashboard-sidebar {
+            background: var(--background-secondary);
+            border-right: 1px solid var(--border-color);
+            min-height: calc(100vh - 75px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .sidebar-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin: 0.25rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-link:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+        
+        .sidebar-link.active {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+        
+        .sidebar-link i {
+            margin-right: 0.75rem;
+            width: 20px;
+        }
+        
+        .dashboard-content {
+            background-color: var(--background-color);
+            min-height: calc(100vh - 75px);
+            padding: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .appointment-card {
+            background: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .appointment-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .appointment-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .status-confirmed {
+            background-color: var(--secondary-light);
+            color: var(--secondary-color);
+        }
+        
+        .status-pending {
+            background-color: #fef3c7;
+            color: var(--accent-color);
+        }
+        
+        .status-completed {
+            background-color: #f3f4f6;
+            color: var(--text-secondary);
+        }
+        
+        .status-cancelled {
+            background-color: #fee2e2;
+            color: var(--error-color);
+        }
+        
+        .customer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .time-slot {
+            background: var(--background-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .time-slot:hover {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
+        }
+        
+        .time-slot.booked {
+            background-color: var(--error-color);
+            color: var(--text-light);
+            border-color: var(--error-color);
+            cursor: not-allowed;
+        }
+        
+        .time-slot.available {
+            background-color: var(--secondary-color);
+            color: var(--text-light);
+            border-color: var(--secondary-color);
+        }
+        
+        .revenue-card {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-hover) 100%);
+            color: var(--text-light);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .chart-container {
+            background: var(--background-secondary);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+        
+        .review-card {
+            background: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .rating {
+            color: var(--accent-color);
+        }
+        
+        .service-item {
+            background: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Slotify - Clean Optimized Styles */
+
+:root {
+  /* Brand Colors */
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-light: #dbeafe;
+  
+  --secondary-color: #059669;
+  --secondary-hover: #047857;
+  --secondary-light: #d1fae5;
+  
+  --accent-color: #f59e0b;
+  --accent-hover: #d97706;
+  
+  /* Backgrounds & Text */
+  --background-color: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  --background-secondary: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --text-light: #ffffff;
+  
+  /* Status Colors */
+  --success-color: #059669;
+  --warning-color: #d97706;
+  --warning-light: #fef3c7;
+  --error-color: #dc2626;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  
+  /* Borders */
+  --border-color: #e2e8f0;
+}
+
+/* Base Styles */
+body {
+  background: var(--background-color);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  padding-top: 75px;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Navbar */
+.navbar {
+  background-color: var(--background-secondary);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  color: var(--primary-color) !important;
+  font-size: 1.5rem;
+}
+
+.nav-link {
+  color: var(--text-secondary) !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--primary-color) !important;
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+  border: none;
+  color: var(--text-light);
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+  background-color: var(--background-secondary);
+  border: 2px solid var(--border-color);
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
+  padding: 4rem 0;
+  position: relative;
+}
+
+.hero-section h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+}
+
+.hero-section .lead {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+/* Feature Cards */
+.icons-cards {
+  background: var(--background-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.icons-cards::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.icons-cards:hover::before {
+  transform: scaleX(1);
+}
+
+.icons-cards:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-color);
+}
+
+.icons-cards .icon-theme {
+  color: var(--primary-color);
+  transition: all 0.3s ease;
+}
+
+.icons-cards:hover .icon-theme {
+  color: var(--secondary-color);
+  transform: scale(1.1);
+}
+
+/* Services Section */
+.services-class {
+  padding: 5rem 0;
+  background: var(--background-secondary);
+}
+
+#services-main-title {
+  text-align: center;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+#services-subtitle {
+  text-align: center;
+  padding-bottom: 3rem;
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+}
+
+.services-class .card {
+  background: var(--background-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 1.25rem;
+  padding: 2rem 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.services-class .card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-color);
+}
+
+.icon-box {
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
+  border-radius: 1rem;
+  width: 4rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.services-class .card:hover .icon-box {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  transform: scale(1.1);
+}
+
+.icon {
+  width: 2rem;
+  height: 2rem;
+  stroke: var(--primary-color);
+  transition: all 0.3s ease;
+}
+
+.services-class .card:hover .icon {
+  stroke: var(--text-light);
+}
+
+.cards-para {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+/* Modal Styles */
+.modal-content {
+  background-color: var(--background-secondary);
+  border-radius: 1rem;
+  border: none;
+  box-shadow: var(--shadow-xl);
+}
+
+.tab-btn {
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+  color: white;
+}
+
+.action-btn {
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  min-width: 80px;
+}
+
+.action-btn.active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.auth-form .form-control:focus {
+  border-color: var(--success-color);
+  box-shadow: 0 0 0 0.2rem rgba(5, 150, 105, 0.25);
+}
+
+/* Footer */
+.footer-class {
+  background: linear-gradient(135deg, var(--text-primary) 0%, #1e293b 100%);
+  color: var(--text-light);
+  padding: 3rem 0 1rem;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.footer-column {
+  margin-bottom: 1.5rem;
+}
+
+.footer-heading {
+  color: var(--text-light);
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.footer-heading::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.5rem;
+  width: 3rem;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+.footer-text {
+  color: #cbd5e1;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 0.75rem;
+}
+
+.footer-links a {
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.footer-links a:hover {
+  color: var(--primary-color);
+  transform: translateX(5px);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  text-align: center;
+  color: #94a3b8;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.scroll-fade {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease-out;
+}
+
+.scroll-fade.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-section { padding: 2rem 0; }
+  .hero-section h1 { font-size: 2.5rem; }
+  .services-class { padding: 3rem 0; }
+  #services-main-title { font-size: 2rem; }
+}
+
+@media (max-width: 576px) {
+  .hero-section .btn {
+    display: block;
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="../index.html">
+                <img src="https://cdn-icons-png.flaticon.com/512/747/747310.png" alt="logo" height="30" width="30" class="me-2">
+                <strong>Slotify</strong>
+                <span class="badge bg-primary ms-2">Provider</span>
+            </a>
+            
+            <div class="d-flex align-items-center">
+                <button class="btn btn-outline-primary me-3">
+                    <i class="bi bi-calendar-plus me-2"></i>Quick Block Time
+                </button>
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                        <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=40&h=40&fit=crop&crop=face&auto=format" 
+                             alt="Profile" class="rounded-circle me-2" width="32" height="32">
+                        <span>ServiceProvider</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-question-circle me-2"></i>Help</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="../index.html"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 dashboard-sidebar p-0">
+                <div class="p-3">
+                    <nav class="nav flex-column">
+                        <a href="#dashboard" class="sidebar-link active" data-section="dashboard">
+                            <i class="bi bi-speedometer2"></i>
+                            Dashboard
+                        </a>
+                        <a href="#appointments" class="sidebar-link" data-section="appointments">
+                            <i class="bi bi-calendar-check"></i>
+                            Appointments
+                        </a>
+                        <a href="#schedule" class="sidebar-link" data-section="schedule">
+                            <i class="bi bi-calendar3"></i>
+                            Schedule Management
+                        </a>
+                        <a href="#services" class="sidebar-link" data-section="services">
+                            <i class="bi bi-list-ul"></i>
+                            Services
+                        </a>
+                        <a href="#customers" class="sidebar-link" data-section="customers">
+                            <i class="bi bi-people"></i>
+                            Customers
+                        </a>
+                        <a href="#analytics" class="sidebar-link" data-section="analytics">
+                            <i class="bi bi-graph-up"></i>
+                            Analytics
+                        </a>
+                        <a href="#reviews" class="sidebar-link" data-section="reviews">
+                            <i class="bi bi-star"></i>
+                            Reviews
+                        </a>
+                        <a href="#profile" class="sidebar-link" data-section="profile">
+                            <i class="bi bi-person"></i>
+                            Profile
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 dashboard-content">
+                
+                <!-- Dashboard Overview Section -->
+                <div id="dashboard-section" class="content-section">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="fw-bold mb-1">Welcome back! ServiceProvider!</h2>
+                            <p class="text-muted">Here's your appointments overview for today.</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary">
+                                <i class="bi bi-calendar-plus me-2"></i>Block Time
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="bi bi-plus-lg me-2"></i>Add Service
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card text-center">
+                                <div class="stat-number">0</div>
+                                <div class="text-muted">Today's Appointments</div>
+                                <small class="text-success">
+                                    <i class="bi bi-arrow-up"></i> +0% from yesterday
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card text-center">
+                                <div class="stat-number">0%</div>
+                                <div class="text-muted">Schedule Utilization</div>
+                                <small class="text-warning">
+                                    <i class="bi bi-dash"></i> 0% from last week
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card text-center">
+                                <div class="stat-number">0.0</div>
+                                <div class="text-muted">Average Rating</div>
+                                <small class="text-success">
+                                    <i class="bi bi-arrow-up"></i> +0.0 this month
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Today's Schedule -->
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <h4 class="fw-semibold mb-3">Today's Schedule</h4>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="appointment-status status-confirmed">Confirmed</span>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        Actions
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>View Details</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="bi bi-chat me-2"></i>Message</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="bi bi-calendar me-2"></i>Reschedule</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-x-circle me-2"></i>Cancel</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-outline-primary">View Full Schedule</button>
+                        </div>
+        
+                        <div class="col-lg-4">
+                            <h5 class="fw-semibold mb-3">Quick Actions</h5>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary">
+                                    <i class="bi bi-calendar-plus me-2"></i>Block Time Slot
+                                </button>
+                                <button class="btn btn-outline-primary">
+                                    <i class="bi bi-clock-history me-2"></i>Set Availability
+                                </button>
+                                <button class="btn btn-outline-primary">
+                                    <i class="bi bi-plus-lg me-2"></i>Add New Service
+                                </button>
+                                <button class="btn btn-outline-primary">
+                                    <i class="bi bi-megaphone me-2"></i>Send Announcement
+                                </button>
+                            </div>
+
+                            <h6 class="fw-semibold mt-4 mb-3">Recent Reviews</h6>
+                            <div class="review-card"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appointments Section -->
+                <div id="appointments-section" class="content-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="fw-bold mb-1">Appointments</h2>
+                            <p class="text-muted">Manage your appointment requests and schedule.</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary">
+                                <i class="bi bi-funnel me-2"></i>Filter
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="bi bi-calendar-plus me-2"></i>Block Time
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Appointment Tabs -->
+                    <ul class="nav nav-tabs mb-4" id="appointmentTabs">
+                        <li class="nav-item">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pending-requests">
+                                Pending Requests <span class="badge bg-warning rounded-pill ms-2">0</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#confirmed-apps">
+                                Confirmed <span class="badge bg-success rounded-pill ms-2">0</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#completed-apps">
+                                Completed <span class="badge bg-secondary rounded-pill ms-2">0</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#cancelled-apps">
+                                Cancelled <span class="badge bg-danger rounded-pill ms-2">0</span>
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <!-- Pending Requests -->
+                        
+                        <div class="tab-pane fade" id="pending-requests">
+                            <div class="text-center py-4">
+                                <p class="text-muted">Pending Requests will appear here.</p>
+                            </div>
+                        </div>
+                  
+
+                        <!-- Confirmed Appointments -->
+                        
+                        <div class="tab-pane fade" id="confirmed-apps">
+                            <div class="text-center py-4">
+                                <p class="text-muted">Confirmed appointments will appear here.</p>
+                            </div>
+                        </div>
+
+                        <!-- Completed Appointments -->
+                        <div class="tab-pane fade" id="completed-apps">
+                            <div class="text-center py-4">
+                                <p class="text-muted">Completed appointments will appear here.</p>
+                            </div>
+                        </div>
+
+                        <!-- Cancelled Appointments -->
+                        <div class="tab-pane fade" id="completed-apps">
+                            <div class="text-center py-4">
+                                <p class="text-muted">Completed appointments will appear here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Management Section -->
+                <div id="schedule-section" class="content-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="fw-bold mb-1">Schedule Management</h2>
+                            <p class="text-muted">Set your availability and manage time slots.</p>
+                        </div>
+                        <button class="btn btn-primary">
+                            <i class="bi bi-clock me-2"></i>Set Weekly Schedule
+                        </button>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="fw-semibold mb-0">Today's Schedule</h5>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-arrow-left"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-arrow-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p>Schedule will appear here..</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="fw-semibold mb-0">Weekly Availability</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="fw-semibold">Monday</span>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <input type="time" class="form-control form-control-sm" value="00:00">
+                                            <input type="time" class="form-control form-control-sm" value="00:00">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="fw-semibold">Tuesday</span>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <input type="time" class="form-control form-control-sm" value="00:00">
+                                            <input type="time" class="form-control form-control-sm" value="00:00">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="fw-semibold">Wednesday</span>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <input type="time" class="form-control form-control-sm" value="00:00">
+                                            <input type="time" class="form-control form-control-sm" value="00:00">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="fw-semibold">Thursday</span>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <input type="time" class="form-control form-control-sm" value="00:00">
+                                            <input type="time" class="form-control form-control-sm" value="00:00">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="fw-semibold">Friday</span>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <input type="time" class="form-control form-control-sm" value="00:00">
+                                            <input type="time" class="form-control form-control-sm" value="00:00">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="fw-semibold">Saturday</span>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <input type="time" class="form-control form-control-sm" disabled>
+                                            <input type="time" class="form-control form-control-sm" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="fw-semibold">Sunday</span>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <input type="time" class="form-control form-control-sm" disabled>
+                                            <input type="time" class="form-control form-control-sm" disabled>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary w-100">Save Schedule</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services Section -->
+                <div id="services-section" class="content-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="fw-bold mb-1">Services</h2>
+                            <p class="text-muted">Manage your service offerings and rates.</p>
+                        </div>
+                        <button class="btn btn-primary">
+                            <i class="bi bi-plus-lg me-2"></i>Add New Service
+                        </button>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="fw-semibold mb-0">Service Analytics</h5>
+                            </div>
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5 class="fw-semibold mb-0">Quick Add Service</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form>
+                                        <div class="mb-3">
+                                            <label class="form-label">Service Name</label>
+                                            <input type="text" class="form-control" placeholder="e.g., Health Checkup">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Duration (minutes)</label>
+                                            <input type="number" class="form-control" placeholder="30">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">Add Service</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customers Section -->
+                <div id="customers-section" class="content-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="fw-bold mb-1">Customers</h2>
+                            <p class="text-muted">Manage your patient database and history.</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary">
+                                <i class="bi bi-funnel me-2"></i>Filter
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="bi bi-person-plus me-2"></i>Add Customer
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="input-group" style="max-width: 400px;">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control" placeholder="Search customers...">
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <select class="form-select" style="max-width: 200px;">
+                                        <option>All Customers</option>
+                                        <option>Recent Patients</option>
+                                        <option>Frequent Visitors</option>
+                                        <option>Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="fw-semibold mb-0">Customer Overview</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row text-center">
+                                            <div class="col-6 mb-3">
+                                                <div class="fw-bold text-primary h4">0</div>
+                                                <small class="text-muted">Total Customers</small>
+                                            </div>
+                                            <div class="col-6 mb-3">
+                                                <div class="fw-bold text-success h4">0</div>
+                                                <small class="text-muted">New This Month</small>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="fw-bold text-warning h4">0</div>
+                                                <small class="text-muted">Regular Patients</small>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="fw-bold text-info h4">0%</div>
+                                                <small class="text-muted">Retention Rate</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="fw-semibold mb-0">Recent Activity</h5>
+                                    </div>
+                                    <p>Recent activity will appear here..</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Analytics Section -->
+                <div id="analytics-section" class="content-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="fw-bold mb-1">Analytics</h2>
+                            <p class="text-muted">Track your practice performance and growth.</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <select class="form-select" style="max-width: 200px;">
+                                <option>Last 30 Days</option>
+                                <option>Last 3 Months</option>
+                                <option>Last 6 Months</option>
+                                <option>Last Year</option>
+                            </select>
+                            <button class="btn btn-outline-primary">
+                                <i class="bi bi-download me-2"></i>Export Report
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Key Metrics -->
+                    <div class="row mb-4">
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <div class="stat-number">0</div>
+                                        <div class="text-muted">Appointments</div>
+                                    </div>
+                                    <i class="bi bi-calendar-check h3 text-primary"></i>
+                                </div>
+                                <small class="text-success">
+                                    <i class="bi bi-arrow-up"></i> +0% from last month
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <div class="stat-number">0</div>
+                                        <div class="text-muted">New Customers</div>
+                                    </div>
+                                    <i class="bi bi-person-plus h3 text-info"></i>
+                                </div>
+                                <small class="text-success">
+                                    <i class="bi bi-arrow-up"></i> +0% from last month
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <div class="stat-number">0.0</div>
+                                        <div class="text-muted">Avg Rating</div>
+                                    </div>
+                                    <i class="bi bi-star-fill h3 text-warning"></i>
+                                </div>
+                                <small class="text-success">
+                                    <i class="bi bi-arrow-up"></i> +0.0 from last month
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts and Analytics -->
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="chart-container">
+                                <h5 class="fw-semibold mb-3">Appointment Distribution</h5>
+                                <p>Appointment distribution will appear here..</p>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="fw-semibold mb-0">Peak Hours</h5>
+                                    </div>
+                                    <p>Peak Hours will appear here..</p>
+                                </div>
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="fw-semibold mb-0">Performance Goals</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span>Monthly Appointments</span>
+                                                <span>0/0</span>
+                                            </div>
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-success" style="width: 0%"></div>
+                                            </div>
+                                            <small class="text-muted">0% complete</small>
+                                        </div>
+                                        <div>
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span>Customer Satisfaction</span>
+                                                <span>0.0 / 0.0</span>
+                                            </div>
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-warning" style="width: 0%"></div>
+                                            </div>
+                                            <small class="text-muted">0% complete</small>
+                                        </div>
+                                    </div>
+                                </div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Reviews Section -->
+                <div id="reviews-section" class="content-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="fw-bold mb-1">Reviews & Ratings</h2>
+                            <p class="text-muted">Manage customer feedback and improve your service.</p>
+                        </div>
+                        <button class="btn btn-outline-primary">
+                            <i class="bi bi-funnel me-2"></i>Filter Reviews
+                        </button>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="fw-semibold mb-0">Rating Overview</h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="display-4 fw-bold text-warning mb-2">4.9</div>
+                                    <div class="rating mb-2">
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                    </div>
+                                    <p class="text-muted">Based on 0 reviews</p>
+                                    
+                                    <div class="mt-4">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="me-2">5</span>
+                                            <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                <div class="progress-bar bg-warning" style="width: 0%"></div>
+                                            </div>
+                                            <span class="small">0</span>
+                                        </div>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="me-2">4</span>
+                                            <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                <div class="progress-bar bg-warning" style="width: 0%"></div>
+                                            </div>
+                                            <span class="small">0</span>
+                                        </div>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="me-2">3</span>
+                                            <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                <div class="progress-bar bg-warning" style="width: 0%"></div>
+                                            </div>
+                                            <span class="small">0</span>
+                                        </div>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="me-2">2</span>
+                                            <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                <div class="progress-bar bg-warning" style="width: 0%"></div>
+                                            </div>
+                                            <span class="small">0</span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-2">1</span>
+                                            <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                <div class="progress-bar bg-warning" style="width: 0%"></div>
+                                            </div>
+                                            <span class="small">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="fw-semibold mb-0">Recent Highlights</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="small fw-semibold text-success">Most Mentioned Positive</div>
+                                        <div class="small text-muted"></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="small fw-semibold text-primary">Average Response Time</div>
+                                        <div class="small text-muted">0.0 hours</div>
+                                    </div>
+                                    <div>
+                                        <div class="small fw-semibold text-info">Review Response Rate</div>
+                                        <div class="small text-muted">0% (0 of 0)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Section -->
+                <div id="profile-section" class="content-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="fw-bold mb-1">Provider Profile</h2>
+                            <p class="text-muted">Manage your professional information and credentials.</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="fw-semibold mb-0">Professional Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">Full Name</label>
+                                                <input type="text" class="form-control" value="Dr. Sarah Smith">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">Professional Title</label>
+                                                <input type="text" class="form-control" value="General Practitioner">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Bio/Description</label>
+                                            <textarea class="form-control" rows="4">Dr. Sarah Smith is a dedicated General Practitioner with over 15 years of experience in family medicine. She specializes in preventive care, chronic disease management, and patient education. Dr. Smith is committed to providing compassionate, comprehensive healthcare to patients of all ages.</textarea>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">Specialization</label>
+                                                <select class="form-select">
+                                                    <option selected></option>
+                                                    <option></option>
+                                                    <option></option>
+                                                    <option></option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">Years of Experience</label>
+                                                <input type="number" class="form-control" value="15">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">License Number</label>
+                                                <input type="text" class="form-control" value="MD123456789">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">Medical School</label>
+                                                <input type="text" class="form-control" value="Harvard Medical School">
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Update Information</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="fw-semibold mb-0">Practice Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Practice Name</label>
+                                            <input type="text" class="form-control" value="Downtown Medical Center">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Address</label>
+                                            <textarea class="form-control" rows="3">123 Medical Plaza Drive
+Suite 200
+New York, NY 10001</textarea>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">Phone Number</label>
+                                                <input type="tel" class="form-control" value="+1 (555) 123-4567">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">Email</label>
+                                                <input type="email" class="form-control" value="dr.smith@medicenter.com">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Website</label>
+                                            <input type="url" class="form-control" value="https://www.downtownmedicalcenter.com">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Update Practice Info</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="fw-semibold mb-0">Profile Photo</h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <img src="" alt="Dr. Sarah Smith" class="rounded-circle mb-3" width="120" height="120">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-outline-primary btn-sm">Change Photo</button>
+                                        <button class="btn btn-outline-secondary btn-sm">Remove Photo</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="fw-semibold mb-0">Account Settings</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="profileVisible" checked>
+                                        <label class="form-check-label" for="profileVisible">Profile Visible to Customers</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="onlineBooking" checked>
+                                        <label class="form-check-label" for="onlineBooking">Accept Online Bookings</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                                        <label class="form-check-label" for="emailNotifications">Email Notifications</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="smsNotifications" checked>
+                                        <label class="form-check-label" for="smsNotifications">SMS Notifications</label>
+                                    </div>
+                                    <button class="btn btn-primary w-100">Save Settings</button>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="fw-semibold mb-0">Profile Stats</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row text-center">
+                                        <div class="col-6 mb-3">
+                                            <div class="fw-bold text-primary h5">0.0</div>
+                                            <small class="text-muted">Average Rating</small>
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <div class="fw-bold text-success h5">0</div>
+                                            <small class="text-muted">Total Reviews</small>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="fw-bold text-info h5">0.0k</div>
+                                            <small class="text-muted">Profile Views</small>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="fw-bold text-warning h5">0%</div>
+                                            <small class="text-muted">Response Rate</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Dashboard navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Hide all content sections
+                    contentSections.forEach(section => {
+                        section.style.display = 'none';
+                    });
+                    
+                    // Show the selected section
+                    const targetSection = this.getAttribute('data-section');
+                    const targetElement = document.getElementById(targetSection + '-section');
+                    if (targetElement) {
+                        targetElement.style.display = 'block';
+                    }
+                });
+            });
+
+            // Toggle switches for availability
+            const toggleSwitches = document.querySelectorAll('.toggle-switch input');
+            toggleSwitches.forEach(toggle => {
+                toggle.addEventListener('change', function() {
+                    const timeInputs = this.closest('.mb-3').querySelectorAll('input[type="time"]');
+                    timeInputs.forEach(input => {
+                        input.disabled = !this.checked;
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

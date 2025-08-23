@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - Slotify</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="../styles/style.css">
+
+    <style>
+        .dashboard-sidebar
+        {
+            background-color: var(--background-secondary);
+            border-right: 1px solid var(--border-color);
+            min-height: calc(100vh - 75px);
+            box-shadow: var(--shadow-sm);
+        }
+        .sidebar-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin: 0.25rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-link:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+        
+        .sidebar-link.active {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+        
+        .sidebar-link i {
+            margin-right: 0.75rem;
+            width: 20px;
+        }
+
+        .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+        border: none;
+        color: var(--text-light);
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+        background-color: var(--background-secondary);
+        border: 2px solid var(--border-color);
+        color: var(--text-primary);
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+        }
+
+        .stat-card {
+            background-color: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-card-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .appointment-card {
+            background-color: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .appointment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .appointment-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .status-confirmed {
+            background-color: var(--secondary-light);
+            color: var(--secondary-color);
+        }
+
+        .status-pending {
+            background-color: var(--warning-light);
+            color: var(--warning-color);
+        }
+
+        .status-completed {
+            background-color: aliceblue;
+            color: var(--text-secondary);
+        }
+
+        .provider-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .quick-booking-card {
+            background-color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            text-align: center;
+            border-radius: 1rem;
+            color: var(--text-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-container {
+            background-color: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .provider-card {
+            background-color: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .provider-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .rating {
+            color: var(--accent-color);
+        }
+       .status-available {
+            background-color: var(--background-secondary);
+            color: var(--success-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-weight: 600;
+       } 
+
+       .delete-user-card
+       {
+            background-color: rgb(255, 255, 255);
+            border: 1px solid var(--border-color);
+            text-align: center;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+       }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="../index.html">
+                <img src="https://cdn-icons-png.flaticon.com/512/747/747310.png" alt="logo" height="30" width="30" class="me-2">Slotify
+            </a>
+            <div class="ms-auto d-flex align-items-center">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle me-2"></i> Profile
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>View Profile</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="../index.html"><i class="bi bi-box-arrow-in-right me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 p-0 dashboard-sidebar">
+                <div class="p-3">
+                    <nav class="nav flex-column">
+                        <a href="#dashboard" class="sidebar-link active" data-section="dashboard">
+                            <i class="bi bi-house-door me-2"></i>
+                            Dashboard
+                        </a>
+                        <a href="#book-appointment" class="sidebar-link" data-section="book-appointment">
+                            <i class="bi bi-calendar-plus me-2"></i>
+                            Book Appointments
+                        </a>
+                        <a href="#view-appointments" class="sidebar-link" data-section="view-appointments">
+                            <i class="bi bi-calendar-check me-2"></i>
+                            View Appointments
+                        </a>
+                        <a href="#profile" class="sidebar-link" data-section="profile">
+                            <i class="bi bi-person"></i>
+                            Profile
+                        </a>
+                        <a href="#notifications" class="sidebar-link" data-section="notifications">
+                            <i class="bi bi-bell"></i>
+                            Notifications
+                            <span class="badge bg-danger rounded-pill ms-auto">3</span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <!--main content-->
+            <div class="col-md-9 col-lg-10 p-3 dashboard-content">
+                
+                <!-- Dashboard Section -->
+                <div class="content-section" id="dashboard-section">
+                    <!--dashboard header-->
+                    <div class="justify-content-between d-flex p-3">
+                        <div>
+                            <h1>Welcome back! (User name) </h1>
+                            <p>Here's what's happening with your appointments today.</p>
+                        </div>
+                        <div>
+                        <button class="btn-primary">
+                            <i class="bi bi-calendar-plus me-2"></i> Book new appointment
+                        </button>
+                        </div>
+                    </div>
+
+                    <!--Statistical analytics-->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="stat-card text-center">
+                                <div class="stat-card-number">NA</div>
+                                <div class="text-muted">Upcoming Appointments</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card text-center">
+                                <div class="stat-card-number">NA</div>
+                                <div class="text-muted"> Total Appointments</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card text-center">
+                                <div class="stat-card-number">NA</div>
+                                <div class="text-muted"> Missed Appointments</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card text-center">
+                                <div class="stat-card-number">NA</div>
+                                <div class="text-muted">Attendance Rate</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Recent appointments section-->
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <h4>Recent Appointments</h4>
+                            <div class="appointment-card">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="d-flex">
+                                        <i class="bi bi-person-circle me-3" style="font-size: 4rem; color:skyblue"></i>
+                                        <div>
+                                            <h5 class="fw-semibold">Dr. John Doe</h5>
+                                            <p class="text-muted small mb-1">General Consultation</p>
+                                            <p class="text-muted small mb-0">
+                                                <i class="bi bi-calendar me-1"></i>Today, 3:00 PM
+                                                <i class="bi bi-geo-alt ms-3 me-1"></i>Downtown Clinic
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <span class="appointment-status status-confirmed">Confirmed</span>
+                                </div>
+                                <div class="mt-3">
+                                    <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                    <button class="btn btn-sm btn-outline-secondary ms-2">Reschedule</button>
+                                </div>
+                                <h6 class="mt-3">preview for the recent appointment display with styling</h6>
+                            </div>
+                        </div>
+                        <!-- Sidebar for quick booking-->
+                        <div class="col-lg-4">
+                            <div class="quick-booking-card p-3 mb-4">
+                                <h5 class="mb-3">Quick Book</h5>
+                                <p>Need an appointment? Find available slots instantly.</p>
+                                <button class="btn btn-light btn-lg w-100">
+                                    <i class="bi bi-search me-2"></i>Find Providers
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book Appointment Section -->
+                <div class="content-section" id="book-appointment-section" style="display: none;">
+                    <div class="d-flex justify-content-start align-items-center mb-3">
+                        <div>
+                            <h3>Book New Appointment</h3>
+                            <p>Find and book with the best service providers!</p>
+                        </div>
+                    </div>
+
+                    <div class="search-container">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">Service category</label>
+                                <select class="form-select">
+                                    <option value="">All Categories</option>
+                                    <option value="healthcare">Healthcare</option>
+                                    <option value="beauty">Beauty & Wellness</option>
+                                    <option value="automotive">Automotive</option>
+                                    <option value="professional">Professional Services</option>
+                                    <option value="it">IT Support</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">Location</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                    <input type="text" class="form-control" placeholder="Enter city or area">
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">Date</label>
+                                <input type="date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control" placeholder="Search for providers, specialists or services...">
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <button class="btn btn-primary w-100">
+                                    <i class="bi bi-search me-2"></i>Search Providers
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!--available providers-->
+                    <div class="row">
+                        <div class="col-md-8 ">
+                            <h4 class="fw-semibold mt-4">Available Providers</h4>
+                            <div class="provider-card">
+                                <div class="row">
+                                    <div class="col-md-3  text-center mb-3">
+                                        <i class="bi bi-person-circle" style="font-size: 4rem; color:skyblue"></i>
+                                        <div class="rating">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                            <span class="text-muted ms-1">(4.8)</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <h5 class="fw-semibold">Dr. Jane Smith</h5>
+                                        <p class="text-muted small">Specializes in Family Medicine</p>
+                                        <p class="small">
+                                            <i class="bi bi-geo-alt me-1"></i>GHMC Kakinada <br>
+                                            <i class="bi bi-clock me-1"></i>Available: 9:00 AM - 5:00 PM <br>
+                                            <i class="bi bi-award"></i> 10+ years of experience 
+                                        </p>
+                                        <div class="d-flex gap-2 mb-2">
+                                            <span class="badge bg-light text-dark">Hair Styling</span>
+                                            <span class="badge bg-light text-dark">Color Treatment</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 mb-3 text-end">
+                                        <div class="d-grid gap-3">
+                                            <div class="status-available mb-3">Available</div>
+                                            <button class="btn btn-primary btn-sm">Book Now</button>
+                                            <button class="btn btn-outline-secondary btn-sm">View Profile</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="mt-3">preview for service provider card display with styling</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View Appointments Section -->
+                <div class="content-section" id="view-appointments-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h3>My Appointments</h3>
+                            <p>Manage your appointments and view history.</p>
+                        </div>
+                        <button class="btn btn-primary">
+                            <i class="bi bi-calendar-plus me-2"></i>Book New
+                        </button>
+                    </div>
+
+                    <!-- Appointment Tabs -->
+                    <ul class="nav nav-tabs mb-4" id="appointmentTabs">
+                        <li class="nav-item">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#upcoming">
+                                Upcoming <span class="badge bg-primary rounded-pill ms-2">4</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#completed">
+                                Completed <span class="badge bg-secondary rounded-pill ms-2">8</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#cancelled">
+                                Cancelled <span class="badge bg-danger rounded-pill ms-2">2</span>
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <!-- Upcoming Appointments -->
+                        <div class="tab-pane fade show active" id="upcoming">
+                            <div class="appointment-card">
+                                <div class="row align-items-center">
+                                    <div class="col-md-1">
+                                        <div class="text-center">
+                                            <div class="fw-bold text-primary">29</div>
+                                            <div class="small text-muted">AUG</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <i class="bi bi-person-circle" style="font-size: 2rem"></i>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <h6 class="fw-semibold mb-1">Dr. Sarah Smith</h6>
+                                        <p class="text-muted small mb-1">General Consultation</p>
+                                        <p class="small mb-0">
+                                            <i class="bi bi-clock me-1"></i>3:00 PM - 3:30 PM<br>
+                                            <i class="bi bi-geo-alt me-1"></i>Downtown Medical Center
+                                        </p>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <span class="appointment-status status-confirmed">Confirmed</span>
+                                    </div>
+                                    <div class="col-md-2 text-end">
+                                        <div class="dropdown">
+                                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                Actions
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>View Details</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-calendar me-2"></i>Reschedule</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-telephone me-2"></i>Contact Provider</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-x-circle me-2"></i>Cancel</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Completed Appointments -->
+                        <div class="tab-pane fade" id="completed">
+                            <div class="text-center py-5">
+                                <i class="bi bi-calendar-check display-4 text-muted mb-3"></i>
+                                <h5 class="text-muted">Your completed appointments will appear here</h5>
+                            </div>
+                        </div>
+
+                        <!-- Cancelled Appointments -->
+                        <div class="tab-pane fade" id="cancelled">
+                            <div class="text-center py-5">
+                                <i class="bi bi-calendar-x display-4 text-muted mb-3"></i>
+                                <h5 class="text-muted">No cancelled appointments</h5>
+                                <p class="text-muted">Keep up the good work!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Section -->
+                <div class="content-section" id="profile-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h3>My Profile</h3>
+                            <p>Manage your personal information and preferences.</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="fw-semibold mb-0">Personal Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">First Name</label>
+                                                <input type="text" class="form-control" value="John">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">Last Name</label>
+                                                <input type="text" class="form-control" value="Doe">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Email Address</label>
+                                            <input type="email" class="form-control" value="john.doe@example.com">
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">Phone Number</label>
+                                                <input type="tel" class="form-control" value="+91 99999 88888">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">Date of Birth</label>
+                                                <input type="date" class="form-control" value="02-04-2006">
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="delete-user-card p-3 mb-4">
+                                <h5 class="mb-3">Delete Acount</h5>
+                                <p>Wanna leave Slotify?</p>
+                                <button class="btn btn-outline-danger btn-lg w-100">
+                                    <i class="bi bi-person-fill-x me-2"></i>Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications Section -->
+                <div class="content-section" id="notifications-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h3>Notifications</h3>
+                            <p>Stay updated with your appointments and reminders.</p>
+                        </div>
+                        <button class="btn btn-outline-secondary">
+                            <i class="bi bi-check-all me-2"></i>Mark All as Read
+                        </button>
+                    </div>
+
+                    <div class="list-group">
+                        <div class="list-group-item list-group-item-action border-0 mb-2 rounded">
+                            <div class="d-flex w-100 justify-content-between">
+                                <div class="d-flex">
+                                    <div class="me-3">
+                                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                            <i class="bi bi-calendar-check text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 fw-semibold">Remainder title</h6>
+                                        <p class="mb-1 small">Description</p>
+                                        <small class="text-muted">2 hours ago</small>
+                                    </div>
+                                </div>
+                                <span class="badge bg-danger rounded-circle" style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">!</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            // Show only the section that matches the initially active sidebar link
+            const activeLink = document.querySelector('.sidebar-link.active');
+            if (activeLink) {
+                contentSections.forEach(section => section.style.display = 'none');
+                const targetSection = activeLink.getAttribute('data-section');
+                const targetElement = document.getElementById(targetSection + '-section');
+                if (targetElement) targetElement.style.display = 'block';
+            }
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e){
+                    e.preventDefault();
+
+                    //remove active class for all links
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+
+                    //add active to clicked link
+                    this.classList.add('active');
+
+                    //hide all content sections
+                    contentSections.forEach(section => {
+                        section.style.display = 'none';
+                    });
+
+                    //display selected section by activated link
+                    const targetSection = this.getAttribute('data-section');
+                    const targetElement = document.getElementById(targetSection + '-section');
+                    if(targetElement)
+                    {
+                        targetElement.style.display = 'block';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
