@@ -1,0 +1,700 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Slotify</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="../styles/style.css">
+    <style>
+        .appointment-modal .modal-dialog {
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .appointment-modal .modal-content {
+            border: none;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+            background: #ffffff;
+            overflow: hidden;
+            position: relative;
+            z-index: 1060;
+        }
+
+        .appointment-modal {
+            z-index: 1055;
+        }
+
+        .appointment-modal .modal-dialog {
+            z-index: 1060;
+        }
+
+        .appointment-modal .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.85) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .appointment-modal.show .modal-backdrop {
+            opacity: 1 !important;
+        }
+
+        .modal-header-custom {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: var(--text-light);
+            padding: 2rem 2rem 1.5rem 2rem;
+            border: none;
+            position: relative;
+        }
+
+        /* for the bottom gradient line - show ki*/
+        .modal-header-custom::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--secondary-color), var(--accent-color), var(--secondary-color));
+        }
+
+        /* Progress Indicators */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        /*for line like thing b/w the steps, it's a single line extending from the left step to the right step*/
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--border-color);
+            z-index: 1;
+        }
+
+        .progress-step {
+            background: #ffffff;
+            border: 3px solid #e9ecef;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        .progress-step.completed {
+            background: var(--success-color);
+            border-color: var(--success-color);
+            color: var(--text-light);
+        }
+
+        .appointment-form-section {
+            background: #f3f3f4;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .appointment-form-section:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-label-custom {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-label-custom i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .form-control-custom {
+            border: 2px solid #e9ecef;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: #ffffff;
+        }
+
+        .form-control-custom:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.25);
+            background-color: var(--background-primary);
+        }
+
+        .btn-book-appointment {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border: none;
+            color: var(--text-light);
+            font-weight: 700;
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            font-size: 1.1rem;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-book-appointment:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(var(--primary-rgb), 0.4);
+        }
+
+        .btn-book-appointment:active {
+            transform: translateY(-1px);
+        }
+
+        .time-slot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .time-slot-btn {
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            background: #ffffff;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .time-slot-btn:hover {
+            border-color: var(--primary-light);
+            background: var(--background-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .time-slot-btn.selected {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: var(--text-light);
+            transform: scale(1.05);
+        }
+
+        .time-slot-btn.unavailable {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f8f9fa;
+        }
+
+        .booking-summary {
+            background: linear-gradient(135deg, var(--primary-light) 0%, rgba(var(--secondary-rgb), 0.1) 100%);
+            border: 1px solid var(--primary-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="modal show d-block appointment-modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header modal-header-custom">
+                    <div>
+                        <h4 class="fw-bold mb-2">
+                            <i class="bi bi-calendar-heart me-2"></i>Book Your Appointment
+                        </h4>
+                        <p class="mb-0 opacity-90">Schedule your visit with (SP name)</p>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <!--progress indicators-->
+                    <div class="progress-steps">
+                        <div class="progress-step" id="step1"><span id="step1Icon">1</span></div>
+                        <div class="progress-step" id="step2"><span id="step2Icon">2</span></div>
+                        <div class="progress-step" id="step3">3</div>
+                        <div class="progress-step" id="step4">4</div>
+                    </div>
+
+                    <!--date theskundham-->
+                    <div class="step-content active" id="stepContent1">
+                        <div class="appointment-form-section">
+                            <label class="form-label-custom">
+                                <i class="bi bi-calendar3"></i>Select Appointment Date
+                            </label>
+                                                        <input type="date" class="form-control form-control-custom" id="appointmentDate" min="" max="">
+                                                        <script>
+// Service selection logic
+let selectedService = null;
+function updateServiceSelection() {
+    const serviceSelect = document.getElementById('serviceSelect');
+    selectedService = serviceSelect.value;
+    // Progress indicator: step 3 blue, step 2 tick/white
+    if (selectedService) {
+        progressSteps[1].classList.remove('active');
+        progressSteps[1].classList.add('completed');
+        step2Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
+        step2Icon.style.color = '#fff';
+        progressSteps[2].classList.add('active');
+        if (document.getElementById('step3')) {
+            document.getElementById('step3').style.background = '#0d6efd';
+            document.getElementById('step3').style.color = '#fff';
+        }
+    }
+}
+document.addEventListener('DOMContentLoaded', function() {
+    const serviceSelect = document.getElementById('serviceSelect');
+    if (serviceSelect) {
+        serviceSelect.addEventListener('change', updateServiceSelection);
+    }
+});
+let selectedSlot = null;
+let selectedSlotLabel = '';
+function updateSlotSelection() {
+    let found = false;
+    document.querySelectorAll('.time-slot-btn').forEach(btn => {
+        btn.classList.remove('selected');
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.borderColor = '';
+        if (btn.dataset.time === selectedSlot) {
+            btn.classList.add('selected');
+            btn.style.background = '#0d6efd';
+            btn.style.color = '#fff';
+            btn.style.borderColor = '#0d6efd';
+            selectedSlotLabel = btn.textContent.trim();
+            found = true;
+        }
+    });
+    if (!found) selectedSlotLabel = '';
+    // Progress indicator: step 2 blue, step 3 no color
+    if (selectedSlot) {
+        progressSteps[1].classList.add('active');
+        step2Icon.innerHTML = '2';
+        step2Icon.style.color = '#0d6efd';
+        progressSteps[2].classList.remove('active');
+        progressSteps[2].classList.remove('completed');
+        if (document.getElementById('step3')) {
+            document.getElementById('step3').style.background = '';
+            document.getElementById('step3').style.color = '';
+            document.getElementById('step3').innerHTML = '3';
+        }
+    }
+    // If on summary step, update the summary time immediately
+    if (currentStep === 5 && document.getElementById('summaryTime')) {
+        document.getElementById('summaryTime').textContent = selectedSlotLabel || 'No time selected';
+    }
+}
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.time-slot-btn').forEach(btn => {
+        if (!btn.classList.contains('unavailable')) {
+            btn.onclick = function() {
+                selectedSlot = btn.dataset.time;
+                updateSlotSelection();
+                // Always update the summary time field
+                var summaryTime = document.getElementById('summaryTime');
+                if (summaryTime) {
+                    summaryTime.textContent = btn.textContent.trim();
+                }
+            };
+        }
+    });
+});
+                                                            // Restrict date input to today and next 2 days
+                                                            window.addEventListener('DOMContentLoaded', function() {
+                                                                const dateInput = document.getElementById('appointmentDate');
+                                                                const today = new Date();
+                                                                const yyyy = today.getFullYear();
+                                                                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                                                                const dd = String(today.getDate()).padStart(2, '0');
+                                                                const minDate = `${yyyy}-${mm}-${dd}`;
+                                                                const maxDateObj = new Date(today);
+                                                                maxDateObj.setDate(today.getDate() + 2);
+                                                                const maxyyyy = maxDateObj.getFullYear();
+                                                                const maxmm = String(maxDateObj.getMonth() + 1).padStart(2, '0');
+                                                                const maxdd = String(maxDateObj.getDate()).padStart(2, '0');
+                                                                const maxDate = `${maxyyyy}-${maxmm}-${maxdd}`;
+                                                                dateInput.setAttribute('min', minDate);
+                                                                dateInput.setAttribute('max', maxDate);
+                                                            });
+                                                        </script>
+                        </div>
+                    </div>
+
+                    <!--time thesukundham-->
+                    <div class="step-content" id="stepContent2">
+                        <div class="appointment-form-section">
+                            <label class="form-label-custom">
+                                <i class="bi bi-clock"></i>Choose Your Time Slot
+                            </label>
+                            <div class="time-slot-grid">
+                                <div class="time-slot-btn" data-time="09:00">9:00 AM</div>
+                                <div class="time-slot-btn unavailable" data-time="10:00">10:00 AM</div>
+                                <div class="time-slot-btn" data-time="11:00">11:00 AM</div>
+                                <div class="time-slot-btn unavailable" data-time="12:00">12:00 PM</div>
+                                <div class="time-slot-btn" data-time="13:00">1:00 PM</div>
+                                <div class="time-slot-btn unavailable" data-time="14:00">2:00 PM</div>
+                                <div class="time-slot-btn" data-time="15:00">3:00 PM</div>
+                                <div class="time-slot-btn" data-time="16:00">4:00 PM</div>
+                                <div class="time-slot-btn" data-time="17:00">5:00 PM</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-content" id="stepContent3">
+                        <div class="appointment-form-section">
+                            <label class="form-label-custom">
+                                <i class="bi bi-person-badge"></i>Select service
+                            </label>
+                            <select class="form-select form-control-custom" id="serviceSelect">
+                                <option value="" disabled selected>Select a service</option>
+                                <option value="service-1">service-1</option>
+                                <option value="service-2">service-2</option>
+                                <option value="service-3">service-3</option>
+                                <option value="service-4">service-4</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!--last step lo ki summary-->
+                    <div class="step-content" id="stepContent4">
+                        <div class="appointment-form-section">
+                            <label class="form-label-custom">
+                                <i class="bi bi-chat-dots"></i>Additional Notes (Optional)
+                            </label>
+                            <textarea class="form-control form-control-custom notes-textarea" 
+                                      placeholder="Any specific concerns or requirements..." id="appointmentNotes"></textarea>
+                        </div>
+
+                        
+                    </div>
+
+
+                    <div class="step-content" id="successContent" style="display:none;">
+                        <div class="appointment-form-section">
+                            <h4 class="mb-3">Appointment Summary</h4>
+                            <div class="mb-2"><strong>Provider Name:</strong> <span id="summaryProvider">(SP name)</span></div>
+                            <div class="mb-2"><strong>Date:</strong> <span id="summaryDate"></span></div>
+                            <div class="mb-2"><strong>Day:</strong> <span id="summaryDay"></span></div>
+                            <div class="mb-2"><strong>Time:</strong> <span id="summaryTime"></span></div>
+                            <div class="mb-2"><strong>Service:</strong> <span id="summaryService"></span></div>
+                        </div>
+                        <div class="d-flex w-100 justify-content-end align-items-center" id="footerBookBtn" style="display:none;">
+                            <button type="button" class="btn btn-book-appointment" id="bookAppointmentBtn" onclick="showBookedMessage()">Book Appointment</button>
+                        </div>
+                        <div id="bookedMessage" style="display:none;">
+                            <div class="text-center py-4">
+                                <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                                <h4 class="text-success mt-3 mb-2">Appointment Booked Successfully!</h4>
+                                <p class="text-muted">You'll receive a confirmation email shortly.</p>
+                            </div>
+                        </div>
+<script>
+function showBookedMessage() {
+    // Hide the form, button, and summary, show only the booked message
+    // Remove the Book Appointment button and hide all summary details
+    var btn = document.getElementById('bookAppointmentBtn');
+    if (btn) btn.remove();
+    var summarySection = document.getElementById('successContent').querySelector('.appointment-form-section');
+    if (summarySection) summarySection.style.display = 'none';
+    document.getElementById('footerBookBtn').style.display = 'none';
+    document.getElementById('bookedMessage').style.display = 'block';
+}
+</script>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0 p-4 pt-0" id="footerNavBtns">
+                    <div class="d-flex w-100 gap-3 justify-content-between align-items-center">
+                        <button type="button" class="btn btn-outline-secondary" id="prevBtn" onclick="previousStep()">
+                            <i class="bi bi-arrow-left me-2"></i>Previous
+                        </button>
+                        <button type="button" class="btn btn-book-appointment" id="nextBtn" onclick="nextStep()">
+                            Next<i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                                                        <script>
+// Restrict date input to today and next 3 days
+window.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('appointmentDate');
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const minDate = `${yyyy}-${mm}-${dd}`;
+        const maxDateObj = new Date(today);
+        maxDateObj.setDate(today.getDate() + 3);
+        const maxyyyy = maxDateObj.getFullYear();
+        const maxmm = String(maxDateObj.getMonth() + 1).padStart(2, '0');
+        const maxdd = String(maxDateObj.getDate()).padStart(2, '0');
+        const maxDate = `${maxyyyy}-${maxmm}-${maxdd}`;
+        dateInput.setAttribute('min', minDate);
+        dateInput.setAttribute('max', maxDate);
+
+        // Step navigation logic and progress indicator
+    let currentStep = 1;
+    const totalSteps = 4;
+    const summaryContent = document.getElementById('successContent');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const stepContents = [
+            document.getElementById('stepContent1'),
+            document.getElementById('stepContent2'),
+            document.getElementById('stepContent3'),
+            document.getElementById('stepContent4')
+        ];
+        const progressSteps = [
+            document.getElementById('step1'),
+            document.getElementById('step2'),
+            document.getElementById('step3'),
+            document.getElementById('step4')
+        ];
+        const step1Icon = document.getElementById('step1Icon');
+        const step2Icon = document.getElementById('step2Icon');
+
+            function updateSteps() {
+                // Hide all step contents and summary
+                stepContents.forEach((el) => { if (el) el.style.display = 'none'; });
+                if (summaryContent) summaryContent.style.display = 'none';
+                document.getElementById('footerNavBtns').style.display = '';
+                document.getElementById('footerBookBtn').style.display = 'none';
+                // Show only the current step or summary
+                if (currentStep <= 4 && stepContents[currentStep - 1]) {
+                    stepContents[currentStep - 1].style.display = '';
+                } else if (currentStep === 5 && summaryContent) {
+                    summaryContent.style.display = 'block';
+                    document.getElementById('footerNavBtns').style.display = 'none';
+                    document.getElementById('footerBookBtn').style.display = 'flex';
+                    // Fill summary fields
+                    const dateVal = document.getElementById('appointmentDate').value;
+                    // Always get the label of the selected (highlighted) time slot
+                    let timeLabel = '';
+                    const btns = document.querySelectorAll('.time-slot-btn');
+                    btns.forEach(btn => {
+                        if (btn.classList.contains('selected')) {
+                            timeLabel = btn.textContent.trim();
+                        }
+                    });
+                    const serviceVal = document.getElementById('serviceSelect').value || '';
+                    document.getElementById('summaryDate').textContent = dateVal;
+                    document.getElementById('summaryTime').textContent = timeLabel || 'No time selected';
+                    document.getElementById('summaryService').textContent = serviceVal;
+                    // Calculate and show day
+                    if (dateVal) {
+                        const day = new Date(dateVal).toLocaleDateString('en-US', { weekday: 'long' });
+                        document.getElementById('summaryDay').textContent = day;
+                    } else {
+                        document.getElementById('summaryDay').textContent = '';
+                    }
+                }
+                // Progress indicator
+                if (currentStep === 5) {
+                    // All steps completed: show only green tick marks, no numbers
+                    progressSteps.forEach((step, idx) => {
+                        step.classList.remove('active');
+                        step.classList.add('completed');
+                        if (idx === 0) {
+                            step1Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
+                            step1Icon.style.color = '#fff';
+                        }
+                        if (idx === 1) {
+                            step2Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
+                            step2Icon.style.color = '#fff';
+                        }
+                        if (idx === 2 && document.getElementById('step3')) {
+                            document.getElementById('step3').innerHTML = '<i class="bi bi-check-lg"></i>';
+                            document.getElementById('step3').style.background = '#198754';
+                            document.getElementById('step3').style.color = '#fff';
+                        }
+                        if (idx === 3 && document.getElementById('step4')) {
+                            document.getElementById('step4').innerHTML = '<i class="bi bi-check-lg"></i>';
+                            document.getElementById('step4').style.background = '#198754';
+                            document.getElementById('step4').style.color = '#fff';
+                        }
+                    });
+                } else if (currentStep === 2) {
+                    // Step 1: white tick, Step 2: white, Step 3/4: default
+                    progressSteps[0].classList.remove('active');
+                    progressSteps[0].classList.add('completed');
+                    step1Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
+                    step1Icon.style.color = '#fff';
+                    progressSteps[1].classList.add('active');
+                    progressSteps[1].classList.remove('completed');
+                    step2Icon.innerHTML = '2';
+                    step2Icon.style.color = '#fff';
+                    progressSteps[2].classList.remove('active');
+                    progressSteps[2].classList.remove('completed');
+                    progressSteps[3].classList.remove('active');
+                    progressSteps[3].classList.remove('completed');
+                } else if (currentStep === 3) {
+                    // Step 1: white tick, Step 2: white tick, Step 3: blue, Step 4: default
+                    progressSteps[0].classList.remove('active');
+                    progressSteps[0].classList.add('completed');
+                    step1Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
+                    step1Icon.style.color = '#fff';
+                    progressSteps[1].classList.remove('active');
+                    progressSteps[1].classList.add('completed');
+                    step2Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
+                    step2Icon.style.color = '#fff';
+                    progressSteps[2].classList.add('active');
+                    progressSteps[2].classList.remove('completed');
+                    if (document.getElementById('step3')) {
+                        document.getElementById('step3').style.background = '#0d6efd';
+                        document.getElementById('step3').style.color = '#fff';
+                    }
+                    progressSteps[3].classList.remove('active');
+                    progressSteps[3].classList.remove('completed');
+                } else if (currentStep === 4) {
+                    // Step 1: white tick, Step 2: white tick, Step 3: green tick (white), Step 4: blue
+                    progressSteps[0].classList.remove('active');
+                    progressSteps[0].classList.add('completed');
+                    step1Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
+                    step1Icon.style.color = '#fff';
+                    progressSteps[1].classList.remove('active');
+                    progressSteps[1].classList.add('completed');
+                    step2Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
+                    step2Icon.style.color = '#fff';
+                    progressSteps[2].classList.remove('active');
+                    progressSteps[2].classList.add('completed');
+                    if (document.getElementById('step3')) {
+                        document.getElementById('step3').innerHTML = '<i class="bi bi-check-lg"></i>';
+                        document.getElementById('step3').style.background = '#198754';
+                        document.getElementById('step3').style.color = '#fff';
+                    }
+                    progressSteps[3].classList.add('active');
+                    progressSteps[3].classList.remove('completed');
+                    // Force Next button to always be visible
+                    if (nextBtn) {
+                        nextBtn.style.display = '';
+                    }
+                } else {
+                    // Reset to default
+                    progressSteps[0].classList.remove('completed');
+                    progressSteps[0].classList.add('active');
+                    step1Icon.innerHTML = '1';
+                    step1Icon.style.color = '';
+                    progressSteps[1].classList.remove('completed');
+                    progressSteps[1].classList.remove('active');
+                    step2Icon.innerHTML = '2';
+                    step2Icon.style.color = '';
+                    progressSteps[2].classList.remove('active');
+                    progressSteps[2].classList.remove('completed');
+                    progressSteps[3].classList.remove('active');
+                    progressSteps[3].classList.remove('completed');
+                }
+                // Prev button only after first step
+                prevBtn.style.display = (currentStep === 1) ? 'none' : '';
+                nextBtn.style.display = (currentStep === 5) ? 'none' : '';
+            }
+
+        window.nextStep = function() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateSteps();
+                // If moved to select service step, only show that section
+                if (currentStep === 3) {
+                    stepContents.forEach((el, idx) => {
+                        el.style.display = (idx === 2) ? '' : 'none';
+                    });
+                }
+                // If moved to step 4, update header progress
+                if (currentStep === 4) {
+                    updateServiceSelection();
+                }
+            } else if (currentStep === totalSteps) {
+                // After additional notes, show only summary
+                currentStep++;
+                updateSteps();
+            }
+        };
+        window.previousStep = function() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateSteps();
+                // After going back, show only green tick marks for all completed steps (no numbers)
+                for (let i = 0; i < currentStep; i++) {
+                    if (progressSteps[i]) {
+                        progressSteps[i].classList.remove('active');
+                        progressSteps[i].classList.add('completed');
+                        if (i === 0) {
+                            step1Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
+                            step1Icon.style.color = '#fff';
+                        }
+                        if (i === 1) {
+                            step2Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
+                            step2Icon.style.color = '#fff';
+                        }
+                        if (i === 2 && document.getElementById('step3')) {
+                            document.getElementById('step3').innerHTML = '<i class="bi bi-check-lg"></i>';
+                            document.getElementById('step3').style.background = '#198754';
+                            document.getElementById('step3').style.color = '#fff';
+                        }
+                        if (i === 3 && document.getElementById('step4')) {
+                            document.getElementById('step4').innerHTML = '<i class="bi bi-check-lg"></i>';
+                            document.getElementById('step4').style.background = '#198754';
+                            document.getElementById('step4').style.color = '#fff';
+                        }
+                    }
+                }
+                // Remove numbers from completed steps (step 1, 2, 3, 4)
+                if (currentStep < 4 && document.getElementById('step4')) {
+                    document.getElementById('step4').innerHTML = '4';
+                    document.getElementById('step4').style.background = '';
+                    document.getElementById('step4').style.color = '';
+                }
+                if (currentStep < 3 && document.getElementById('step3')) {
+                    document.getElementById('step3').innerHTML = '3';
+                    document.getElementById('step3').style.background = '';
+                    document.getElementById('step3').style.color = '';
+                }
+                if (currentStep < 2 && document.getElementById('step2Icon')) {
+                    step2Icon.innerHTML = '2';
+                    step2Icon.style.color = '';
+                }
+            }
+        };
+        // Hide all but first step on load
+        updateSteps();
+});
+                                                        </script>
