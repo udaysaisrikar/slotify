@@ -29,12 +29,11 @@
 
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"> <a class="nav-link" href="#services">Services</a> </li>
-                        <li class="nav-item"> <a class="nav-link" href="#providers">Providers</a> </li>
+                        <li class="nav-item"> <a class="nav-link" href="#services-categories">Services Providers</a> </li>
                         <li class="nav-item"> <a class="nav-link" href="#about">About</a> </li>
                         <li class="nav-item"> <a class="nav-link" href="#contact">Contact</a> </li>
                     </ul>
-                    <button class="btn btn-primary ms-lg-3" data-bs-toggle="modal" data-bs-target="#authModal">Sign In</button>
+                    <button id="signing-button" class="btn btn-primary ms-lg-3" data-bs-toggle="modal" data-bs-target="#authModal">Sign In</button>
                 </div>
             </div>
         </nav>
@@ -86,7 +85,7 @@
             </div>
         </section>
         <!--Services Section-->
-        <section class="services-class">
+        <section id="services-categories" class="services-class">
             <h2 id="services-main-title">Browse by Category</h2>
             <h5 id="services-subtitle">Find the perfect service provider for your needs</h5>
             <div class="container my-5">
@@ -481,8 +480,8 @@
                     <h3 class="footer-heading">For Customers</h3>
                     <ul class="footer-links">
                         <li><a href="#">Providers</a></li>
-                        <li><a href="#">Book Appointments</a></li>
-                        <li><a href="#">Rate & Review</a></li>
+                        <li><a href="javascript:void(0);" onclick="document.getElementById('signing-button').click();">Book Appointments</a></li>
+                        <li><a href="#">Customer Support</a></li>
                     </ul>
                 </div>
             
@@ -490,9 +489,8 @@
                 <div class="footer-column">
                     <h3 class="footer-heading">For Providers</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Join Our Platform</a></li>
-                        <li><a href="#">Manage Appointments</a></li>
-                        <li><a href="#">Grow Your Business</a></li>
+                        <li><a href="javascript:void(0);" onclick="document.getElementById('signing-button').click();">Join Our Platform</a></li>
+                        <li><a href="javascript:void(0);" onclick="document.getElementById('signing-button').click();">Manage Appointments</a></li>
                     </ul>
                 </div>
 
@@ -598,6 +596,13 @@
                             setTimeout(() => {
                                 const modal = bootstrap.Modal.getInstance(document.getElementById('authModal'));
                                 if (modal) modal.hide();
+                                
+                                // Redirect based on user type
+                                if (key.includes('customer')) {
+                                    window.location.href = 'public/customer-dashboard.html';
+                                } else if (key.includes('provider')) {
+                                    window.location.href = 'public/provider-dashboard.html';
+                                }
                             }, 2000);
                         });
                     }
