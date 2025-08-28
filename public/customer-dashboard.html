@@ -199,10 +199,14 @@
 <body>
     <nav class="navbar navbar-expand-lg fixed-top shadow-sm">
         <div class="container-fluid">
+            
+            
+            <!-- Mobile Navbar -->
             <a class="navbar-brand d-flex align-items-center" href="../index.html">
-                <img src="https://cdn-icons-png.flaticon.com/512/747/747310.png" alt="logo" height="30" width="30" class="me-2">Slotify
+                <img src="https://cdn-icons-png.flaticon.com/512/747/747310.png" alt="logo" height="30" width="30" class="me-2">
+                Slotify
             </a>
-            <div class="ms-auto d-flex align-items-center">
+            <div class="d-flex align-items-center">
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-person-circle me-2"></i> Profile
@@ -214,38 +218,82 @@
                         <li><a class="dropdown-item" href="../index.html"><i class="bi bi-box-arrow-in-right me-2"></i>Logout</a></li>
                     </ul>
                 </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
             </div>
+
         </div>
     </nav>
 
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 p-0 dashboard-sidebar">
+
+
+            <div class="col-md-3 col-lg-2 p-0">
                 <div class="p-3">
-                    <nav class="nav flex-column">
-                        <a href="#dashboard" class="sidebar-link active" data-section="dashboard">
-                            <i class="bi bi-house-door me-2"></i>
-                            Dashboard
-                        </a>
-                        <a href="#book-appointment" class="sidebar-link" data-section="book-appointment">
-                            <i class="bi bi-calendar-plus me-2"></i>
-                            Book Appointments
-                        </a>
-                        <a href="#view-appointments" class="sidebar-link" data-section="view-appointments">
-                            <i class="bi bi-calendar-check me-2"></i>
-                            View Appointments
-                        </a>
-                        <a href="#profile" class="sidebar-link" data-section="profile">
-                            <i class="bi bi-person"></i>
-                            Profile
-                        </a>
-                        <a href="#notifications" class="sidebar-link" data-section="notifications">
-                            <i class="bi bi-bell"></i>
-                            Notifications
-                            <span class="badge bg-danger rounded-pill ms-auto">3</span>
-                        </a>
-                    </nav>
+
+                    <!-- Sidebar for large screens -->
+                    <div class="d-none d-lg-block bg-light border-end vh-100 p-3" id="sidebarMenu">
+                        <h5 class="mb-4">Customer Dashboard</h5>
+                        <nav class="nav flex-column">
+                            <a href="#dashboard" class="sidebar-link active" data-section="dashboard">
+                                <i class="bi bi-house-door me-2"></i>
+                                Dashboard
+                            </a>
+                            <a href="#book-appointment" class="sidebar-link" data-section="book-appointment">
+                                <i class="bi bi-calendar-plus me-2"></i>
+                                Book Appointments
+                            </a>
+                            <a href="#view-appointments" class="sidebar-link" data-section="view-appointments">
+                                <i class="bi bi-calendar-check me-2"></i>
+                                View Appointments
+                            </a>
+                            <a href="#profile" class="sidebar-link" data-section="profile">
+                                <i class="bi bi-person"></i>
+                                Profile
+                            </a>
+                            <a href="#notifications" class="sidebar-link" data-section="notifications">
+                                <i class="bi bi-bell"></i>
+                                Notifications
+                                <span class="badge bg-danger rounded-pill ms-auto">3</span>
+                            </a>
+                        </nav>
+                    </div>
+
+                    <!-- Offcanvas Sidebar for mobile -->
+                    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
+                        <div class="offcanvas-header">
+                            <h5 class="offcanvas-title">Menu</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <nav class="nav flex-column">
+                                <a href="#dashboard" class="sidebar-link active" data-section="dashboard">
+                                    <i class="bi bi-house-door me-2"></i>
+                                    Dashboard
+                                </a>
+                                <a href="#book-appointment" class="sidebar-link" data-section="book-appointment">
+                                    <i class="bi bi-calendar-plus me-2"></i>
+                                    Book Appointments
+                                </a>
+                                <a href="#view-appointments" class="sidebar-link" data-section="view-appointments">
+                                    <i class="bi bi-calendar-check me-2"></i>
+                                    View Appointments
+                                </a>
+                                <a href="#profile" class="sidebar-link" data-section="profile">
+                                    <i class="bi bi-person"></i>
+                                    Profile
+                                </a>
+                                <a href="#notifications" class="sidebar-link" data-section="notifications">
+                                    <i class="bi bi-bell"></i>
+                                    Notifications
+                                    <span class="badge bg-danger rounded-pill ms-auto">3</span>
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -650,6 +698,16 @@
                         targetElement.style.display = 'block';
                     }
                 });
+            });
+        });
+    </script>
+    <!-- JS to auto-close offcanvas when link is clicked -->
+    <script>
+        document.querySelectorAll('#mobileSidebar .sidebar-link').forEach(link => {
+            link.addEventListener('click', () => {
+                const offcanvasElement = document.getElementById('mobileSidebar');
+                const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                offcanvas.hide();
             });
         });
     </script>

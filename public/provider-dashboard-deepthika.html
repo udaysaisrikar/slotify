@@ -11,6 +11,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel='stylesheet' href="../styles/style.css">
     <style>
         .dashboard-sidebar {
             background: var(--background-secondary);
@@ -230,396 +232,19 @@
             transform: translateX(26px);
         }
 
-        /* Slotify - Clean Optimized Styles */
+       #sidebarMenu {
+            min-width: 250px;
+            max-width: 250px;
+        }
+        @media (max-width: 412px){
+            /* Hide sidebar on small screens */
+            #sidebarMenu {
+                display: none;
+            }
+        }
 
-:root {
-  /* Brand Colors */
-  --primary-color: #2563eb;
-  --primary-hover: #1d4ed8;
-  --primary-light: #dbeafe;
-  
-  --secondary-color: #059669;
-  --secondary-hover: #047857;
-  --secondary-light: #d1fae5;
-  
-  --accent-color: #f59e0b;
-  --accent-hover: #d97706;
-  
-  /* Backgrounds & Text */
-  --background-color: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  --background-secondary: #ffffff;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --text-muted: #94a3b8;
-  --text-light: #ffffff;
-  
-  /* Status Colors */
-  --success-color: #059669;
-  --warning-color: #d97706;
-  --warning-light: #fef3c7;
-  --error-color: #dc2626;
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-  
-  /* Borders */
-  --border-color: #e2e8f0;
-}
+        
 
-/* Base Styles */
-body {
-  background: var(--background-color);
-  color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
-  padding-top: 75px;
-  line-height: 1.6;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  color: var(--text-primary);
-  font-weight: 600;
-}
-
-/* Navbar */
-.navbar {
-  background-color: var(--background-secondary);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
-}
-
-.navbar-brand {
-  font-weight: 700;
-  color: var(--primary-color) !important;
-  font-size: 1.5rem;
-}
-
-.nav-link {
-  color: var(--text-secondary) !important;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.nav-link:hover {
-  color: var(--primary-color) !important;
-}
-
-/* Buttons */
-.btn-primary {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
-  border: none;
-  color: var(--text-light);
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.75rem;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-md);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-.btn-secondary {
-  background-color: var(--background-secondary);
-  border: 2px solid var(--border-color);
-  color: var(--text-primary);
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.75rem;
-  transition: all 0.3s ease;
-}
-
-.btn-secondary:hover {
-  border-color: var(--primary-color);
-  color: var(--primary-color);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-/* Hero Section */
-.hero-section {
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
-  padding: 4rem 0;
-  position: relative;
-}
-
-.hero-section h1 {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 1.5rem;
-}
-
-.hero-section .lead {
-  font-size: 1.25rem;
-  color: var(--text-secondary);
-  max-width: 600px;
-  margin: 0 auto 2rem;
-}
-
-/* Feature Cards */
-.icons-cards {
-  background: var(--background-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 1rem;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.icons-cards::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
-}
-
-.icons-cards:hover::before {
-  transform: scaleX(1);
-}
-
-.icons-cards:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-xl);
-  border-color: var(--primary-color);
-}
-
-.icons-cards .icon-theme {
-  color: var(--primary-color);
-  transition: all 0.3s ease;
-}
-
-.icons-cards:hover .icon-theme {
-  color: var(--secondary-color);
-  transform: scale(1.1);
-}
-
-/* Services Section */
-.services-class {
-  padding: 5rem 0;
-  background: var(--background-secondary);
-}
-
-#services-main-title {
-  text-align: center;
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-#services-subtitle {
-  text-align: center;
-  padding-bottom: 3rem;
-  font-size: 1.25rem;
-  color: var(--text-secondary);
-}
-
-.services-class .card {
-  background: var(--background-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 1.25rem;
-  padding: 2rem 1.5rem;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-sm);
-}
-
-.services-class .card:hover {
-  transform: translateY(-10px);
-  box-shadow: var(--shadow-xl);
-  border-color: var(--primary-color);
-}
-
-.icon-box {
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
-  border-radius: 1rem;
-  width: 4rem;
-  height: 4rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-  transition: all 0.3s ease;
-}
-
-.services-class .card:hover .icon-box {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  transform: scale(1.1);
-}
-
-.icon {
-  width: 2rem;
-  height: 2rem;
-  stroke: var(--primary-color);
-  transition: all 0.3s ease;
-}
-
-.services-class .card:hover .icon {
-  stroke: var(--text-light);
-}
-
-.cards-para {
-  color: var(--text-secondary);
-  margin-bottom: 1.5rem;
-}
-
-/* Modal Styles */
-.modal-content {
-  background-color: var(--background-secondary);
-  border-radius: 1rem;
-  border: none;
-  box-shadow: var(--shadow-xl);
-}
-
-.tab-btn {
-  border-radius: 25px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.tab-btn.active {
-  background-color: var(--success-color);
-  border-color: var(--success-color);
-  color: white;
-}
-
-.action-btn {
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  min-width: 80px;
-}
-
-.action-btn.active {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-  color: white;
-}
-
-.auth-form .form-control:focus {
-  border-color: var(--success-color);
-  box-shadow: 0 0 0 0.2rem rgba(5, 150, 105, 0.25);
-}
-
-/* Footer */
-.footer-class {
-  background: linear-gradient(135deg, var(--text-primary) 0%, #1e293b 100%);
-  color: var(--text-light);
-  padding: 3rem 0 1rem;
-}
-
-.footer-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-}
-
-.footer-column {
-  margin-bottom: 1.5rem;
-}
-
-.footer-heading {
-  color: var(--text-light);
-  font-weight: 600;
-  font-size: 1.25rem;
-  margin-bottom: 1.5rem;
-  position: relative;
-}
-
-.footer-heading::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -0.5rem;
-  width: 3rem;
-  height: 2px;
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-}
-
-.footer-text {
-  color: #cbd5e1;
-  line-height: 1.6;
-  margin-bottom: 1rem;
-}
-
-.footer-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.footer-links li {
-  margin-bottom: 0.75rem;
-}
-
-.footer-links a {
-  color: #cbd5e1;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.footer-links a:hover {
-  color: var(--primary-color);
-  transform: translateX(5px);
-}
-
-.footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  text-align: center;
-  color: #94a3b8;
-}
-
-/* Animations */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.scroll-fade {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.6s ease-out;
-}
-
-.scroll-fade.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .hero-section { padding: 2rem 0; }
-  .hero-section h1 { font-size: 2.5rem; }
-  .services-class { padding: 3rem 0; }
-  #services-main-title { font-size: 2rem; }
-}
-
-@media (max-width: 576px) {
-  .hero-section .btn {
-    display: block;
-    width: 100%;
-    margin: 0.5rem 0;
-  }
-}
 
     </style>
 </head>
@@ -627,20 +252,22 @@ h1, h2, h3, h4, h5, h6 {
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm">
         <div class="container-fluid">
+            
+            <!-- Mobile Navbar -->
             <a class="navbar-brand d-flex align-items-center" href="../index.html">
                 <img src="https://cdn-icons-png.flaticon.com/512/747/747310.png" alt="logo" height="30" width="30" class="me-2">
                 <strong>Slotify</strong>
-                <span class="badge bg-primary ms-2">Provider</span>
             </a>
-            
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
             <div class="d-flex align-items-center">
                 <button class="btn btn-outline-primary me-3">
                     <i class="bi bi-calendar-plus me-2"></i>Quick Block Time
                 </button>
                 <div class="dropdown">
                     <button class="btn btn-outline-primary dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
-                        <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=40&h=40&fit=crop&crop=face&auto=format" 
-                             alt="Profile" class="rounded-circle me-2" width="32" height="32">
                         <span>ServiceProvider</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
@@ -652,52 +279,63 @@ h1, h2, h3, h4, h5, h6 {
                     </ul>
                 </div>
             </div>
+                    
         </div>
+                
     </nav>
 
     <div class="container-fluid">
         <div class="row">
+
             <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 dashboard-sidebar p-0">
+            
+
+            <div class="col-md-3 col-lg-2 p-0">
                 <div class="p-3">
-                    <nav class="nav flex-column">
-                        <a href="#dashboard" class="sidebar-link active" data-section="dashboard">
-                            <i class="bi bi-speedometer2"></i>
-                            Dashboard
-                        </a>
-                        <a href="#appointments" class="sidebar-link" data-section="appointments">
-                            <i class="bi bi-calendar-check"></i>
-                            Appointments
-                        </a>
-                        <a href="#schedule" class="sidebar-link" data-section="schedule">
-                            <i class="bi bi-calendar3"></i>
-                            Schedule Management
-                        </a>
-                        <a href="#services" class="sidebar-link" data-section="services">
-                            <i class="bi bi-list-ul"></i>
-                            Services
-                        </a>
-                        <a href="#customers" class="sidebar-link" data-section="customers">
-                            <i class="bi bi-people"></i>
-                            Customers
-                        </a>
-                        <a href="#analytics" class="sidebar-link" data-section="analytics">
-                            <i class="bi bi-graph-up"></i>
-                            Analytics
-                        </a>
-                        <a href="#reviews" class="sidebar-link" data-section="reviews">
-                            <i class="bi bi-star"></i>
-                            Reviews
-                        </a>
-                        <a href="#profile" class="sidebar-link" data-section="profile">
-                            <i class="bi bi-person"></i>
-                            Profile
-                        </a>
-                    </nav>
+
+                    <!-- Sidebar for large screens -->
+                    <div class="d-none d-lg-block bg-light border-end vh-100 p-3" id="sidebarMenu">
+                        
+                        <nav class="nav flex-column">
+                            <a href="#dashboard" class="sidebar-link active" data-section="dashboard"><i class="bi bi-speedometer2"></i>Dashboard</a>
+                            <a href="#appointments" class="sidebar-link" data-section="appointments"><i class="bi bi-calendar-check me-2"></i>Appointments</a>
+                            <a href="#schedule" class="sidebar-link" data-section="schedule"><i class="bi bi-calendar3 me-2"></i>Schedule Management</a>
+                            <a href="#services"  class="sidebar-link" data-section="services"><i class="bi bi-list-ul me-2"></i>Services</a>
+                            <a href="#customers" class="sidebar-link" data-section="customers"><i class="bi bi-people me-2"></i>Customers</a>
+                            <a href="#analytics" class="sidebar-link" data-section="analytics"><i class="bi bi-graph-up me-2"></i>Analytics</a>
+                            <a href="#reviews" class="sidebar-link" data-section="reviews"><i class="bi bi-star me-2"></i>Reviews</a>
+                            <a href="#profile" class="sidebar-link" data-section="profile"><i class="bi bi-person me-2"></i>Profile</a>
+                        </nav>
+                    </div>
+
+                    
+                    <!-- Offcanvas Sidebar for mobile -->
+                    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
+                        <div class="offcanvas-header">
+                            <h5 class="offcanvas-title">Menu</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <nav class="nav flex-column">
+                                <a href="#dashboard" class="sidebar-link active" data-section="dashboard"><i class="bi bi-speedometer2"></i>Dashboard</a>
+                                <a href="#appointments" class="sidebar-link" data-section="appointments"><i class="bi bi-calendar-check me-2"></i>Appointments</a>
+                                <a href="#schedule" class="sidebar-link" data-section="schedule"><i class="bi bi-calendar3 me-2"></i>Schedule Management</a>
+                                <a href="#services" class="sidebar-link" data-section="services"><i class="bi bi-list-ul me-2"></i>Services</a>
+                                <a href="#customers" class="sidebar-link" data-section="customers"><i class="bi bi-people me-2"></i>Customers</a>
+                                <a href="#analytics" class="sidebar-link" data-section="analytics"><i class="bi bi-graph-up me-2"></i>Analytics</a>
+                                <a href="#reviews" class="sidebar-link" data-section="reviews"><i class="bi bi-star me-2"></i>Reviews</a>
+                                <a href="#profile" class="sidebar-link" data-section="profile"><i class="bi bi-person me-2"></i>Profile</a>
+                            </nav>
+                        </div>
+                    </div>
+
+                       
+                    
                 </div>
             </div>
 
             <!-- Main Content -->
+
             <div class="col-md-9 col-lg-10 dashboard-content">
                 
                 <!-- Dashboard Overview Section -->
@@ -708,18 +346,19 @@ h1, h2, h3, h4, h5, h6 {
                             <p class="text-muted">Here's your appointments overview for today.</p>
                         </div>
                         <div class="d-flex gap-2">
-                            <button class="btn btn-outline-primary">
-                                <i class="bi bi-calendar-plus me-2"></i>Block Time
-                            </button>
                             <button class="btn btn-primary">
                                 <i class="bi bi-plus-lg me-2"></i>Add Service
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="bi bi-clock me-2"></i>Set Weekly Schedule
                             </button>
                         </div>
                     </div>
 
                     <!-- Stats Cards -->
+
                     <div class="row mb-4">
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-4 mb-4">
                             <div class="stat-card text-center">
                                 <div class="stat-number">0</div>
                                 <div class="text-muted">Today's Appointments</div>
@@ -728,7 +367,7 @@ h1, h2, h3, h4, h5, h6 {
                                 </small>
                             </div>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-4 mb-4">
                             <div class="stat-card text-center">
                                 <div class="stat-number">0%</div>
                                 <div class="text-muted">Schedule Utilization</div>
@@ -737,7 +376,7 @@ h1, h2, h3, h4, h5, h6 {
                                 </small>
                             </div>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-4 mb-4">
                             <div class="stat-card text-center">
                                 <div class="stat-number">0.0</div>
                                 <div class="text-muted">Average Rating</div>
@@ -749,53 +388,97 @@ h1, h2, h3, h4, h5, h6 {
                     </div>
 
                     <!-- Today's Schedule -->
+
                     <div class="row">
                         <div class="col-lg-8">
                             <h4 class="fw-semibold mb-3">Today's Schedule</h4>
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="appointment-status status-confirmed">Confirmed</span>
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        Actions
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>View Details</a></li>
-                                        <li><a class="dropdown-item" href="#"><i class="bi bi-chat me-2"></i>Message</a></li>
-                                        <li><a class="dropdown-item" href="#"><i class="bi bi-calendar me-2"></i>Reschedule</a></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-x-circle me-2"></i>Cancel</a></li>
-                                    </ul>
+                            <div class="appointment-card">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="d-flex">
+                                        <div>
+                                            <h6 class="fw-semibold mb-1">Customer-1</h6>
+                                            <p class="text-muted small mb-1">General Consultation</p>
+                                            <p class="text-muted small mb-0">
+                                                <i class="bi bi-clock me-1"></i>9:00 AM - 9:30 AM
+                                                <i class="bi bi-telephone ms-3 me-1"></i>+1 (555) 123-4567
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="appointment-status status-confirmed">Confirmed</span>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                Actions
+                                            </button>
+                                            <ul class="dropdown-menu">
+            
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-calendar me-2"></i>Reschedule</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-x-circle me-2"></i>Cancel</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="text-center mt-3">
-                            <button class="btn btn-outline-primary">View Full Schedule</button>
+
+                            <div class="appointment-card">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="d-flex">
+                                        <div>
+                                            <h6 class="fw-semibold mb-1">Customer-2</h6>
+                                            <p class="text-muted small mb-1">Routine Checkup</p>
+                                            <p class="text-muted small mb-0">
+                                                <i class="bi bi-clock me-1"></i>11:30 AM - 12:00 PM
+                                                <i class="bi bi-telephone ms-3 me-1"></i>+1 (555) 456-7890
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="appointment-status status-pending">Pending</span>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                Actions
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-calendar me-2"></i>Reschedule</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-x-circle me-2"></i>Cancel</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-3">
+                                <button class="btn btn-outline-primary">View Full Schedule</button>
+                            </div>
                         </div>
         
                         <div class="col-lg-4">
-                            <h5 class="fw-semibold mb-3">Quick Actions</h5>
-                            <div class="d-grid gap-2">
-                                <button class="btn btn-outline-primary">
-                                    <i class="bi bi-calendar-plus me-2"></i>Block Time Slot
-                                </button>
-                                <button class="btn btn-outline-primary">
-                                    <i class="bi bi-clock-history me-2"></i>Set Availability
-                                </button>
-                                <button class="btn btn-outline-primary">
-                                    <i class="bi bi-plus-lg me-2"></i>Add New Service
-                                </button>
-                                <button class="btn btn-outline-primary">
-                                    <i class="bi bi-megaphone me-2"></i>Send Announcement
-                                </button>
-                            </div>
 
                             <h6 class="fw-semibold mt-4 mb-3">Recent Reviews</h6>
-                            <div class="review-card"></div>
+                            <div class="review-card">
+                                <div class="d-flex align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between">
+                                            <small class="fw-semibold">ServiceProvider</small>
+                                            <div class="rating">
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                            </div>
+                                        </div>
+                                        <p class="small text-muted mb-0">"review!"</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Appointments Section -->
+
                 <div id="appointments-section" class="content-section" style="display: none;">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
@@ -813,25 +496,26 @@ h1, h2, h3, h4, h5, h6 {
                     </div>
 
                     <!-- Appointment Tabs -->
+
                     <ul class="nav nav-tabs mb-4" id="appointmentTabs">
                         <li class="nav-item">
                             <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pending-requests">
-                                Pending Requests <span class="badge bg-warning rounded-pill ms-2">0</span>
+                                Pending Requests <span class="badge bg-warning rounded-pill ms-2">1</span>
                             </button>
                         </li>
                         <li class="nav-item">
                             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#confirmed-apps">
-                                Confirmed <span class="badge bg-success rounded-pill ms-2">0</span>
+                                Confirmed <span class="badge bg-success rounded-pill ms-2">1</span>
                             </button>
                         </li>
                         <li class="nav-item">
                             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#completed-apps">
-                                Completed <span class="badge bg-secondary rounded-pill ms-2">0</span>
+                                Completed <span class="badge bg-secondary rounded-pill ms-2">1</span>
                             </button>
                         </li>
                         <li class="nav-item">
                             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#cancelled-apps">
-                                Cancelled <span class="badge bg-danger rounded-pill ms-2">0</span>
+                                Cancelled <span class="badge bg-danger rounded-pill ms-2">1</span>
                             </button>
                         </li>
                     </ul>
@@ -839,9 +523,41 @@ h1, h2, h3, h4, h5, h6 {
                     <div class="tab-content">
                         <!-- Pending Requests -->
                         
-                        <div class="tab-pane fade" id="pending-requests">
-                            <div class="text-center py-4">
-                                <p class="text-muted">Pending Requests will appear here.</p>
+                        <div class="tab-pane fade show active" id="pending-requests">
+                            <div class="appointment-card">
+                                <div class="row align-items-center">
+                                    <div class="col-md-1">
+                                        <div class="text-center">
+                                            <div class="fw-bold text-warning">01</div>
+                                            <div class="small text-muted">AUG</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6 class="fw-semibold mb-1">Customer</h6>
+                                        <p class="text-muted small mb-1">Initial Consultation</p>
+                                        <p class="small mb-0">
+                                            <i class="bi bi-clock me-1"></i>Preferred: 2:00 PM - 3:00 PM<br>
+                                            <i class="bi bi-telephone me-1"></i>+1 (555) 234-5678
+                                        </p>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <span class="appointment-status status-pending">Pending</span>
+                                        <div class="small text-muted mt-1">Requested 2 hours ago</div>
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-success">
+                                                <i class="bi bi-check-lg"></i> Accept
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-calendar"></i> Reschedule
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-x-lg"></i> Decline
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                   
@@ -849,22 +565,85 @@ h1, h2, h3, h4, h5, h6 {
                         <!-- Confirmed Appointments -->
                         
                         <div class="tab-pane fade" id="confirmed-apps">
-                            <div class="text-center py-4">
-                                <p class="text-muted">Confirmed appointments will appear here.</p>
+                            <div class="appointment-card">
+                                <div class="row align-items-center">
+                                    <div class="col-md-1">
+                                        <div class="text-center">
+                                            <div class="fw-bold text-success">01</div>
+                                            <div class="small text-muted">AUG</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <h6 class="fw-semibold mb-1">Customer</h6>
+                                        <p class="text-muted small mb-1">General Consultation</p>
+                                        <p class="small mb-0">
+                                            <i class="bi bi-clock me-1"></i>9:00 AM - 9:30 AM<br>
+                                            <i class="bi bi-telephone me-1"></i>+1 (555) 123-4567
+                                        </p>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <span class="appointment-status status-confirmed">Confirmed</span>
+                                    </div>
+                                    <div class="col-md-2 text-end">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                Actions
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-calendar me-2"></i>Reschedule</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-x-circle me-2"></i>Cancel</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
 
                         <!-- Completed Appointments -->
                         <div class="tab-pane fade" id="completed-apps">
-                            <div class="text-center py-4">
-                                <p class="text-muted">Completed appointments will appear here.</p>
+                            <div class="appointment-card">
+                                <div class="row align-items-center">
+                                    <div class="col-md-1">
+                                        <div class="text-center">
+                                            <div class="fw-bold text-success">01</div>
+                                            <div class="small text-muted">AUG</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <h6 class="fw-semibold mb-1">Customer</h6>
+                                        <p class="text-muted small mb-1">General Consultation</p>
+                                        <p class="small mb-0">
+                                            <i class="bi bi-clock me-1"></i>9:00 AM - 9:30 AM<br>
+                                            <i class="bi bi-telephone me-1"></i>+1 (555) 123-4567
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
+                    
+
                         <!-- Cancelled Appointments -->
-                        <div class="tab-pane fade" id="completed-apps">
-                            <div class="text-center py-4">
-                                <p class="text-muted">Completed appointments will appear here.</p>
+                        <div class="tab-pane fade" id="cancelled-apps">
+                            <div class="appointment-card">
+                                <div class="row align-items-center">
+                                    <div class="col-md-1">
+                                        <div class="text-center">
+                                            <div class="fw-bold text-success">01</div>
+                                            <div class="small text-muted">AUG</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <h6 class="fw-semibold mb-1">Customer</h6>
+                                        <p class="text-muted small mb-1">General Consultation</p>
+                                        <p class="small mb-0">
+                                            <i class="bi bi-clock me-1"></i>9:00 AM - 9:30 AM<br>
+                                            <i class="bi bi-telephone me-1"></i>+1 (555) 123-4567
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1010,15 +789,78 @@ h1, h2, h3, h4, h5, h6 {
                             <h2 class="fw-bold mb-1">Services</h2>
                             <p class="text-muted">Manage your service offerings and rates.</p>
                         </div>
-                        <button class="btn btn-primary">
-                            <i class="bi bi-plus-lg me-2"></i>Add New Service
-                        </button>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="fw-semibold mb-0">Service Analytics</h5>
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="service-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5 class="fw-semibold mb-2">Service-1</h5>
+                                        <p class="text-muted mb-2">Comprehensive health assessment and medical advice for various health concerns.</p>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="badge bg-primary">30 minutes</span>
+                                            <span class="text-muted">|</span>
+                                            <span class="text-muted small">Category: Healthcare</span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="slider"></span>
+                                        </label>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                Actions
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-pencil me-2"></i>Edit Service</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-copy me-2"></i>Duplicate</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>Delete</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                        </div>
+                             
+
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="fw-semibold mb-0">Service Analytics</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Service-1</span>
+                                            <span class="fw-semibold">0%</span>
+                                        </div>
+                                        <div class="progress mt-1" style="height: 6px;">
+                                            <div class="progress-bar bg-primary" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Service-2</span>
+                                            <span class="fw-semibold">0%</span>
+                                        </div>
+                                        <div class="progress mt-1" style="height: 6px;">
+                                            <div class="progress-bar bg-success" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Service-3</span>
+                                            <span class="fw-semibold">0%</span>
+                                        </div>
+                                        <div class="progress mt-1" style="height: 6px;">
+                                            <div class="progress-bar bg-warning" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="card mt-4">
                                 <div class="card-header">
                                     <h5 class="fw-semibold mb-0">Quick Add Service</h5>
@@ -1040,8 +882,8 @@ h1, h2, h3, h4, h5, h6 {
                         </div>
                     </div>
                 </div>
-
-                <!-- Customers Section -->
+                
+                <!--Customers section-->
                 <div id="customers-section" class="content-section" style="display: none;">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
@@ -1051,9 +893,6 @@ h1, h2, h3, h4, h5, h6 {
                         <div class="d-flex gap-2">
                             <button class="btn btn-outline-primary">
                                 <i class="bi bi-funnel me-2"></i>Filter
-                            </button>
-                            <button class="btn btn-primary">
-                                <i class="bi bi-person-plus me-2"></i>Add Customer
                             </button>
                         </div>
                     </div>
@@ -1068,51 +907,99 @@ h1, h2, h3, h4, h5, h6 {
                                 <div class="d-flex gap-2">
                                     <select class="form-select" style="max-width: 200px;">
                                         <option>All Customers</option>
-                                        <option>Recent Patients</option>
+                                        <option>Recent Visitors</option>
                                         <option>Frequent Visitors</option>
                                         <option>Inactive</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <h5 class="fw-semibold mb-0">Customer Overview</h5>
+
+                            <div class="appointment-card">
+                                <div class="row align-items-center">
+                                    
+                                    <div class="col-md-4">
+                                        <h6 class="fw-semibold mb-1">Customer-1</h6>
+                                        <p class="text-muted small mb-1">customer@email.com</p>
+                                        <p class="small mb-0">
+                                            <i class="bi bi-telephone me-1"></i>+1 (555) 123-4567<br>
+                                            <i class="bi bi-calendar me-1"></i>Last visit: July 28, 2025
+                                        </p>
                                     </div>
-                                    <div class="card-body">
-                                        <div class="row text-center">
-                                            <div class="col-6 mb-3">
-                                                <div class="fw-bold text-primary h4">0</div>
-                                                <small class="text-muted">Total Customers</small>
-                                            </div>
-                                            <div class="col-6 mb-3">
-                                                <div class="fw-bold text-success h4">0</div>
-                                                <small class="text-muted">New This Month</small>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="fw-bold text-warning h4">0</div>
-                                                <small class="text-muted">Regular Patients</small>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="fw-bold text-info h4">0%</div>
-                                                <small class="text-muted">Retention Rate</small>
-                                            </div>
+                                    <div class="col-md-3">
+                                        <div class="text-center">
+                                            <div class="fw-bold text-primary">12</div>
+                                            <small class="text-muted">Total Visits</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                Actions
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>View Profile</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="bi bi-calendar-plus me-2"></i>Book Appointment</a></li>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
 
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="fw-semibold mb-0">Recent Activity</h5>
+                        <div class="col-lg-4">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="fw-semibold mb-0">Customer Overview</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row text-center">
+                                        <div class="col-6 mb-3">
+                                            <div class="fw-bold text-primary h4">0</div>
+                                            <small class="text-muted">Total Customers</small>
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <div class="fw-bold text-success h4">0</div>
+                                            <small class="text-muted">New This Week</small>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="fw-bold text-warning h4">0</div>
+                                            <small class="text-muted">Regular Patients</small>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="fw-bold text-info h4">0%</div>
+                                            <small class="text-muted">Retention Rate</small>
+                                        </div>
                                     </div>
-                                    <p>Recent activity will appear here..</p>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="fw-semibold mb-0">Recent Activity</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        
+                                        <div class="flex-grow-1">
+                                            <div class="fw-semibold small">Customer-1</div>
+                                            <div class="text-muted small">Booked appointment for Aug 5</div>
+                                        </div>
+                                        <small class="text-muted">2h ago</small>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="flex-grow-1">
+                                            <div class="fw-semibold small">Customer-2</div>
+                                            <div class="text-muted small">Completed consultation</div>
+                                        </div>
+                                        <small class="text-muted">1d ago</small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-
+    
                 <!-- Analytics Section -->
                 <div id="analytics-section" class="content-section" style="display: none;">
                     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -1122,10 +1009,10 @@ h1, h2, h3, h4, h5, h6 {
                         </div>
                         <div class="d-flex gap-2">
                             <select class="form-select" style="max-width: 200px;">
-                                <option>Last 30 Days</option>
-                                <option>Last 3 Months</option>
-                                <option>Last 6 Months</option>
-                                <option>Last Year</option>
+                                <option>Last 1 Week</option>
+                                <option>Last 2 Weeks</option>
+                                <option>Last 3 Weeks</option>
+                                <option>Last 4 Weeks</option>
                             </select>
                             <button class="btn btn-outline-primary">
                                 <i class="bi bi-download me-2"></i>Export Report
@@ -1135,7 +1022,7 @@ h1, h2, h3, h4, h5, h6 {
 
                     <!-- Key Metrics -->
                     <div class="row mb-4">
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-4 mb-4">
                             <div class="stat-card">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <div>
@@ -1149,7 +1036,7 @@ h1, h2, h3, h4, h5, h6 {
                                 </small>
                             </div>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-4 mb-4">
                             <div class="stat-card">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <div>
@@ -1163,7 +1050,7 @@ h1, h2, h3, h4, h5, h6 {
                                 </small>
                             </div>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-4 mb-4">
                             <div class="stat-card">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <div>
@@ -1184,46 +1071,115 @@ h1, h2, h3, h4, h5, h6 {
                         <div class="col-lg-8">
                             <div class="chart-container">
                                 <h5 class="fw-semibold mb-3">Appointment Distribution</h5>
-                                <p>Appointment distribution will appear here..</p>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <h5 class="fw-semibold mb-0">Peak Hours</h5>
-                                    </div>
-                                    <p>Peak Hours will appear here..</p>
-                                </div>
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <h5 class="fw-semibold mb-0">Performance Goals</h5>
-                                    </div>
-                                    <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
                                         <div class="mb-3">
                                             <div class="d-flex justify-content-between mb-1">
-                                                <span>Monthly Appointments</span>
-                                                <span>0/0</span>
+                                                <span>Service-1</span>
+                                                <span class="fw-semibold">0%</span>
                                             </div>
-                                            <div class="progress" style="height: 6px;">
+                                            <div class="progress" style="height: 8px;">
+                                                <div class="progress-bar bg-primary" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span>Service-2</span>
+                                                <span class="fw-semibold">0%</span>
+                                            </div>
+                                            <div class="progress" style="height: 8px;">
                                                 <div class="progress-bar bg-success" style="width: 0%"></div>
                                             </div>
-                                            <small class="text-muted">0% complete</small>
                                         </div>
-                                        <div>
+                                        <div class="mb-3">
                                             <div class="d-flex justify-content-between mb-1">
-                                                <span>Customer Satisfaction</span>
-                                                <span>0.0 / 0.0</span>
+                                                <span>Service-3</span>
+                                                <span class="fw-semibold">0%</span>
                                             </div>
-                                            <div class="progress" style="height: 6px;">
+                                            <div class="progress" style="height: 8px;">
                                                 <div class="progress-bar bg-warning" style="width: 0%"></div>
                                             </div>
-                                            <small class="text-muted">0% complete</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div style="height: 200px; background: linear-gradient(45deg, #f8f9fa 25%, transparent 25%), linear-gradient(-45deg, #f8f9fa 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f8f9fa 75%), linear-gradient(-45deg, transparent 75%, #f8f9fa 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px; display: flex; align-items: center; justify-content: center; border-radius: 0.5rem;">
+                                            <div class="text-center text-muted">
+                                                <i class="bi bi-pie-chart display-4 mb-2"></i>
+                                                <h6>Pie Chart</h6>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                             </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="fw-semibold mb-0">Peak Hours</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span>00:00 - 00:00</span>
+                                            <span class="fw-semibold">High</span>
+                                        </div>
+                                        <div class="progress mt-1" style="height: 4px;">
+                                            <div class="progress-bar bg-danger" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span>00:00 - 00:00 </span>
+                                            <span class="fw-semibold">Medium</span>
+                                        </div>
+                                        <div class="progress mt-1" style="height: 4px;">
+                                            <div class="progress-bar bg-warning" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span>00:00 - 00:00 </span>
+                                            <span class="fw-semibold">Low</span>
+                                        </div>
+                                        <div class="progress mt-1" style="height: 4px;">
+                                            <div class="progress-bar bg-success" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="fw-semibold mb-0">Performance Goals</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Monthly Appointments</span>
+                                            <span>0/0</span>
+                                        </div>
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar bg-success" style="width: 0%"></div>
+                                        </div>
+                                        <small class="text-muted">0% complete</small>
+                                    </div>
+                                    <div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Customer Satisfaction</span>
+                                            <span>0.0 / 0.0</span>
+                                        </div>
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar bg-warning" style="width: 0%"></div>
+                                        </div>
+                                        <small class="text-muted">0% complete</small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+
                 <!-- Reviews Section -->
                 <div id="reviews-section" class="content-section" style="display: none;">
                     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -1236,19 +1192,52 @@ h1, h2, h3, h4, h5, h6 {
                         </button>
                     </div>
                     <div class="row">
+                        <div class="col-lg-8">
+                            <div class="review-card">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="d-flex">
+                                        <div>
+                                            <h6 class="fw-semibold mb-1">Customer</h6>
+                                            <div class="rating mb-2">
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                            </div>
+                                            <p class="mb-2">ServiceProvider is incredibly professional and caring. The consultation was thorough and I felt heard throughout the entire process. Highly recommend!</p>
+                                            <small class="text-muted">General Consultation • July 28, 2025</small>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-reply me-2"></i>Reply</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <button class="btn btn-outline-primary">Load More Reviews</button>
+                            </div>
+                        </div>
+
                         <div class="col-lg-4">
                             <div class="card mb-4">
                                 <div class="card-header">
                                     <h5 class="fw-semibold mb-0">Rating Overview</h5>
                                 </div>
                                 <div class="card-body text-center">
-                                    <div class="display-4 fw-bold text-warning mb-2">4.9</div>
+                                    <div class="display-4 fw-bold text-warning mb-2">0.0</div>
                                     <div class="rating mb-2">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star"></i>
+                                        <i class="bi bi-star"></i>
+                                        <i class="bi bi-star"></i>
+                                        <i class="bi bi-star"></i>
+                                        <i class="bi bi-star"></i>
                                     </div>
                                     <p class="text-muted">Based on 0 reviews</p>
                                     
@@ -1291,26 +1280,6 @@ h1, h2, h3, h4, h5, h6 {
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="fw-semibold mb-0">Recent Highlights</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <div class="small fw-semibold text-success">Most Mentioned Positive</div>
-                                        <div class="small text-muted"></div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <div class="small fw-semibold text-primary">Average Response Time</div>
-                                        <div class="small text-muted">0.0 hours</div>
-                                    </div>
-                                    <div>
-                                        <div class="small fw-semibold text-info">Review Response Rate</div>
-                                        <div class="small text-muted">0% (0 of 0)</div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -1334,6 +1303,16 @@ h1, h2, h3, h4, h5, h6 {
                                     <form>
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">ServiceProvider ID</label>
+                                                <input type="text" class="form-control" value="SP123456" readonly>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-semibold">Category</label>
+                                                <input type="text" class="form-control" value="Healthcare" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
                                                 <label class="form-label fw-semibold">Full Name</label>
                                                 <input type="text" class="form-control" value="Dr. Sarah Smith">
                                             </div>
@@ -1348,50 +1327,11 @@ h1, h2, h3, h4, h5, h6 {
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
-                                                <label class="form-label fw-semibold">Specialization</label>
-                                                <select class="form-select">
-                                                    <option selected></option>
-                                                    <option></option>
-                                                    <option></option>
-                                                    <option></option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
                                                 <label class="form-label fw-semibold">Years of Experience</label>
-                                                <input type="number" class="form-control" value="15">
+                                                <input type="text" class="form-control">
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label fw-semibold">License Number</label>
-                                                <input type="text" class="form-control" value="MD123456789">
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label fw-semibold">Medical School</label>
-                                                <input type="text" class="form-control" value="Harvard Medical School">
-                                            </div>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Update Information</button>
-                                    </form>
-                                </div>
-                            </div>
-
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5 class="fw-semibold mb-0">Practice Information</h5>
-                                </div>
-                                <div class="card-body">
-                                    <form>
-                                        <div class="mb-3">
-                                            <label class="form-label fw-semibold">Practice Name</label>
-                                            <input type="text" class="form-control" value="Downtown Medical Center">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label fw-semibold">Address</label>
-                                            <textarea class="form-control" rows="3">123 Medical Plaza Drive
-Suite 200
-New York, NY 10001</textarea>
-                                        </div>
+                                        
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label fw-semibold">Phone Number</label>
@@ -1403,55 +1343,24 @@ New York, NY 10001</textarea>
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold">Website</label>
+                                            <label class="form-label fw-semibold">Potfolio</label>
                                             <input type="url" class="form-control" value="https://www.downtownmedicalcenter.com">
                                         </div>
-                                        <button type="submit" class="btn btn-primary">Update Practice Info</button>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Address</label>
+                                            <textarea class="form-control" rows="3">123 Medical Plaza Drive
+                                                                                    Suite 200
+                                                                                New York, NY 10001</textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Update Information</button>
                                     </form>
                                 </div>
                             </div>
                         </div>
 
                         <div class="col-lg-4">
+                            
                             <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5 class="fw-semibold mb-0">Profile Photo</h5>
-                                </div>
-                                <div class="card-body text-center">
-                                    <img src="" alt="Dr. Sarah Smith" class="rounded-circle mb-3" width="120" height="120">
-                                    <div class="d-grid gap-2">
-                                        <button class="btn btn-outline-primary btn-sm">Change Photo</button>
-                                        <button class="btn btn-outline-secondary btn-sm">Remove Photo</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5 class="fw-semibold mb-0">Account Settings</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" id="profileVisible" checked>
-                                        <label class="form-check-label" for="profileVisible">Profile Visible to Customers</label>
-                                    </div>
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" id="onlineBooking" checked>
-                                        <label class="form-check-label" for="onlineBooking">Accept Online Bookings</label>
-                                    </div>
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
-                                        <label class="form-check-label" for="emailNotifications">Email Notifications</label>
-                                    </div>
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" id="smsNotifications" checked>
-                                        <label class="form-check-label" for="smsNotifications">SMS Notifications</label>
-                                    </div>
-                                    <button class="btn btn-primary w-100">Save Settings</button>
-                                </div>
-                            </div>
-
-                            <div class="card">
                                 <div class="card-header">
                                     <h5 class="fw-semibold mb-0">Profile Stats</h5>
                                 </div>
@@ -1475,6 +1384,23 @@ New York, NY 10001</textarea>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <center><h5 class="fw-semibold mb-0">Delete Account</h5></center>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div>
+                                        <i class="fa-solid fa-trash-can" style="font-size: 30px; color: crimson; margin:8px;"></i>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-outline-primary btn-sm">Delete my account</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
                             </div>
                         </div>
                     </div>
@@ -1527,6 +1453,17 @@ New York, NY 10001</textarea>
                         input.disabled = !this.checked;
                     });
                 });
+            });
+        });
+    </script>
+
+    <!-- JS to auto-close offcanvas when link is clicked -->
+    <script>
+        document.querySelectorAll('#mobileSidebar .sidebar-link').forEach(link => {
+            link.addEventListener('click', () => {
+                const offcanvasElement = document.getElementById('mobileSidebar');
+                const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                offcanvas.hide();
             });
         });
     </script>
