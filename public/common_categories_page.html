@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Providers - Slotify</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/style.css">
+
+    <style>
+        /* Clean Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 50%, var(--secondary-color) 100%);
+            color: white !important;
+            padding: 140px 0 100px;
+            margin-top: 76px;
+            position: relative;
+        }
+
+        .hero-section h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: white !important; /* Add this line */
+        }
+
+        .hero-section .lead {
+            font-size: 1.2rem;
+            font-weight: 400;
+            opacity: 0.9;
+            color: white !important; /* Add this line */
+        }
+        /* Remove the old rule and replace with more specific one */
+        .hero-section #categoryTitle, 
+        .hero-section #categoryDescription {
+            color: white !important;
+        }
+
+        /* Clean Search Container */
+        .search-container {
+            background: var(--background-secondary);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: -70px;
+            position: relative;
+            z-index: 10;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Clean Provider Cards */
+        .provider-card {
+            background: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .provider-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+        }
+
+        .provider-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .provider-card:hover .provider-avatar {
+            border-color: var(--primary-color);
+        }
+
+        /* Clean Rating */
+        .rating {
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-weight: 600;
+        }
+
+        .rating .stars {
+            font-size: 1rem;
+        }
+
+        .rating-number {
+            background: var(--accent-color);
+            color: white;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.4rem;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        /* Clean Badges */
+        .price-badge {
+            background: var(--primary-color);
+            color: var(--text-light);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .availability-badge {
+            background: var(--success-color);
+            color: var(--text-light);
+            padding: 0.3rem 0.8rem;
+            border-radius: 0.4rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Clean Filter Sidebar */
+        .filter-sidebar {
+            background: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .filter-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .filter-section h6 {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .form-check {
+            margin-bottom: 0.5rem;
+            padding: 0.25rem 0;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* Clean Category Header */
+        .category-header {
+            background: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .category-header h4 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        /* Clean Service Tags */
+        .service-tag {
+            background: var(--secondary-light);
+            color: var(--secondary-color);
+            padding: 0.25rem 0.7rem;
+            border-radius: 0.4rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            border: 1px solid rgba(5, 150, 105, 0.2);
+        }
+
+        /* Clean Buttons */
+        .btn-book-now {
+            background: var(--primary-color);
+            border: none;
+            color: var(--text-light);
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-book-now:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-view-profile {
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view-profile:hover {
+            background: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        /* Location and Distance */
+        .location-info {
+            display: flex;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .distance-badge {
+            background: var(--warning-light);
+            color: var(--warning-color);
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.3rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+            border: 1px solid rgba(217, 119, 6, 0.2);
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            display: none;
+            padding: 3rem;
+        }
+
+        .loading-spinner .spinner-border {
+            width: 2.5rem;
+            height: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        /* No Results */
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        /* Clean Form Controls */
+        .form-control, .form-select {
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.6rem 0.75rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+        }
+
+        .input-group-text {
+            background: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        /* Status Indicators */
+        .status-available {
+            color: var(--success-color);
+            font-weight: 500;
+        }
+
+        .status-busy {
+            color: var(--warning-color);
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .filter-sidebar {
+                position: static;
+                margin-bottom: 1.5rem;
+            }
+            
+            .search-container {
+                margin-top: -50px;
+                padding: 1.5rem;
+            }
+            
+            .provider-card {
+                padding: 1rem;
+            }
+            
+            .hero-section {
+                padding: 120px 0 80px;
+            }
+
+            .provider-avatar {
+                width: 60px;
+                height: 60px;
+            }
+        }
+
+        /* Smooth animations for page load */
+        .provider-card {
+            opacity: 0;
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        /*.provider-card:nth-child(2) { animation-delay: 0.1s; }
+        .provider-card:nth-child(3) { animation-delay: 0.2s; }
+        .provider-card:nth-child(4) { animation-delay: 0.3s; } */
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Clean dropdown */
+        .dropdown-menu {
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="../index.html">
+                <img src="https://cdn-icons-png.flaticon.com/512/747/747310.png" alt="logo" height="30" width="30" class="me-2">
+                <strong>Slotify</strong>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html#services-categories">All Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html#contact">Contact</a>
+                    </li>
+                </ul>
+                <!--on to : deepthika-->
+                <button id="signing-button" class="btn btn-primary ms-lg-3" onclick="window.location.href='../index.html'; window.onload = function() { document.getElementById('signing-button')?.focus(); }">Sign In</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-center mt-0">
+        <div class="container">
+            <h2 style="color: beige;">Service Provider Category</h2>
+            <p class="lead" id="categoryDescription" style="color: white !important;">Find trusted healthcare professionals near you</p>
+            <div class="mt-4">
+                <div class="d-flex justify-content-center align-items-center gap-4 flex-wrap">
+                    <span class="d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        Verified Professionals
+                    </span>
+                    <span class="d-flex align-items-center">
+                        <i class="bi bi-calendar-check me-2"></i>
+                        Easy Booking
+                    </span>
+                    <span class="d-flex align-items-center">
+                        <i class="bi bi-star-fill text-warning me-2"></i>
+                        Top Rated
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Container -->
+    <div class="container">
+        <div class="search-container">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-calendar3 me-2 text-primary"></i>Date
+                    </label>
+                    <input type="date" class="form-control" id="dateInput">
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-clock me-2 text-primary"></i>Time Slot
+                    </label>
+                    <select class="form-select" id="timeSlotSelect">
+                        <option value="">Any Time</option>
+                        <option value="morning">Morning (9 AM - 12 PM)</option>
+                        <option value="afternoon">Afternoon (12 PM - 5 PM)</option>
+                        <option value="evening">Evening (5 PM - 8 PM)</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">&nbsp;</label>
+                    <button class="btn btn-primary w-100 fw-semibold">
+                        <i class="bi bi-search me-2"></i>Search
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <div class="row g-3">
+            <!-- Filter Sidebar -->
+            <div class="col-lg-3 d-none d-md-block d-lg-block">
+                <div class="filter-sidebar">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-funnel me-2"></i>Filters
+                    </h5>
+
+                    <!-- Rating -->
+                    <div class="filter-section ms-2">
+                        <h6>
+                            <i class="bi bi-star-fill me-2"></i>Rating
+                        </h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rating5">
+                            <label class="form-check-label" for="rating5">
+                                ★★★★★ (5.0)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rating4">
+                            <label class="form-check-label" for="rating4">
+                                ★★★★☆ (4.0+)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rating3">
+                            <label class="form-check-label" for="rating3">
+                                ★★★☆☆ (3.0+)
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Availability -->
+                    <div class="filter-section ms-2">
+                        <h6>
+                            <i class="bi bi-clock-history me-2"></i>Availability
+                        </h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="availableToday">
+                            <label class="form-check-label" for="availableToday">Available Today</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="availableTmrw">
+                            <label class="form-check-label" for="availableTmrw">Available Tomorrow</label>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-arrow-clockwise me-2"></i>Clear All Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Providers List -->
+            <div class="col-lg-9">
+                <!-- Category Header -->
+                <div class="category-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="mb-1" id="resultsCount">
+                                <i class="bi bi-people me-2"></i>24 Providers Found
+                            </h4>
+                            <small class="text-muted" id="categoryBreadcrumb">Healthcare > General Practitioners</small>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-sort-down me-2"></i>Sort By
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-star me-2"></i>Highest Rated
+                                </a></li>
+                                <li><a class="dropdown-item" href="#">
+                                    <i class="bi bi-clock me-2"></i>Availability
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div class="text-center loading-spinner" id="loadingSpinner">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3">Finding the best providers for you...</p>
+                </div>
+
+                <!-- Provider Cards -->
+                <div id="providersContainer">
+                    <!-- Sample Provider Card 1 -->
+                    <div class="provider-card">
+                        <div class="row align-items-center">
+                            <div class="col-md-2 text-center mb-3">
+                                <i class="bi bi-person-circle mb-2" style="font-size: 4rem;"></i>
+                                <div class="rating mb-1">
+                                    <span class="stars">★★★★★</span>
+                                    <span class="rating-number">4.8</span>
+                                </div>
+                                <small class="text-muted">156 reviews</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h5 class="fw-bold mb-2">service provider title</h5>
+                                <p class="text-muted mb-2">provider title • years of exp</p>
+                                <p class="small mb-3 text-muted">Description of the service provider</p>
+                                <div class="mb-3">
+                                    <span class="service-tag">tag-1</span>
+                                    <span class="service-tag">tag-2</span>
+                                    <span class="service-tag">tag-3</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="d-grid gap-2 mb-3">
+                                    <button class="btn btn-book-now">
+                                        <i class="bi bi-calendar-plus me-2"></i>Book Now
+                                    </button>
+                                    <button class="btn btn-view-profile" data-bs-toggle="modal" data-bs-target="#provider-modal">
+                                        <i class="bi bi-person me-2"></i>View Profile
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                <!-- Load More Button -->
+                <div class="text-center mt-4">
+                    <button class="btn btn-outline-primary" onclick="loadMoreProviders()">
+                        <i class="bi bi-plus-circle me-2"></i>Load More Providers
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-class mt-5" style="border-radius: 1rem; overflow: hidden;">
+        <div class="footer-container">
+            <div class="footer-column">
+                <h3 class="footer-heading">Slotify</h3>
+                <p class="footer-text">
+                    Connecting customers with trusted service providers for seamless appointment management.
+                </p>
+            </div>
+            <div class="footer-column">
+                <h3 class="footer-heading">Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../index.html#services-categories">All Services</a></li>
+                    <li><a href="#">Customer Support</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3 class="footer-heading">Support</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © 2025 Slotify. All rights reserved.
+        </div>
+    </footer>
+
+    <!--provider-modal-->
+    <div class="modal fade provider-card" id="provider-modal" aria-labelledby="provider-modal-label" aria-hidden="true" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header modal-header-custom">
+                    <h3 class="modal-title" id="provider-modal-label">Provider Details</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <h5 class="fw-bold fs-5">Service Provider Title</h5>
+                    <div class="details-element">
+                        <span>Provider name: </span>
+                        <span id="provider-name">Uday Sai Srikar</span>
+                    </div>
+                    <div class="details-element">
+                        <span>Category: </span>
+                        <span id="provider-category">IT & Technical support</span>
+                    </div>
+                    <div class="details-element">
+                        <span>E-mail: </span>
+                        <span id="provider-email">uday@gmail.com</span>
+                    </div>
+                    <div class="details-element">
+                        <span>Phone: </span>
+                        <span id="provider-phno">9618742368</span>
+                    </div>
+                    <div class="details-element">
+                        <span>Address: </span>
+                        <span id="provider-address">East Godavari-533343</span>
+                    </div>
+                    <button class="btn btn-secondary mt-3">
+                        View Services
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
