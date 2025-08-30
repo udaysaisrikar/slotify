@@ -392,8 +392,8 @@
     <!-- Hero Section -->
     <section class="hero-section text-center mt-0">
         <div class="container">
-            <h2 style="color: beige;">Service Provider Category</h2>
-            <p class="lead" id="categoryDescription" style="color: white !important;">Find trusted healthcare professionals near you</p>
+            <h2 id="category-heading" style="color: beige;">Service Provider Category</h2>
+            <p class="lead" id="categoryDescription" style="color: white !important;">Find trusted professionals near you</p>
             <div class="mt-4">
                 <div class="d-flex justify-content-center align-items-center gap-4 flex-wrap">
                     <span class="d-flex align-items-center">
@@ -411,6 +411,16 @@
                 </div>
             </div>
         </div>
+        <script>
+            // Dynamically update heading based on category query parameter
+            const params = new URLSearchParams(window.location.search);
+            const category = params.get('category');
+            if (category) {
+                document.getElementById('category-heading').textContent = category ;
+                // Optionally, update the description as well
+                document.getElementById('categoryDescription').textContent = `Find trusted ${category.toLowerCase()} professionals near you`;
+            }
+        </script>
     </section>
 
     <!-- Search Container -->
@@ -509,7 +519,7 @@
                             <h4 class="mb-1" id="resultsCount">
                                 <i class="bi bi-people me-2"></i>24 Providers Found
                             </h4>
-                            <small class="text-muted" id="categoryBreadcrumb">Healthcare > General Practitioners</small>
+                            <small class="text-muted" id="categoryBreadcrumb">Healthcare  General Practitioners</small>
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
