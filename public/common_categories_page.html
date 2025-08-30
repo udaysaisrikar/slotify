@@ -374,17 +374,17 @@
             <div class="collapse navbar-collapse" id="navbarContent">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="../index.html#services-categories">All Services</a>
+                        <a class="nav-link" href="../index.html#services-categories">ServiceProviders</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../index.html#about">About</a>
+                        <a class="nav-link" href="../public/about.html">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../index.html#contact">Contact</a>
+                        <a class="nav-link" href="../public/contact_us.html">Contact</a>
                     </li>
                 </ul>
                 <!--on to : deepthika-->
-                <button id="signing-button" class="btn btn-primary ms-lg-3" onclick="window.location.href='../index.html'; window.onload = function() { document.getElementById('signing-button')?.focus(); }">Sign In</button>
+                <button id="signing-button" class="btn btn-primary ms-lg-3" data-bs-toggle="modal" data-bs-target="#authModal">Sign In</button>
             </div>
         </div>
     </nav>
@@ -392,8 +392,8 @@
     <!-- Hero Section -->
     <section class="hero-section text-center mt-0">
         <div class="container">
-            <h2 id="category-heading" style="color: beige;">Service Provider Category</h2>
-            <p class="lead" id="categoryDescription" style="color: white !important;">Find trusted professionals near you</p>
+            <h2 style="color: beige;">Service Provider Category</h2>
+            <p class="lead" id="categoryDescription" style="color: white !important;">Find trusted healthcare professionals near you</p>
             <div class="mt-4">
                 <div class="d-flex justify-content-center align-items-center gap-4 flex-wrap">
                     <span class="d-flex align-items-center">
@@ -411,16 +411,6 @@
                 </div>
             </div>
         </div>
-        <script>
-            // Dynamically update heading based on category query parameter
-            const params = new URLSearchParams(window.location.search);
-            const category = params.get('category');
-            if (category) {
-                document.getElementById('category-heading').textContent = category ;
-                // Optionally, update the description as well
-                document.getElementById('categoryDescription').textContent = `Find trusted ${category.toLowerCase()} professionals near you`;
-            }
-        </script>
     </section>
 
     <!-- Search Container -->
@@ -519,7 +509,7 @@
                             <h4 class="mb-1" id="resultsCount">
                                 <i class="bi bi-people me-2"></i>24 Providers Found
                             </h4>
-                            <small class="text-muted" id="categoryBreadcrumb">Healthcare  General Practitioners</small>
+                            <small class="text-muted" id="categoryBreadcrumb">Healthcare > General Practitioners</small>
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -611,9 +601,8 @@
             <div class="footer-column">
                 <h3 class="footer-heading">Support</h3>
                 <ul class="footer-links">
-                    <li><a href="#">Help Center</a></li>
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="../public/contact_us.html">Contact Us</a></li>
+                    <li><a href="../public/privacy_policy.html">Privacy Policy</a></li>
                 </ul>
             </div>
         </div>
