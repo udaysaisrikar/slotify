@@ -29,9 +29,9 @@
 
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"> <a class="nav-link" href="#services-categories">Services Providers</a> </li>
-                        <li class="nav-item"> <a class="nav-link" href="#about">About</a> </li>
-                        <li class="nav-item"> <a class="nav-link" href="#contact">Contact</a> </li>
+                        <li class="nav-item"> <a class="nav-link" href="#services-categories">ServiceProviders</a> </li>
+                        <li class="nav-item"> <a class="nav-link" href="public/about.html">About</a> </li>
+                        <li class="nav-item"> <a class="nav-link" href="public/contact_us.html">Contact</a> </li>
                     </ul>
                     <button id="signing-button" class="btn btn-primary ms-lg-3" data-bs-toggle="modal" data-bs-target="#authModal">Sign In</button>
                 </div>
@@ -99,7 +99,7 @@
                             <div class="cards">
                                 <h5>Healthcare</h5>
                                 <p class="cards-para">Doctors, Dentists, Therapists</p>
-                                <a href="public/common_categories_page.html?category=Healthcare" class="btn btn-primary">Explore</a>
+                                <a href="public/common_categories_page.html" class="btn btn-primary">Explore</a>
                             </div>
                         </div>
                     </div>
@@ -112,7 +112,7 @@
                             <div class="cards">
                                 <h5>Beauty & Wellness</h5>
                                 <p class="cards-para">Parlour,Salons, Spas</p>
-                                <a href="public/common_categories_page.html?category=Beauty%20%26%20Wellness" class="btn btn-primary">Explore</a>
+                                <a href="public/common_categories_page.html" class="btn btn-primary">Explore</a>
                             </div>
                         </div>
                     </div>
@@ -125,7 +125,7 @@
                             <div class="cards">
                                 <h5>Automotive</h5>
                                 <p class="cards-para">Mechanic,Car Wash</p>
-                                <a href="public/common_categories_page.html?category=Automotive" class="btn btn-primary">Explore</a>
+                                <a href="public/common_categories_page.html" class="btn btn-primary">Explore</a>
                             </div>
                         </div>
                     </div>
@@ -142,7 +142,7 @@
                             <div class="cards">
                                 <h5>Professionals</h5>
                                 <p class="cards-para">Lawyers,Consultants</p>
-                                <a href="public/common_categories_page.html?category=Professionals" class="btn btn-primary">Explore</a>
+                                <a href="public/common_categories_page.html" class="btn btn-primary">Explore</a>
                             </div>
                         </div>
                     </div>
@@ -155,7 +155,7 @@
                             <div class="cards">
                                 <h5>IT & Technical Support</h5>
                                 <p class="cards-para">Laptop/PC Technicians</p>
-                                <a href="public/common_categories_page.html?category=IT%20%26%20Technical%20Support" class="btn btn-primary">Explore</a>
+                                <a href="public/common_categories_page.html" class="btn btn-primary">Explore</a>
                             </div>
                         </div>
                     </div>
@@ -168,7 +168,7 @@
                             <div class="cards">
                                 <h5>Other Services</h5>
                                 <p class="cards-para">Repair,Maintenance</p>
-                                <a href="public/common_categories_page.html?category=Other%20Services" class="btn btn-primary">Explore</a>
+                                <a href="public/common_categories_page.html" class="btn btn-primary">Explore</a>
                             </div>
                         </div>
                     </div>
@@ -265,6 +265,13 @@
                                 </div>
                             </div>
                             <div class="mb-3">
+                                <label class="form-label text-dark">Date Of Birth</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                                    <input type="date" class="form-control" placeholder="dd-mm-yyyy" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
                                 <label class="form-label text-dark">Email Address</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
@@ -275,14 +282,7 @@
                                 <label class="form-label text-dark">Phone Number</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                    <input type="tel" class="form-control" placeholder="+1 (555) 123-4567" required>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label text-dark">Location (City)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
-                                    <input type="text" class="form-control" placeholder="New York" required>
+                                    <input type="tel" class="form-control" placeholder="+91 1234567890" required>
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -381,7 +381,7 @@
                                     <label class="form-label text-dark">Phone Number</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                        <input type="tel" class="form-control" placeholder="+1 (555) 123-4567" required>
+                                        <input type="tel" class="form-control" placeholder="+91 1234567890" required>
                                     </div>
                                 </div>
                             </div>
@@ -391,14 +391,11 @@
                                     <span class="input-group-text"><i class="bi bi-tags"></i></span>
                                     <select class="form-control" required>
                                         <option value="">Select your service category</option>
-                                        <option value="healthcare">Healthcare & Medical</option>
+                                        <option value="healthcare">Healthcare</option>
                                         <option value="beauty">Beauty & Wellness</option>
-                                        <option value="legal">Legal Services</option>
-                                        <option value="consultancy">Consultancy & Advisory</option>
-                                        <option value="education">Education & Training</option>
-                                        <option value="automotive">Automotive Services</option>
-                                        <option value="home-services">Home Services</option>
-                                        <option value="fitness">Fitness & Sports</option>
+                                        <option value="automotive">Automotive</option>
+                                        <option value="professionals">Professionals</option>
+                                        <option value="it">IT & Technical Support</option>
                                         <option value="other">Other</option>
                                     </select>
                                 </div>
@@ -479,7 +476,7 @@
                 <div class="footer-column">
                     <h3 class="footer-heading">For Customers</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Providers</a></li>
+                        <li><a href="#services-categories">SerivceProviders</a></li>
                         <li><a href="javascript:void(0);" onclick="document.getElementById('signing-button').click();">Book Appointments</a></li>
                         <li><a href="#">Customer Support</a></li>
                     </ul>
@@ -498,10 +495,10 @@
                 <div class="footer-column">
                     <h3 class="footer-heading">Support</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Contact Us</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
+
+                        <li><a href="public/contact_us.html">Contact Us</a></li>
+                        <li><a href="public/privacy_policy.html">Privacy Policy</a></li>
+                        <li><a href="public/terms_of_services.html">Terms of Service</a></li>
                     </ul>
                 </div>
             </div>
