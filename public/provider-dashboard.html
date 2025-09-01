@@ -254,7 +254,7 @@
         <div class="container-fluid">
             
             <!-- Mobile Navbar -->
-            <a href="index.html" class="navbar-brand d-flex align-items-center" style="display: inline-flex; align-items: center;">
+            <a href="../index.html" class="navbar-brand d-flex align-items-center" style="display: inline-flex; align-items: center;">
                 <img src="https://cdn-icons-png.flaticon.com/512/747/747310.png" alt="logo" height="30" width="30" class="me-2">
                 <strong>Slotify</strong>
             </a>
@@ -268,7 +268,7 @@
                         <span>ServiceProvider</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#provider-modal"><i class="bi bi-person me-2"></i>Profile</a></li>
                         <li><a class="dropdown-item" href="index.html"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
                         
                     </ul>
@@ -946,7 +946,7 @@
                                                 Actions
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>View Profile</a></li>
+                                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#provider-modal" ><i class="bi bi-eye me-2"></i>View Profile</a></li>
                                                 <li><a class="dropdown-item" href="#"><i class="bi bi-calendar-plus me-2"></i>Book Appointment</a></li>
                                             </ul>
                                         </div>
@@ -1563,6 +1563,45 @@
             </div>
         </div>
     </div> 
+
+    <!--provider-modal-->
+    <div class="modal fade provider-card" id="provider-modal" aria-labelledby="provider-modal-label" aria-hidden="true" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header modal-header-custom">
+                    <h3 class="modal-title" id="provider-modal-label">Provider Details</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <h5 class="fw-bold fs-5">Service Provider Title</h5>
+                    <div class="details-element">
+                        <span>Provider name: </span>
+                        <span id="provider-name">Uday Sai Srikar</span>
+                    </div>
+                    <div class="details-element">
+                        <span>Category: </span>
+                        <span id="provider-category">IT & Technical support</span>
+                    </div>
+                    <div class="details-element">
+                        <span>E-mail: </span>
+                        <span id="provider-email">uday@gmail.com</span>
+                    </div>
+                    <div class="details-element">
+                        <span>Phone: </span>
+                        <span id="provider-phno">9618742368</span>
+                    </div>
+                    <div class="details-element">
+                        <span>Address: </span>
+                        <span id="provider-address">East Godavari-533343</span>
+                    </div>
+                    <button class="btn btn-secondary mt-3">
+                        View Services
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     
 
     <!-- JS to auto-close offcanvas when link is clicked -->
