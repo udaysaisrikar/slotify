@@ -103,6 +103,80 @@
     box-shadow: var(--shadow-lg);
     }
 
+    /* Footer */
+    .footer-class {
+    background: linear-gradient(135deg, var(--text-primary) 0%, #1e293b 100%);
+    color: var(--text-light);
+    padding: 3rem 0 1rem;
+    }   
+
+    .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    }
+
+    .footer-column {
+    margin-bottom: 1.5rem;
+    }
+
+    .footer-heading {
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    }
+
+    .footer-heading::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -0.5rem;
+    width: 3rem;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    }
+
+    .footer-text {
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    }
+
+    .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    }
+
+    .footer-links li {
+    margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    }
+
+    .footer-links a:hover {
+    color: var(--primary-color);
+    transform: translateX(5px);
+    }
+
+    .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    text-align: center;
+    color: #94a3b8;
+    }
+
     
   </style>
 </head>
@@ -169,6 +243,54 @@
             </div>
         </div>
     </section>
+
+    <!--Footer-->
+    <footer class="footer-class">
+        <div class="footer-container">
+      
+            <!-- Slotify Description -->
+            <div class="footer-column">
+                <h3 class="footer-heading">Slotify</h3>
+                <p class="footer-text">
+                    Connecting customers with trusted service providers for seamless appointment management.
+                </p>
+            </div>
+
+            <!-- For Customers -->
+            <div class="footer-column">
+                <h3 class="footer-heading">For Customers</h3>
+                <ul class="footer-links">
+                    <li><a href="../index.html#services-categories">SerivceProviders</a></li>
+                    <li><a href="javascript:void(0);" onclick="document.getElementById('signing-button').click();">Book Appointments</a></li>
+                    <li><a href="#">Customer Support</a></li>
+                </ul>
+            </div>
+            
+            <!-- For Providers -->
+            <div class="footer-column">
+                <h3 class="footer-heading">For Providers</h3>
+                <ul class="footer-links">
+                    <li><a href="javascript:void(0);" onclick="document.getElementById('signing-button').click();">Join Our Platform</a></li>
+                    <li><a href="javascript:void(0);" onclick="document.getElementById('signing-button').click();">Manage Appointments</a></li>
+                </ul>
+            </div>
+
+            <!-- Support -->
+            <div class="footer-column">
+                <h3 class="footer-heading">Support</h3>
+                <ul class="footer-links">
+
+                    <li><a href="public/contact_us.html">Contact Us</a></li>
+                    <li><a href="public/privacy_policy.html">Privacy Policy</a></li>
+                    <li><a href="public/terms_of_services.html">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © 2025 Slotify. All rights reserved.
+        </div>
+    </footer>
+        
     <!-- Add Bootstrap JS (for navbar toggling) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
