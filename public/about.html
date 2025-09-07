@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About - Slotify</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root {
+    /* Brand Colors */
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-light: #dbeafe;
+  
+    --secondary-color: #059669;
+    --secondary-hover: #047857;
+    --secondary-light: #d1fae5;
+  
+    --accent-color: #f59e0b;
+    --accent-hover: #d97706;
+  
+    /* Backgrounds & Text */
+    --background-color: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    --background-secondary: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --text-light: #ffffff;
+  
+    /* Status Colors */
+    --success-color: #059669;
+    --warning-color: #d97706;
+    --warning-light: #fef3c7;
+    --error-color: #dc2626;
+  
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  
+    /* Borders */
+    --border-color: #e2e8f0;
+    }
+
+    body {
+    background: var(--background-color);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    padding-top: 75px;
+    line-height: 1.6;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+    font-weight: 600;
+    }
+
+    /* Navbar */
+    .navbar {
+    background-color: var(--background-secondary);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);   
+    }
+
+    .navbar-brand {
+    font-weight: 700;
+    color: var(--primary-color) !important;
+    font-size: 1.5rem;
+    }
+
+    .nav-link {
+    color: var(--text-secondary) !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    }
+
+    .nav-link:hover {
+    color: var(--primary-color) !important;
+    }
+
+    .nav-link.active {
+    font-weight: bold;
+    color: #007bff !important;
+    }
+
+
+    /* Buttons */
+    .btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+    border: none;
+    color: var(--text-light);
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    }
+
+    /* Footer */
+    .footer-class {
+    background: linear-gradient(135deg, var(--text-primary) 0%, #1e293b 100%);
+    color: var(--text-light);
+    padding: 3rem 0 1rem;
+    }   
+
+    .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    }
+
+    .footer-column {
+    margin-bottom: 1.5rem;
+    }
+
+    .footer-heading {
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    }
+
+    .footer-heading::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -0.5rem;
+    width: 3rem;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    }
+
+    .footer-text {
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    }
+
+    .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    }
+
+    .footer-links li {
+    margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    }
+
+    .footer-links a:hover {
+    color: var(--primary-color);
+    transform: translateX(5px);
+    }
+
+    .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    text-align: center;
+    color: #94a3b8;
+    }
+
+    .policy-hero { 
+    background: linear-gradient(135deg, #eef2ff, #f8fafc); 
+    }
+
+  </style>
+</head>
+<body>
+    <!--navbar-->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="../index.html">
+                <img src="https://cdn-icons-png.flaticon.com/512/747/747310.png" alt="logo" height="30" width="30" class="me-2">
+                <strong>Slotify</strong>
+            </a>
+
+            <!--button for responsive design - shows up on small screens-->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"> <a class="nav-link" href="../index.html#services-categories">ServiceProviders</a> </li>
+                    <li class="nav-item"> <a class="nav-link active" href="slotify/public/about.html">About</a> </li>
+                    <li class="nav-item"> <a class="nav-link" href="../public/contact_us.html">Contact</a> </li>
+                </ul>
+                <button id="signing-button" class="btn btn-primary ms-lg-3" data-bs-toggle="modal" data-bs-target="#authModal">Sign In
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="container my-5" >
+            <!-- First row: Image left, text right -->
+            <div class="row align-items-center mb-5">
+                <div class="col-md-6">
+                    <img src="" alt="slotify logo" class="img-fluid rounded shadow">
+                </div>
+                <div class="col-md-6">
+                    <h2>About Slotify</h2>
+                    <p style="text-align: justify;">
+                        Slotify is a modern online scheduling platform designed to connect customers with service providers efficiently. Whether you are a business owner looking to manage your appointments or a customer seeking convenient booking options, Slotify offers an easy-to-use interface, real-time availability, and automated reminders. Our platform supports a variety of industries, ensuring flexibility and reliability for all users.
+                    </p>
+                </div>
+            </div>
+            <!-- Second row: Text left, image right -->
+            <div class="row align-items-center mb-5 flex-md-row-reverse">
+                <div class="col-md-6 d-flex justify-content-center align-items-center mb-3">
+                    <div class="bg-black rounded-circle shadow-lg d-flex justify-content-center align-items-center" style="width:100%; max-width:350px; height:350px;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Service Provider Icon" style="width:70%; height:70%;">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h2>Service Provider</h2>
+                    <p style="text-align: justify;">
+                        With Slotify, service providers gain access to a powerful suite of tools to streamline appointment management. Easily set your availability, manage bookings in real-time, and reduce no-shows with automated reminders. Our platform offers a customizable profile and analytics to help you grow your business. Focus on delivering quality service while Slotify handles your scheduling needs efficiently.
+                    </p>
+                </div>
+            </div>
+            <!-- Third row: Image left, text right -->
+            <div class="row align-items-center mb-5">
+                <div class="col-md-6 d-flex justify-content-center align-items-center mb-3">
+                    <div class="bg-black rounded-circle shadow-lg d-flex justify-content-center align-items-center" style="width:100%; max-width:350px; height:350px;">
+                        <div class="bg-white rounded-circle d-flex justify-content-center align-items-center" style="width: 240px; height: 240px;">
+                            <i class="bi bi-people-fill" style="font-size: 8rem; color: var(--primary-color);"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h2>Customer</h2>
+                    <p style="text-align: justify;">
+                        Slotify empowers customers with a seamless booking experience. Discover and compare service providers, view real-time availability, and book appointments instantly—all in one place. Receive timely reminders, manage your bookings easily, and enjoy the flexibility to reschedule or cancel as needed. Slotify puts convenience and control at your fingertips for all your scheduling needs.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!--Footer-->
+        <footer class="footer-class" style="border-radius: 1rem; overflow: hidden;">
+            <div class="footer-container">
+        
+                <!-- Slotify Description -->
+                <div class="footer-column">
+                    <h3 class="footer-heading">Slotify</h3>
+                    <p class="footer-text">
+                        Connecting customers with trusted service providers for seamless appointment management.
+                    </p>
+                </div>
+
+                <!-- For Customers -->
+                <div class="footer-column">
+                    <h3 class="footer-heading">For Customers</h3>
+                    <ul class="footer-links">
+                        <li><a href="../index.html#services-categories">SerivceProviders</a></li>
+                        <li><a href="javascript:void(0);" onclick="document.getElementById('signing-button').click();">Book Appointments</a></li>
+                        <li><a href="#">Customer Support</a></li>
+                    </ul>
+                </div>
+                
+                <!-- For Providers -->
+                <div class="footer-column">
+                    <h3 class="footer-heading">For Providers</h3>
+                    <ul class="footer-links">
+                        <li><a href="javascript:void(0);" onclick="document.getElementById('signing-button').click();">Join Our Platform</a></li>
+                        <li><a href="javascript:void(0);" onclick="document.getElementById('signing-button').click();">Manage Appointments</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div class="footer-column">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+
+                        <li><a href="contact_us.html">Contact Us</a></li>
+                        <li><a href="privacy_policy.html">Privacy Policy</a></li>
+                        <li><a href="terms_of_services.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                © 2025 Slotify. All rights reserved.
+            </div>
+        </footer>
+    </div>
+    <!-- Add Bootstrap JS (for navbar toggling) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

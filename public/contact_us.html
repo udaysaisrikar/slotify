@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - Slotify</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Add Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    
+    :root {
+    /* Brand Colors */
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-light: #dbeafe;
+  
+    --secondary-color: #059669;
+    --secondary-hover: #047857;
+    --secondary-light: #d1fae5;
+  
+    --accent-color: #f59e0b;
+    --accent-hover: #d97706;
+  
+    /* Backgrounds & Text */
+    --background-color: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    --background-secondary: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --text-light: #ffffff;
+  
+    /* Status Colors */
+    --success-color: #059669;
+    --warning-color: #d97706;
+    --warning-light: #fef3c7;
+    --error-color: #dc2626;
+  
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  
+    /* Borders */
+    --border-color: #e2e8f0;
+    }
+
+    /* Base Styles */
+    body {
+    background: var(--background-color);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    padding-top: 75px;
+    line-height: 1.6;
+    }
+
+    /* Navbar */
+    .navbar {
+    background-color: var(--background-secondary);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    }
+
+    .navbar-brand {
+    font-weight: 700;
+    color: var(--primary-color) !important;
+    font-size: 1.5rem;
+    }
+
+    .nav-link {
+    color: var(--text-secondary) !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    }
+
+    .nav-link:hover {
+    color: var(--primary-color) !important;
+    }
+
+    .nav-link.active {
+    font-weight: bold;
+    color: #007bff !important;
+    }
+
+
+    /* Buttons */
+    .btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+    border: none;
+    color: var(--text-light);
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    }
+
+    .container-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 50px;
+    }
+
+    .contact-box {
+    display: flex;
+    width: 100%;
+    max-width: 1000px;
+    background: rgba(0, 0, 30, 0.7);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
+    }
+
+    /* Left Section */
+    .left {
+    flex: 1;
+    padding: 40px;
+    background: var(--background-color);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    }
+
+    .left h2 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+    font-weight: 600;
+    }
+
+    .info {
+    margin: 20px 0;
+    }
+
+    .info p {
+    margin: 10px 0;
+    font-size: 16px;
+    }
+
+    .info i {
+    margin-right: 10px;
+    color: #f1c40f;
+    }
+
+    /* Right Section */
+    .right {
+    flex: 1;
+    padding: 40px;
+    background: var(--background-color);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    }
+
+    .right h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    font-weight: 600;
+    }
+
+    .form-group {
+    margin-bottom: 20px;
+    }
+
+    .form-group input, .form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    background: var(--background-secondary);
+    color: var(--text-primary);
+    font-size: 15px;
+    outline: none;
+    }
+
+    .form-group textarea {
+    resize: none;
+    height: 100px;
+    }
+
+
+    @media (max-width: 768px) {
+      .contact-box {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+    <!--navbar-->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="../index.html">
+                <img src="https://cdn-icons-png.flaticon.com/512/747/747310.png" alt="logo" height="30" width="30" class="me-2">
+                <strong>Slotify</strong>
+            </a>
+
+            <!--button for responsive design - shows up on small screens-->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"> <a class="nav-link" href="../index.html#services-categories">ServiceProviders</a> </li>
+                    <li class="nav-item"> <a class="nav-link" href="../public/about.html">About</a> </li>
+                    <li class="nav-item"> <a class="nav-link active" href="#">Contact</a> </li>
+                </ul>
+                <button id="signing-button" class="btn btn-primary ms-lg-3" data-bs-toggle="modal" data-bs-target="#authModal">Sign In</button>
+            </div>
+        </div>
+    </nav>
+    <div class="container-box">
+        <div class="contact-box">
+      
+            <!-- Left Section -->
+            <div class="left">
+                <h2>Contact Us</h2>
+                <p>
+                    Need help or want to reach out? Just type your message in the form on the right and click the <strong>Send Message</strong> button. Our team will review your message and get back to you soon. We look forward to hearing from you!
+                </p>
+
+                <div class="info">
+                    <p><i class="fas fa-envelope"></i> Email: slotify@gmail.com</p>
+                </div>
+            </div>
+
+            <!-- Right Section -->
+            <div class="right">
+                <h2>Contact Us</h2>
+                <form>
+                    <div class="form-group">
+                        <textarea name="message" placeholder="Enter your message" rows="5" cols="5" required id="message"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary ms-lg-3">Send Message</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+ 
+
+</body>
+</html>
+</body>
+</html>
