@@ -679,5 +679,34 @@
             });
         });
     </script>
+<script>
+    // Book Appointment Section: Limit date input to today and next 3 days
+    document.addEventListener('DOMContentLoaded', function() {
+        // ...existing sidebar code...
+
+        // Limit date input in Book Appointment section
+        const bookDateInput = document.querySelector('#book-appointment-section input[type="date"]');
+        if (bookDateInput) {
+            const today = new Date();
+            const minDate = today.toISOString().split('T')[0];
+            const maxDateObj = new Date(today);
+            maxDateObj.setDate(today.getDate() + 3);
+            const maxDate = maxDateObj.toISOString().split('T')[0];
+            bookDateInput.min = minDate;
+            bookDateInput.max = maxDate;
+            bookDateInput.value = minDate; // Optionally set default value to today
+        }
+
+        // Profile Section: Restrict DOB to 13+ years only
+        const dobInput = document.querySelector('#profile-section input[type="date"]');
+        if (dobInput) {
+            const today = new Date();
+            const minYear = today.getFullYear() - 120; // reasonable lower bound
+            const maxDate = new Date(today.getFullYear() - 13, today.getMonth(), today.getDate());
+            dobInput.max = maxDate.toISOString().split('T')[0];
+            dobInput.min = new Date(minYear, 0, 1).toISOString().split('T')[0];
+        }
+    });
+</script>
 </body>
 </html>

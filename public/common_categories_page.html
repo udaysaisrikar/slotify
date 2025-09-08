@@ -11,7 +11,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles/style.css">
-
     <style>
         /* Clean Hero Section */
         .hero-section {
@@ -504,7 +503,7 @@
                         </div>
                     </div>
 
-                    <button class="btn btn-outline-secondary w-100">
+                    <button class="btn btn-outline-secondary w-100" id="clearFiltersBtn">
                         <i class="bi bi-arrow-clockwise me-2"></i>Clear All Filters
                     </button>
                 </div>
@@ -519,7 +518,7 @@
                             <h4 class="mb-1" id="resultsCount">
                                 <i class="bi bi-people me-2"></i>24 Providers Found
                             </h4>
-                            <small class="text-muted" id="categoryBreadcrumb">Healthcare > General Practitioners</small>
+                            <small class="text-muted" id="categoryBreadcrumb">Healthcare  General Practitioners</small>
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -658,5 +657,48 @@
             </div>
         </div>
     </div>
+    <script>
+  // Limit date input to today and next 3 days
+  const dateInput = document.getElementById('dateInput');
+  const today = new Date();
+  const minDate = today.toISOString().split('T')[0];
+  const maxDateObj = new Date(today);
+  maxDateObj.setDate(today.getDate() + 3);
+  const maxDate = maxDateObj.toISOString().split('T')[0];
+  dateInput.min = minDate;
+  dateInput.max = maxDate;
+  dateInput.value = minDate; // Optionally set default value to today
+
+  // Make rating checkboxes behave like radio buttons (only one can be checked)
+  document.querySelectorAll('#rating5, #rating4, #rating3').forEach(cb => {
+    cb.addEventListener('change', function() {
+      if (this.checked) {
+        document.querySelectorAll('#rating5, #rating4, #rating3').forEach(other => {
+          if (other !== this) other.checked = false;
+        });
+      }
+    });
+  });
+
+  // Make availability checkboxes behave like radio buttons (only one can be checked)
+  document.querySelectorAll('#availableToday, #availableTmrw').forEach(cb => {
+    cb.addEventListener('change', function() {
+      if (this.checked) {
+        document.querySelectorAll('#availableToday, #availableTmrw').forEach(other => {
+          if (other !== this) other.checked = false;
+        });
+      }
+    });
+  });
+
+  // Clear all filters functionality
+  document.getElementById('clearFiltersBtn').addEventListener('click', function() {
+    // Uncheck all checkboxes in the filter sidebar
+    document.querySelectorAll('.filter-sidebar input[type="checkbox"]').forEach(cb => cb.checked = false);
+    // Optionally reset other filters (date, time slot)
+    // dateInput.value = minDate;
+    // document.getElementById('timeSlotSelect').selectedIndex = 0;
+  });
+</script>
 </body>
 </html>
