@@ -658,47 +658,47 @@
         </div>
     </div>
     <script>
-  // Limit date input to today and next 3 days
-  const dateInput = document.getElementById('dateInput');
-  const today = new Date();
-  const minDate = today.toISOString().split('T')[0];
-  const maxDateObj = new Date(today);
-  maxDateObj.setDate(today.getDate() + 3);
-  const maxDate = maxDateObj.toISOString().split('T')[0];
-  dateInput.min = minDate;
-  dateInput.max = maxDate;
-  dateInput.value = minDate; // Optionally set default value to today
+        // Limit date input to today and next 3 days
+        const dateInput = document.getElementById('dateInput');
+        const today = new Date();
+        const minDate = today.toISOString().split('T')[0];
+        const maxDateObj = new Date(today);
+        maxDateObj.setDate(today.getDate() + 3);
+        const maxDate = maxDateObj.toISOString().split('T')[0];
+        dateInput.min = minDate;
+        dateInput.max = maxDate;
+        dateInput.value = minDate; // Optionally set default value to today
 
-  // Make rating checkboxes behave like radio buttons (only one can be checked)
-  document.querySelectorAll('#rating5, #rating4, #rating3').forEach(cb => {
-    cb.addEventListener('change', function() {
-      if (this.checked) {
-        document.querySelectorAll('#rating5, #rating4, #rating3').forEach(other => {
-          if (other !== this) other.checked = false;
+        // Make rating checkboxes behave like radio buttons (only one can be checked)
+        document.querySelectorAll('#rating5, #rating4, #rating3').forEach(cb => {
+            cb.addEventListener('change', function() {
+            if (this.checked) {
+                document.querySelectorAll('#rating5, #rating4, #rating3').forEach(other => {
+                if (other !== this) other.checked = false;
+                });
+            }
+            });
         });
-      }
-    });
-  });
 
-  // Make availability checkboxes behave like radio buttons (only one can be checked)
-  document.querySelectorAll('#availableToday, #availableTmrw').forEach(cb => {
-    cb.addEventListener('change', function() {
-      if (this.checked) {
-        document.querySelectorAll('#availableToday, #availableTmrw').forEach(other => {
-          if (other !== this) other.checked = false;
+        // Make availability checkboxes behave like radio buttons (only one can be checked)
+        document.querySelectorAll('#availableToday, #availableTmrw').forEach(cb => {
+            cb.addEventListener('change', function() {
+            if (this.checked) {
+                document.querySelectorAll('#availableToday, #availableTmrw').forEach(other => {
+                if (other !== this) other.checked = false;
+                });
+            }
+            });
         });
-      }
-    });
-  });
 
-  // Clear all filters functionality
-  document.getElementById('clearFiltersBtn').addEventListener('click', function() {
-    // Uncheck all checkboxes in the filter sidebar
-    document.querySelectorAll('.filter-sidebar input[type="checkbox"]').forEach(cb => cb.checked = false);
-    // Optionally reset other filters (date, time slot)
-    // dateInput.value = minDate;
-    // document.getElementById('timeSlotSelect').selectedIndex = 0;
-  });
+        // Clear all filters functionality
+        document.getElementById('clearFiltersBtn').addEventListener('click', function() {
+        // Uncheck all checkboxes in the filter sidebar
+        document.querySelectorAll('.filter-sidebar input[type="checkbox"]').forEach(cb => cb.checked = false);
+        // Optionally reset other filters (date, time slot)
+        // dateInput.value = minDate;
+        // document.getElementById('timeSlotSelect').selectedIndex = 0;
+        }); 
 </script>
 </body>
 </html>

@@ -30,8 +30,7 @@
                     </button>
 
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#"  data-bs-toggle="modal" data-bs-target="#provider-modal"><i class="bi bi-person me-2"></i>View Profile</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" onclick="document.querySelector('[data-section=profile]').click();"><i class="bi bi-person me-2"></i>Profile</a></li>
                         <li><a class="dropdown-item" href="../index.html"><i class="bi bi-box-arrow-in-right me-2"></i>Logout</a></li>
                     </ul>
                 </div>
@@ -403,7 +402,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-lg-8">
+                        <div class="col-lg-8 mb-3">
                             <div class="card">
                                 <div class="card-header">
                                     <h5 class="fw-semibold mb-0">Personal Information</h5>
@@ -446,6 +445,26 @@
                                 <p>Wanna leave Slotify?</p>
                                 <button class="btn btn-outline-danger btn-lg w-100">
                                     <i class="bi bi-person-fill-x me-2"></i>Delete
+                                </button>
+                            </div>
+                            <div class="delete-user-card p-3 mb-4">
+                                <h5 class="mb-3">Forget Password</h5>
+                                <p>Wanna modify your password?</p>
+                                <div class="mb-3 text-start">
+                                    <label class="form-label fw-semibold">Enter new password</label>
+                                    <input type="password" class="form-control">
+                                </div>
+                                <div class="mb-3 text-start">
+                                    <label class="form-label fw-semibold">Confirm password</label>
+                                    <input type="password" class="form-control">
+                                </div>
+                                <div class="mb-3 text-start">
+                                    <label class="form-label fw-semibold">Enter confirmation code</label>
+                                    <p>Sent to your registered email</p>
+                                    <input type="text" class="form-control">
+                                </div>
+                                <button class="btn btn-outline-primary btn-lg w-100">
+                                    <i class="bi bi-lock-fill me-2"></i>Change Password
                                 </button>
                             </div>
                         </div>
@@ -648,6 +667,29 @@
                     }
                 });
             });
+
+            // Limit date input in Book Appointment section
+            const bookDateInput = document.querySelector('#book-appointment-section input[type="date"]');
+            if (bookDateInput) {
+                const today = new Date();
+                const minDate = today.toISOString().split('T')[0];
+                const maxDateObj = new Date(today);
+                maxDateObj.setDate(today.getDate() + 3);
+                const maxDate = maxDateObj.toISOString().split('T')[0];
+                bookDateInput.min = minDate;
+                bookDateInput.max = maxDate;
+                bookDateInput.value = minDate; // Optionally set default value to today
+            }
+
+            // Profile Section: Restrict DOB to 13+ years only
+            const dobInput = document.querySelector('#profile-section input[type="date"]');
+            if (dobInput) {
+                const today = new Date();
+                const minYear = today.getFullYear() - 120; // reasonable lower bound
+                const maxDate = new Date(today.getFullYear() - 13, today.getMonth(), today.getDate());
+                dobInput.max = maxDate.toISOString().split('T')[0];
+                dobInput.min = new Date(minYear, 0, 1).toISOString().split('T')[0];
+            }
         });
     </script>
     <!-- JS to auto-close offcanvas when link is clicked -->
@@ -660,34 +702,5 @@
             });
         });
     </script>
-<script>
-    // Book Appointment Section: Limit date input to today and next 3 days
-    document.addEventListener('DOMContentLoaded', function() {
-        // ...existing sidebar code...
-
-        // Limit date input in Book Appointment section
-        const bookDateInput = document.querySelector('#book-appointment-section input[type="date"]');
-        if (bookDateInput) {
-            const today = new Date();
-            const minDate = today.toISOString().split('T')[0];
-            const maxDateObj = new Date(today);
-            maxDateObj.setDate(today.getDate() + 3);
-            const maxDate = maxDateObj.toISOString().split('T')[0];
-            bookDateInput.min = minDate;
-            bookDateInput.max = maxDate;
-            bookDateInput.value = minDate; // Optionally set default value to today
-        }
-
-        // Profile Section: Restrict DOB to 13+ years only
-        const dobInput = document.querySelector('#profile-section input[type="date"]');
-        if (dobInput) {
-            const today = new Date();
-            const minYear = today.getFullYear() - 120; // reasonable lower bound
-            const maxDate = new Date(today.getFullYear() - 13, today.getMonth(), today.getDate());
-            dobInput.max = maxDate.toISOString().split('T')[0];
-            dobInput.min = new Date(minYear, 0, 1).toISOString().split('T')[0];
-        }
-    });
-</script>
 </body>
 </html>

@@ -268,7 +268,7 @@
                         <span>ServiceProvider</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#provider-modal"><i class="bi bi-person me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item"  onclick="document.querySelector('[data-section=profile]').click();"><i class="bi bi-person me-2"></i>Profile</a></li>
                         <li><a class="dropdown-item" href="index.html"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
                         
                     </ul>
@@ -1554,6 +1554,10 @@
                         <div class="mb-3">
                             <label for="block-date" class="form-label">Date</label>
                             <input type="date" class="form-control" id="block-date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="block-time" class="form-label">Time</label>
+                            <input type="time" class="form-control" id="block-time" required>
                         </div>
                     </div>
                     <div class="modal-footer">

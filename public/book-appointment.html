@@ -247,130 +247,67 @@
                 <div class="modal-body p-4">
                     <!--progress indicators-->
                     <div class="progress-steps">
-                        <div class="progress-step" id="step1"><span id="step1Icon">1</span></div>
-                        <div class="progress-step" id="step2"><span id="step2Icon">2</span></div>
+                        <div class="progress-step active" id="step1">1</div>
+                        <div class="progress-step" id="step2">2</div>
                         <div class="progress-step" id="step3">3</div>
                         <div class="progress-step" id="step4">4</div>
                     </div>
 
-                    <!--date theskundham-->
                     <div class="step-content active" id="stepContent1">
                         <div class="appointment-form-section">
                             <label class="form-label-custom">
+                                <i class="bi bi-briefcase"></i>Select Service
+                            </label>
+                            <div class="list-group" style="max-height: 220px; overflow-y: auto;">
+                                <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center service-option active">
+                                    <div>
+                                        <span class="fw-bold">Service-1</span>
+                                        <div class="text-muted small">Service description goes here</div>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill ms-3">30 min</span>
+                                </button>
+                                <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center service-option">
+                                    <div>
+                                        <span class="fw-bold">Service-2</span>
+                                        <div class="text-muted small">Another service description</div>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill ms-3">45 min</span>
+                                </button>
+                                <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center service-option">
+                                    <div>
+                                        <span class="fw-bold">Service-3</span>
+                                        <div class="text-muted small">Third service description</div>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill ms-3">60 min</span>
+                                </button>
+                                <!-- Add more services as needed -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--date theskundham-->
+                    <div class="step-content active" id="stepContent2">
+                        <div class="appointment-form-section">
+                            <label class="form-label-custom">
                                 <i class="bi bi-calendar3"></i>Select Appointment Date
-                          </label>
-                                                        <input type="date" class="form-control form-control-custom" id="appointmentDate" min="" max="">
-                                                        <script>
-// Service selection logic
-let selectedService = null;
-function updateServiceSelection() {
-    const serviceSelect = document.getElementById('serviceSelect');
-    selectedService = serviceSelect.value;
-    // Progress indicator: step 3 blue, step 2 tick/white
-    if (selectedService) {
-        progressSteps[1].classList.remove('active');
-        progressSteps[1].classList.add('completed');
-        step2Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
-        step2Icon.style.color = '#fff';
-        progressSteps[2].classList.add('active');
-        if (document.getElementById('step3')) {
-            document.getElementById('step3').style.background = '#0d6efd';
-            document.getElementById('step3').style.color = '#fff';
-        }
-    }
-}
-document.addEventListener('DOMContentLoaded', function() {
-    const serviceSelect = document.getElementById('serviceSelect');
-    if (serviceSelect) {
-        serviceSelect.addEventListener('change', updateServiceSelection);
-    }
-});
-let selectedSlot = null;
-let selectedSlotLabel = '';
-function updateSlotSelection() {
-    let found = false;
-    document.querySelectorAll('.time-slot-btn').forEach(btn => {
-        btn.classList.remove('selected');
-        btn.style.background = '';
-        btn.style.color = '';
-        btn.style.borderColor = '';
-        if (btn.dataset.time === selectedSlot) {
-            btn.classList.add('selected');
-            btn.style.background = '#0d6efd';
-            btn.style.color = '#fff';
-            btn.style.borderColor = '#0d6efd';
-            selectedSlotLabel = btn.textContent.trim();
-            found = true;
-        }
-    });
-    if (!found) selectedSlotLabel = '';
-    // Progress indicator: step 2 blue, step 3 no color
-    if (selectedSlot) {
-        progressSteps[1].classList.add('active');
-        step2Icon.innerHTML = '2';
-        step2Icon.style.color = '#0d6efd';
-        progressSteps[2].classList.remove('active');
-        progressSteps[2].classList.remove('completed');
-        if (document.getElementById('step3')) {
-            document.getElementById('step3').style.background = '';
-            document.getElementById('step3').style.color = '';
-            document.getElementById('step3').innerHTML = '3';
-        }
-    }
-    // If on summary step, update the summary time immediately
-    if (currentStep === 5 && document.getElementById('summaryTime')) {
-        document.getElementById('summaryTime').textContent = selectedSlotLabel || 'No time selected';
-    }
-}
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.time-slot-btn').forEach(btn => {
-        if (!btn.classList.contains('unavailable')) {
-            btn.onclick = function() {
-                selectedSlot = btn.dataset.time;
-                updateSlotSelection();
-                // Always update the summary time field
-                var summaryTime = document.getElementById('summaryTime');
-                if (summaryTime) {
-                    summaryTime.textContent = btn.textContent.trim();
-                }
-            };
-        }
-    });
-});
-                                                            // Restrict date input to today and next 2 days
-                                                            window.addEventListener('DOMContentLoaded', function() {
-                                                                const dateInput = document.getElementById('appointmentDate');
-                                                                const today = new Date();
-                                                                const yyyy = today.getFullYear();
-                                                                const mm = String(today.getMonth() + 1).padStart(2, '0');
-                                                                const dd = String(today.getDate()).padStart(2, '0');
-                                                                const minDate = `${yyyy}-${mm}-${dd}`;
-                                                                const maxDateObj = new Date(today);
-                                                                maxDateObj.setDate(today.getDate() + 2);
-                                                                const maxyyyy = maxDateObj.getFullYear();
-                                                                const maxmm = String(maxDateObj.getMonth() + 1).padStart(2, '0');
-                                                                const maxdd = String(maxDateObj.getDate()).padStart(2, '0');
-                                                                const maxDate = `${maxyyyy}-${maxmm}-${maxdd}`;
-                                                                dateInput.setAttribute('min', minDate);
-                                                                dateInput.setAttribute('max', maxDate);
-                                                            });
-                                                        </script>
+                            </label>
+                            <input type="date" class="form-control form-control-custom" id="appointmentDate" min="">
                         </div>
                     </div>
 
                     <!--time thesukundham-->
-                    <div class="step-content" id="stepContent2">
+                    <div class="step-content active" id="stepContent3">
                         <div class="appointment-form-section">
                             <label class="form-label-custom">
                                 <i class="bi bi-clock"></i>Choose Your Time Slot
                             </label>
                             <div class="time-slot-grid">
                                 <div class="time-slot-btn" data-time="09:00">9:00 AM</div>
-                                <div class="time-slot-btn unavailable" data-time="10:00">10:00 AM</div>
+                                <div class="time-slot-btn" data-time="10:00">10:00 AM</div>
                                 <div class="time-slot-btn" data-time="11:00">11:00 AM</div>
                                 <div class="time-slot-btn unavailable" data-time="12:00">12:00 PM</div>
                                 <div class="time-slot-btn" data-time="13:00">1:00 PM</div>
-                                <div class="time-slot-btn unavailable" data-time="14:00">2:00 PM</div>
+                                <div class="time-slot-btn" data-time="14:00">2:00 PM</div>
                                 <div class="time-slot-btn" data-time="15:00">3:00 PM</div>
                                 <div class="time-slot-btn" data-time="16:00">4:00 PM</div>
                                 <div class="time-slot-btn" data-time="17:00">5:00 PM</div>
@@ -378,23 +315,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
 
-                    <div class="step-content" id="stepContent3">
-                        <div class="appointment-form-section">
-                            <label class="form-label-custom">
-                                <i class="bi bi-person-badge"></i>Select service
-                            </label>
-                            <select class="form-select form-control-custom" id="serviceSelect">
-                                <option value="" disabled selected>Select a service</option>
-                                <option value="service-1">service-1</option>
-                                <option value="service-2">service-2</option>
-                                <option value="service-3">service-3</option>
-                                <option value="service-4">service-4</option>
-                            </select>
-                        </div>
-                    </div>
-
                     <!--last step lo ki summary-->
-                    <div class="step-content" id="stepContent4">
+                    <div class="step-content active" id="stepContent4">
                         <div class="appointment-form-section">
                             <label class="form-label-custom">
                                 <i class="bi bi-chat-dots"></i>Additional Notes (Optional)
@@ -403,46 +325,46 @@ document.addEventListener('DOMContentLoaded', function() {
                                       placeholder="Any specific concerns or requirements..." id="appointmentNotes"></textarea>
                         </div>
 
-                        
-                    </div>
-
-
-                    <div class="step-content" id="successContent" style="display:none;">
-                        <div class="appointment-form-section">
-                            <h4 class="mb-3">Appointment Summary</h4>
-                            <div class="mb-2"><strong>Provider Name:</strong> <span id="summaryProvider">(SP name)</span></div>
-                            <div class="mb-2"><strong>Date:</strong> <span id="summaryDate"></span></div>
-                            <div class="mb-2"><strong>Day:</strong> <span id="summaryDay"></span></div>
-                            <div class="mb-2"><strong>Time:</strong> <span id="summaryTime"></span></div>
-                            <div class="mb-2"><strong>Service:</strong> <span id="summaryService"></span></div>
-                        </div>
-                        <div class="d-flex w-100 justify-content-end align-items-center" id="footerBookBtn" style="display:none;">
-                            <button type="button" class="btn btn-book-appointment" id="bookAppointmentBtn" onclick="showBookedMessage()">Book Appointment</button>
-                        </div>
-                        <div id="bookedMessage" style="display:none;">
-                            <div class="text-center py-4">
-                                <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
-                                <h4 class="text-success mt-3 mb-2">Appointment Booked Successfully!</h4>
-                                <p class="text-muted">You'll receive a confirmation email shortly.</p>
+                        <div class="booking-summary">
+                            <h6 class="fw-bold mb-3 fs-5" style="color:var(--primary-color);">
+                                <i class="bi bi-clipboard-check me-2"></i>Appointment Summary
+                            </h6>
+                            <div class="summary-item">
+                                <span>Provider:</span>
+                                <span class="fw-semibold">Dr. Uday Sai Srikar</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Date:</span>
+                                <span id="summaryDate">day, month date, year</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Time:</span>
+                                <span id="summaryTime">-</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Service:</span>
+                                <span id="summaryService">-</span>
                             </div>
                         </div>
-<script>
-function showBookedMessage() {
-    // Hide the form, button, and summary, show only the booked message
-    // Remove the Book Appointment button and hide all summary details
-    var btn = document.getElementById('bookAppointmentBtn');
-    if (btn) btn.remove();
-    var summarySection = document.getElementById('successContent').querySelector('.appointment-form-section');
-    if (summarySection) summarySection.style.display = 'none';
-    document.getElementById('footerBookBtn').style.display = 'none';
-    document.getElementById('bookedMessage').style.display = 'block';
-}
-</script>
+                    </div>
+
+                    <div class="step-content" id="successContent">
+                        <div class="text-center py-4">
+                            <div class="success-animation">
+                                <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                            </div>
+                            <h4 class="text-success mt-3 mb-2">Appointment Booked Successfully!</h4>
+                            <p class="text-muted">You'll receive a confirmation email shortly.</p>
+                            <div class="alert alert-info mt-3">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Please arrive 15 minutes early for your appointment.
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="modal-footer border-0 p-4 pt-0" id="footerNavBtns">
-                    <div class="d-flex w-100 gap-3 justify-content-between align-items-center">
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <div class="d-flex w-100 gap-3">
                         <button type="button" class="btn btn-outline-secondary" id="prevBtn" onclick="previousStep()">
                             <i class="bi bi-arrow-left me-2"></i>Previous
                         </button>
@@ -454,247 +376,5 @@ function showBookedMessage() {
             </div>
         </div>
     </div>
-                                                        <script>
-// Restrict date input to today and next 3 days
-window.addEventListener('DOMContentLoaded', function() {
-        const dateInput = document.getElementById('appointmentDate');
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        const minDate = `${yyyy}-${mm}-${dd}`;
-        const maxDateObj = new Date(today);
-        maxDateObj.setDate(today.getDate() + 3);
-        const maxyyyy = maxDateObj.getFullYear();
-        const maxmm = String(maxDateObj.getMonth() + 1).padStart(2, '0');
-        const maxdd = String(maxDateObj.getDate()).padStart(2, '0');
-        const maxDate = `${maxyyyy}-${maxmm}-${maxdd}`;
-        dateInput.setAttribute('min', minDate);
-        dateInput.setAttribute('max', maxDate);
-
-        // Step navigation logic and progress indicator
-    let currentStep = 1;
-    const totalSteps = 4;
-    const summaryContent = document.getElementById('successContent');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const stepContents = [
-            document.getElementById('stepContent1'),
-            document.getElementById('stepContent2'),
-            document.getElementById('stepContent3'),
-            document.getElementById('stepContent4')
-        ];
-        const progressSteps = [
-            document.getElementById('step1'),
-            document.getElementById('step2'),
-            document.getElementById('step3'),
-            document.getElementById('step4')
-        ];
-        const step1Icon = document.getElementById('step1Icon');
-        const step2Icon = document.getElementById('step2Icon');
-
-            function updateSteps() {
-                // Hide all step contents and summary
-                stepContents.forEach((el) => { if (el) el.style.display = 'none'; });
-                if (summaryContent) summaryContent.style.display = 'none';
-                document.getElementById('footerNavBtns').style.display = '';
-                document.getElementById('footerBookBtn').style.display = 'none';
-                // Show only the current step or summary
-                if (currentStep <= 4 && stepContents[currentStep - 1]) {
-                    stepContents[currentStep - 1].style.display = '';
-                } else if (currentStep === 5 && summaryContent) {
-                    summaryContent.style.display = 'block';
-                    document.getElementById('footerNavBtns').style.display = 'none';
-                    document.getElementById('footerBookBtn').style.display = 'flex';
-                    // Fill summary fields
-                    const dateVal = document.getElementById('appointmentDate').value;
-                    // Always get the label of the selected (highlighted) time slot
-                    let timeLabel = '';
-                    const btns = document.querySelectorAll('.time-slot-btn');
-                    btns.forEach(btn => {
-                        if (btn.classList.contains('selected')) {
-                            timeLabel = btn.textContent.trim();
-                        }
-                    });
-                    const serviceVal = document.getElementById('serviceSelect').value || '';
-                    document.getElementById('summaryDate').textContent = dateVal;
-                    document.getElementById('summaryTime').textContent = timeLabel || 'No time selected';
-                    document.getElementById('summaryService').textContent = serviceVal;
-                    // Calculate and show day
-                    if (dateVal) {
-                        const day = new Date(dateVal).toLocaleDateString('en-US', { weekday: 'long' });
-                        document.getElementById('summaryDay').textContent = day;
-                    } else {
-                        document.getElementById('summaryDay').textContent = '';
-                    }
-                }
-                // Progress indicator
-                if (currentStep === 5) {
-                    // All steps completed: show only green tick marks, no numbers
-                    progressSteps.forEach((step, idx) => {
-                        step.classList.remove('active');
-                        step.classList.add('completed');
-                        if (idx === 0) {
-                            step1Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
-                            step1Icon.style.color = '#fff';
-                        }
-                        if (idx === 1) {
-                            step2Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
-                            step2Icon.style.color = '#fff';
-                        }
-                        if (idx === 2 && document.getElementById('step3')) {
-                            document.getElementById('step3').innerHTML = '<i class="bi bi-check-lg"></i>';
-                            document.getElementById('step3').style.background = '#198754';
-                            document.getElementById('step3').style.color = '#fff';
-                        }
-                        if (idx === 3 && document.getElementById('step4')) {
-                            document.getElementById('step4').innerHTML = '<i class="bi bi-check-lg"></i>';
-                            document.getElementById('step4').style.background = '#198754';
-                            document.getElementById('step4').style.color = '#fff';
-                        }
-                    });
-                } else if (currentStep === 2) {
-                    // Step 1: white tick, Step 2: white, Step 3/4: default
-                    progressSteps[0].classList.remove('active');
-                    progressSteps[0].classList.add('completed');
-                    step1Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
-                    step1Icon.style.color = '#fff';
-                    progressSteps[1].classList.add('active');
-                    progressSteps[1].classList.remove('completed');
-                    step2Icon.innerHTML = '2';
-                    step2Icon.style.color = '#fff';
-                    progressSteps[2].classList.remove('active');
-                    progressSteps[2].classList.remove('completed');
-                    progressSteps[3].classList.remove('active');
-                    progressSteps[3].classList.remove('completed');
-                } else if (currentStep === 3) {
-                    // Step 1: white tick, Step 2: white tick, Step 3: blue, Step 4: default
-                    progressSteps[0].classList.remove('active');
-                    progressSteps[0].classList.add('completed');
-                    step1Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
-                    step1Icon.style.color = '#fff';
-                    progressSteps[1].classList.remove('active');
-                    progressSteps[1].classList.add('completed');
-                    step2Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
-                    step2Icon.style.color = '#fff';
-                    progressSteps[2].classList.add('active');
-                    progressSteps[2].classList.remove('completed');
-                    if (document.getElementById('step3')) {
-                        document.getElementById('step3').style.background = '#0d6efd';
-                        document.getElementById('step3').style.color = '#fff';
-                    }
-                    progressSteps[3].classList.remove('active');
-                    progressSteps[3].classList.remove('completed');
-                } else if (currentStep === 4) {
-                    // Step 1: white tick, Step 2: white tick, Step 3: green tick (white), Step 4: blue
-                    progressSteps[0].classList.remove('active');
-                    progressSteps[0].classList.add('completed');
-                    step1Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
-                    step1Icon.style.color = '#fff';
-                    progressSteps[1].classList.remove('active');
-                    progressSteps[1].classList.add('completed');
-                    step2Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
-                    step2Icon.style.color = '#fff';
-                    progressSteps[2].classList.remove('active');
-                    progressSteps[2].classList.add('completed');
-                    if (document.getElementById('step3')) {
-                        document.getElementById('step3').innerHTML = '<i class="bi bi-check-lg"></i>';
-                        document.getElementById('step3').style.background = '#198754';
-                        document.getElementById('step3').style.color = '#fff';
-                    }
-                    progressSteps[3].classList.add('active');
-                    progressSteps[3].classList.remove('completed');
-                    // Force Next button to always be visible
-                    if (nextBtn) {
-                        nextBtn.style.display = '';
-                    }
-                } else {
-                    // Reset to default
-                    progressSteps[0].classList.remove('completed');
-                    progressSteps[0].classList.add('active');
-                    step1Icon.innerHTML = '1';
-                    step1Icon.style.color = '';
-                    progressSteps[1].classList.remove('completed');
-                    progressSteps[1].classList.remove('active');
-                    step2Icon.innerHTML = '2';
-                    step2Icon.style.color = '';
-                    progressSteps[2].classList.remove('active');
-                    progressSteps[2].classList.remove('completed');
-                    progressSteps[3].classList.remove('active');
-                    progressSteps[3].classList.remove('completed');
-                }
-                // Prev button only after first step
-                prevBtn.style.display = (currentStep === 1) ? 'none' : '';
-                nextBtn.style.display = (currentStep === 5) ? 'none' : '';
-            }
-
-        window.nextStep = function() {
-            if (currentStep < totalSteps) {
-                currentStep++;
-                updateSteps();
-                // If moved to select service step, only show that section
-                if (currentStep === 3) {
-                    stepContents.forEach((el, idx) => {
-                        el.style.display = (idx === 2) ? '' : 'none';
-                    });
-                }
-                // If moved to step 4, update header progress
-                if (currentStep === 4) {
-                    updateServiceSelection();
-                }
-            } else if (currentStep === totalSteps) {
-                // After additional notes, show only summary
-                currentStep++;
-                updateSteps();
-            }
-        };
-        window.previousStep = function() {
-            if (currentStep > 1) {
-                currentStep--;
-                updateSteps();
-                // After going back, show only green tick marks for all completed steps (no numbers)
-                for (let i = 0; i < currentStep; i++) {
-                    if (progressSteps[i]) {
-                        progressSteps[i].classList.remove('active');
-                        progressSteps[i].classList.add('completed');
-                        if (i === 0) {
-                            step1Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
-                            step1Icon.style.color = '#fff';
-                        }
-                        if (i === 1) {
-                            step2Icon.innerHTML = '<i class="bi bi-check-lg"></i>';
-                            step2Icon.style.color = '#fff';
-                        }
-                        if (i === 2 && document.getElementById('step3')) {
-                            document.getElementById('step3').innerHTML = '<i class="bi bi-check-lg"></i>';
-                            document.getElementById('step3').style.background = '#198754';
-                            document.getElementById('step3').style.color = '#fff';
-                        }
-                        if (i === 3 && document.getElementById('step4')) {
-                            document.getElementById('step4').innerHTML = '<i class="bi bi-check-lg"></i>';
-                            document.getElementById('step4').style.background = '#198754';
-                            document.getElementById('step4').style.color = '#fff';
-                        }
-                    }
-                }
-                // Remove numbers from completed steps (step 1, 2, 3, 4)
-                if (currentStep < 4 && document.getElementById('step4')) {
-                    document.getElementById('step4').innerHTML = '4';
-                    document.getElementById('step4').style.background = '';
-                    document.getElementById('step4').style.color = '';
-                }
-                if (currentStep < 3 && document.getElementById('step3')) {
-                    document.getElementById('step3').innerHTML = '3';
-                    document.getElementById('step3').style.background = '';
-                    document.getElementById('step3').style.color = '';
-                }
-                if (currentStep < 2 && document.getElementById('step2Icon')) {
-                    step2Icon.innerHTML = '2';
-                    step2Icon.style.color = '';
-                }
-            }
-        };
-        // Hide all but first step on load
-        updateSteps();
-});
-                                                        </script>
+</body>
+</html>
