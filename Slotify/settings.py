@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     #myApps
     'users',
     'services',
-    'core',
     'appointments',
     'notifications',
 ]
