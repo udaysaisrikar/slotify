@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'users',
     'services',
     'appointments',
-    'notifications',
+    # 'notifications',
 ]
 
 MIDDLEWARE = [
@@ -83,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'Slotify',
         'USER':'root',
-        'PASSWORD':'VinAya@18',
+        'PASSWORD':'',
         'HOST':'localhost',
         'PORT':'3306',
     }
