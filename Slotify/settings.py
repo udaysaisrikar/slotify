@@ -83,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'Slotify',
         'USER':'root',
-        'PASSWORD':'',
+        'PASSWORD':'VinAya@18',
         'HOST':'localhost',
         'PORT':'3306',
     }

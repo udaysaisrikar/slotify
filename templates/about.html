@@ -209,7 +209,10 @@
     <!--navbar-->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm">
       <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="../index.html">
+        <a
+          class="navbar-brand d-flex align-items-center"
+          href="{% url 'home' %}"
+        >
           <img
             src="https://cdn-icons-png.flaticon.com/512/747/747310.png"
             alt="logo"
@@ -233,17 +236,15 @@
         <div class="collapse navbar-collapse" id="navbarContent">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-              <a class="nav-link" href="../index.html#services-categories"
+              <a class="nav-link" href="{% url 'home' %}#services-categories"
                 >ServiceProviders</a
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="slotify/public/about.html"
-                >About</a
-              >
+              <a class="nav-link active" href="{% url 'about' %}">About</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="../public/contact_us.html">Contact</a>
+              <a class="nav-link" href="{% url 'contact' %}">Contact</a>
             </li>
           </ul>
           <button
@@ -362,7 +363,9 @@
             <h3 class="footer-heading">For Customers</h3>
             <ul class="footer-links">
               <li>
-                <a href="../index.html#services-categories">SerivceProviders</a>
+                <a href="{% url 'home' %}#services-categories"
+                  >SerivceProviders</a
+                >
               </li>
               <li>
                 <a
@@ -400,9 +403,11 @@
           <div class="footer-column">
             <h3 class="footer-heading">Support</h3>
             <ul class="footer-links">
-              <li><a href="contact_us.html">Contact Us</a></li>
-              <li><a href="privacy_policy.html">Privacy Policy</a></li>
-              <li><a href="terms_of_services.html">Terms of Service</a></li>
+              <li><a href="{% url 'contact' %}">Contact Us</a></li>
+              <li><a href="{% url 'privacy_policy' %}">Privacy Policy</a></li>
+              <li>
+                <a href="{% url 'terms_of_services' %}">Terms of Service</a>
+              </li>
             </ul>
           </div>
         </div>
