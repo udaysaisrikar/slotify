@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.hashers import make_password, check_password
 # Create your models here.
 class Customer(models.Model):
     customer_id = models.BigAutoField(primary_key=True)
@@ -21,4 +21,7 @@ class ServiceProvider(models.Model):
     password = models.CharField(max_length=255)
     category_id = models.ForeignKey('services.ServiceCategory', on_delete=models.SET_NULL, null=True)
 
+    # Business hours fields
+    start_hours = models.TimeField(null=True, blank=True)
+    end_hours = models.TimeField(null=True, blank=True)
     
