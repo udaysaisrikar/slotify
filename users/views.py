@@ -268,3 +268,27 @@ def delete_account(request):
             return redirect('home')
         
     return redirect(f'{user}_dashboard')
+
+
+
+
+# Customer Searching Providers
+def search_providers(request):
+    if request.method == "POST":
+        category = request.POST.get('category')
+        date = request.POST.get('date')
+        query = request.POST.get('query')
+
+        providers = ServiceProvider.objects.all()
+
+        if category:
+            providers = providers.filter(category_name__icontains=category)
+        if query:
+            providers = providers.filter(business_name__icontains=query)
+        if date:
+            pass
+
+        return render(request, 'customer_dashboard.html', {'providers':providers})
+    
+    return redirect('customer_dashboard')
+        

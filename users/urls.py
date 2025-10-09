@@ -19,4 +19,7 @@ urlpatterns = [
 
     # Delete profile
     path('delete-account/', views.delete_account, name='delete_account'),
+
+    # Search Providers
+    path('search/', views.search_providers, name='search_providers')
 ]

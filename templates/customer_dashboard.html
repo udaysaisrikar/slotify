@@ -301,42 +301,50 @@
             </div>
 
             <div class="search-container">
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label fw-semibold">Service category</label>
-                  <select class="form-select">
-                    <option value="">All Categories</option>
-                    <option value="healthcare">Healthcare</option>
-                    <option value="beauty">Beauty & Wellness</option>
-                    <option value="automotive">Automotive</option>
-                    <option value="professional">Professional Services</option>
-                    <option value="it">IT Support</option>
-                  </select>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label fw-semibold">Date</label>
-                  <input type="date" class="form-control" />
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-8 mb-3">
-                  <div class="input-group">
-                    <span class="input-group-text"
-                      ><i class="bi bi-search"></i
-                    ></span>
-                    <input
-                      type="text"
-                      class="form-control"
-                      placeholder="Search for providers, specialists or services..."
-                    />
+              <form method="POST" action="{% url 'search_providers' %}">
+                {% csrf_token %}
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold"
+                      >Service category</label
+                    >
+                    <select class="form-select" name="category">
+                      <option value="">All Categories</option>
+                      <option value="healthcare">Healthcare</option>
+                      <option value="beauty">Beauty & Wellness</option>
+                      <option value="automotive">Automotive</option>
+                      <option value="professional">
+                        Professional Services
+                      </option>
+                      <option value="it">IT Support</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">Date</label>
+                    <input type="date" class="form-control" name="date" />
                   </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                  <button class="btn btn-primary w-100">
-                    <i class="bi bi-search me-2"></i>Search Providers
-                  </button>
+                <div class="row">
+                  <div class="col-md-8 mb-3">
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="bi bi-search"></i
+                      ></span>
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="query"
+                        placeholder="Search for providers, specialists or services..."
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                      <i class="bi bi-search me-2"></i>Search Providers
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
             <!--available providers-->
             <div class="row">
@@ -396,6 +404,73 @@
                     preview for service provider card display with styling
                   </h6>
                 </div>
+              </div>
+            </div>
+            <!-- Available Providers by Customer Search -->
+            <div class="row">
+              <div class="col-md-8">
+                {% if providers %} {% for provider in providers %}
+                <div class="provider-card">
+                  <div class="row">
+                    <div class="col-md-3 text-center mb-3">
+                      <i
+                        class="bi bi-person-circle"
+                        style="font-size: 4rem; color: skyblue"
+                      ></i>
+                      <div class="rating">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-half"></i>
+                        <span class="text-muted ms-1">(4.8)</span>
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <h5 class="fw-semibold">{{provider.name}}</h5>
+                      <p class="text-muted small">
+                        Specializes in Family Medicine
+                      </p>
+                      <p class="small">
+                        <i class="bi bi-geo-alt me-1"></i>{{provider.address}}
+                        <br />
+                        <i class="bi bi-clock me-1"></i>Available: {{
+                        provider.start_hours|default:"09:00" }} - {{
+                        provider.end_hours|default:"17:00" }} <br />
+                        <i class="bi bi-award"></i> 10+ years of experience
+                      </p>
+                      <div class="d-flex gap-2 mb-2">
+                        <span class="badge bg-light text-dark"
+                          >{{provider.category_name}}</span
+                        >
+                        <span class="badge bg-light text-dark"
+                          >Color Treatment</span
+                        >
+                      </div>
+                    </div>
+                    <div class="col-md-3 mb-3 text-end">
+                      <div class="d-grid gap-3">
+                        <div class="status-available mb-3">Available</div>
+                        <button class="btn btn-primary btn-sm">Book Now</button>
+                        <button
+                          class="btn btn-outline-secondary btn-sm"
+                          data-bs-toggle="modal"
+                          data-bs-target="#provider-modal"
+                        >
+                          View Profile
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <h6 class="mt-3">
+                    preview for service provider card display with styling
+                  </h6>
+                </div>
+                {% endfor %} {% else %}
+                <p class="text-muted mt-3">
+                  No providers found for your search.
+                </p>
+                {% endif %}
               </div>
             </div>
           </div>
