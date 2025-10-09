@@ -186,7 +186,7 @@
             <!--dashboard header-->
             <div class="justify-content-between d-flex p-3">
               <div>
-                <h1>Welcome back! {{customer_name}}</h1>
+                <h1>Welcome back! {{customer.first_name}}</h1>
                 <p>Here's what's happening with your appointments today.</p>
               </div>
               <div>
@@ -598,7 +598,8 @@
                     <h5 class="fw-semibold mb-0">Personal Information</h5>
                   </div>
                   <div class="card-body">
-                    <form>
+                    <form method="POST" action="{% url 'update_profile' %}">
+                      {% csrf_token %}
                       <div class="row">
                         <div class="col-md-6 mb-3">
                           <label class="form-label fw-semibold"
@@ -607,14 +608,20 @@
                           <input
                             type="text"
                             class="form-control"
-                            value="John"
+                            name="first_name"
+                            value="{{customer.first_name}}"
                           />
                         </div>
                         <div class="col-md-6 mb-3">
                           <label class="form-label fw-semibold"
                             >Last Name</label
                           >
-                          <input type="text" class="form-control" value="Doe" />
+                          <input
+                            type="text"
+                            class="form-control"
+                            name="last_name"
+                            value="{{customer.last_name}}"
+                          />
                         </div>
                       </div>
                       <div class="mb-3">
@@ -624,7 +631,8 @@
                         <input
                           type="email"
                           class="form-control"
-                          value="john.doe@example.com"
+                          name="email_id"
+                          value="{{customer.email_id}}"
                         />
                       </div>
                       <div class="row">
@@ -635,7 +643,8 @@
                           <input
                             type="tel"
                             class="form-control"
-                            value="+91 99999 88888"
+                            name="phone_no"
+                            value="{{customer.phone_no}}"
                           />
                         </div>
                         <div class="col-md-6 mb-3">
@@ -645,7 +654,9 @@
                           <input
                             type="date"
                             class="form-control"
-                            value="02-04-2006"
+                            name="dob"
+                            id="dobDisplay"
+                            value="{% if customer.dob %}{{customer.dob|date:'Y-m-d' }}{% endif %}"
                           />
                         </div>
                       </div>
@@ -661,9 +672,15 @@
                 <div class="delete-user-card p-3 mb-4">
                   <h5 class="mb-3">Delete Acount</h5>
                   <p>Wanna leave Slotify?</p>
-                  <button class="btn btn-outline-danger btn-lg w-100">
-                    <i class="bi bi-person-fill-x me-2"></i>Delete
-                  </button>
+                  <form method="POST" action="{% url 'delete_account' %}">
+                    {% csrf_token %}
+                    <button
+                      type="submit"
+                      class="btn btn-outline-danger btn-lg w-100"
+                    >
+                      <i class="bi bi-person-fill-x me-2"></i>Delete
+                    </button>
+                  </form>
                 </div>
                 <div class="delete-user-card p-3 mb-4">
                   <h5 class="mb-3">Forget Password</h5>
@@ -672,13 +689,21 @@
                     <label class="form-label fw-semibold"
                       >Enter new password</label
                     >
-                    <input type="password" class="form-control" />
+                    <input
+                      type="password"
+                      class="form-control"
+                      name="new_password"
+                    />
                   </div>
                   <div class="mb-3 text-start">
                     <label class="form-label fw-semibold"
                       >Confirm password</label
                     >
-                    <input type="password" class="form-control" />
+                    <input
+                      type="password"
+                      class="form-control"
+                      name="confirm_new_password"
+                    />
                   </div>
                   <div class="mb-3 text-start">
                     <label class="form-label fw-semibold"
@@ -1026,5 +1051,12 @@ Write the review here (optional)</textarea
           });
         });
     </script>
+    {% if messages %}
+    <script>
+      {% for message in messages %}
+      alert("{{ message }}")
+      {% endfor %}
+    </script>
+    {% endif %}
   </body>
 </html>

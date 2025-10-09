@@ -1310,21 +1310,22 @@
                                     <h5 class="fw-semibold mb-0">Professional Information</h5>
                                 </div>
                                 <div class="card-body">
-                                    <form>
+                                    <form method="POST" action="{% url 'update_profile' %}">
+                                        {% csrf_token %}
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label fw-semibold">ServiceProvider ID</label>
-                                                <input type="text" class="form-control" value="SP123456" readonly>
+                                                <input type="text" class="form-control" value="{{provider.provider_id}}" readonly>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label fw-semibold">Category</label>
-                                                <input type="text" class="form-control" value="Healthcare" readonly>
+                                                <input type="text" class="form-control" name="service_category" value="{{provider.category_name}}" readonly>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label fw-semibold">Full Name</label>
-                                                <input type="text" class="form-control" value="Dr. Sarah Smith">
+                                                <input type="text" class="form-control" name="name" value="{{provider.name}}">
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label fw-semibold">Professional Title</label>
@@ -1349,11 +1350,11 @@
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label fw-semibold">Phone Number</label>
-                                                <input type="tel" class="form-control" value="+91 ">
+                                                <input type="tel" class="form-control" name="phone_no"  value="{{provider.phone_no}}">
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label fw-semibold">Email</label>
-                                                <input type="email" class="form-control" value="dr.smith@medicenter.com">
+                                                <input type="email" class="form-control" name="email" value="{{provider.email_id}}">
                                             </div>
                                         </div>
                                         <div class="mb-3">
@@ -1409,7 +1410,10 @@
                                         <i class="fa-solid fa-trash-can" style="font-size: 30px; color: crimson; margin:8px;"></i>
                                     </div>
                                     <div>
-                                        <button class="btn btn-outline-primary btn-sm">Delete my account</button>
+                                        <form method="POST" action="{% url 'delete_account' %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-primary btn-sm">Delete my account</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -1619,5 +1623,15 @@
             });
         });
     </script>
+
+    
+    {% if messages %}
+    <script>
+      {% for message in messages %}
+      alert("{{ message }}")
+      {% endfor %}
+    </script>
+    {% endif %}
+    
 </body>
 </html>

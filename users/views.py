@@ -12,8 +12,10 @@ def customer_dashboard(request):
     if 'customer_id' not in request.session:
         return redirect('home')
     
+    customer_id = request.session.get('customer_id')
     customer_name = request.session.get('customer_fname')
-    return render(request, 'customer_dashboard.html', {'customer_name':customer_name})
+    customer = Customer.objects.get(customer_id = customer_id)
+    return render(request, 'customer_dashboard.html', {'customer':customer})
 
 # Customer Sign Up
 def customer_signup(request):
@@ -65,6 +67,7 @@ def customer_signin(request):
             request.session['customer_id'] = customer.customer_id
             request.session['customer_fname'] = customer.first_name
             request.session['customer_lname'] = customer.last_name
+            request.session['user_type'] = 'customer'
             # messages.success(request, f"Welcome, {customer.first_name}!")
             return redirect('customer_dashboard')
         else:
@@ -186,6 +189,7 @@ def provider_signin(request):
         # Check Password
         if check_password(password, provider.password):
             request.session['provider_id'] = provider.provider_id
+            request.session['user_type'] = 'provider'
             return redirect('provider_dashboard')
         else:
             messages.error(request, "Passwords do not match.")
@@ -200,3 +204,61 @@ def provider_logout(request):
     messages.info(request, "Logged out successfully.")
     return redirect('home')
         
+
+
+# Update profiles
+def update_profile(request):
+    user_type = request.session.get('user_type') # Customer or Provider
+    cus_id = request.session.get('customer_id')
+    sp_id = request.session.get('provider_id')
+
+    if request.method == 'POST':
+        if user_type == 'customer':
+            customer = Customer.objects.get(customer_id=cus_id)
+            customer.first_name = request.POST.get('first_name')
+            customer.last_name = request.POST.get('last_name')
+            customer.email_id = request.POST.get('email_id')
+            customer.phone_no = request.POST.get('phone_no')
+            dob = request.POST.get('dob')
+            if dob:
+                customer.dob = dob
+            customer.save()
+            messages.success(request, "Profile updated successfully!")
+
+        elif user_type == 'provider':
+            provider = ServiceProvider.objects.get(provider_id=sp_id)
+            email = provider.email_id
+            category = provider.category_name
+            provider.name = request.POST.get('name')
+            provider.email_id = email
+            provider.phone_no = request.POST.get('phone_no')
+            provider.category_name = category
+            provider.save()
+            messages.success(request, "Your profile updated successfully!")
+
+        return redirect(f'{user_type}_dashboard')
+    
+    return redirect(f'{user_type}_dashboard')
+
+
+# Delete account
+def delete_account(request):
+    user = request.session.get('user_type')
+    if request.method == 'POST':
+        # If user is Customer
+        if 'customer_id' in request.session:
+            customer = Customer.objects.get(pk=request.session['customer_id'])
+            customer.delete()
+            request.session.flush() # Clear the session
+            messages.success(request, "Account deleted Successfully!")
+            return redirect('home')
+        
+        # If user is Provider
+        elif 'provider_id' in request.session:
+            provider = ServiceProvider.objects.get(pk=request.session['provider_id'])
+            provider.delete()
+            request.session.flush()
+            messages.success(request, "Account deleted Successfully!")
+            return redirect('home')
+        
+    return redirect(f'{user}_dashboard')

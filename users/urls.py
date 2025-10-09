@@ -13,4 +13,10 @@ urlpatterns = [
     path('sp_signin/', views.provider_signin, name='sp_signin'),
     path('sp_logout/', views.provider_logout, name='sp_logout'),
     path('provider-dashboard/', views.provider_dashboard, name='provider_dashboard'),
+
+    # Update Profile
+    path('update-profile/', views.update_profile, name='update_profile'),
+
+    # Delete profile
+    path('delete-account/', views.delete_account, name='delete_account'),
 ]
