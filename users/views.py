@@ -215,11 +215,16 @@ def update_profile(request):
     if request.method == 'POST':
         if user_type == 'customer':
             customer = Customer.objects.get(customer_id=cus_id)
-            customer.first_name = request.POST.get('first_name')
-            customer.last_name = request.POST.get('last_name')
-            customer.email_id = request.POST.get('email_id')
-            customer.phone_no = request.POST.get('phone_no')
-            dob = request.POST.get('dob')
+            first_name = request.POST.get('first_name') or customer.first_name
+            last_name = request.POST.get('last_name') or customer.last_name
+            email_id = request.POST.get('email_id') or customer.email_id
+            phone_no = request.POST.get('phone_no') or customer.phone_no
+            dob = request.POST.get('dob') or customer.dob
+            # Update Customer
+            customer.first_name = first_name
+            customer.last_name = last_name
+            customer.email_id = email_id
+            customer.phone_no = phone_no
             if dob:
                 customer.dob = dob
             customer.save()
@@ -227,12 +232,13 @@ def update_profile(request):
 
         elif user_type == 'provider':
             provider = ServiceProvider.objects.get(provider_id=sp_id)
-            email = provider.email_id
-            category = provider.category_name
-            provider.name = request.POST.get('name')
-            provider.email_id = email
-            provider.phone_no = request.POST.get('phone_no')
-            provider.category_name = category
+            name = request.POST.get('name') or provider.name
+            email_id = request.POST.get('email') or provider.email_id
+            phone_no = request.POST.get('phone_no') or provider.phone_no
+            # Update Provider
+            provider.name = name
+            provider.email_id = email_id
+            provider.phone_no = phone_no
             provider.save()
             messages.success(request, "Your profile updated successfully!")
 
