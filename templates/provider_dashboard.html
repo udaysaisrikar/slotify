@@ -913,7 +913,10 @@
                             <span class="fw-semibold">{{ day }}</span>
                             <label class="toggle-switch">
                             <input type="checkbox" name="{{day}}_active"
-                            {% if schedule_dict.day.available_time %} checked {% endif %} />
+                            {% if schedule_dict.day %}
+                                {% if schedule_dict.day.available_time %}
+                             checked {% endif %}
+                            {% endif %}/>
                             <span class="slider"></span>
                             </label>
                         </div>
@@ -922,13 +925,13 @@
                             type="time"
                             name="{{ day }}_start"
                             class="form-control form-control-sm"
-                            value="{{ schedule_dict.day.available_time|slice:':5'|default:"09:00" }}"
+                            value="{% if schedule_dict.day %}{{ schedule_dict.day.available_time|slice:':5' }}{% else %}09:00{% endif %}"
                             />
                             <input
                             type="time"
                             name="{{ day }}_end"
                             class="form-control form-control-sm"
-                            value="{{ schedule_dict.get.day.available_time|slice:'6:'|default:"17:00" }}"
+                            value="{% if schedule_dict.day %}{{ schedule_dict.day.available_time|slice:'6:' }}{% else %}17:00{% endif %}"
                             />
                         </div>
                         </div>

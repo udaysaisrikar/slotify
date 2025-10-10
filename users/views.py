@@ -317,6 +317,15 @@ def provider_dashboard(request):
     services = Services.objects.filter(provider_id=provider)
     categories = ServiceCategory.objects.all()
 
+    schedules = ProviderSchedule.objects.filter(provider=provider)
+    schedule_dict = {day :{"available_time":""} for day in DAYS_OF_WEEK}
+    for s in schedules:
+        schedule_dict[s.day_of_week] = {
+        "available_time": s.available_time,
+        "blocked_time": s.blocked_time,
+        "booked_slots": s.booked_slots
+    }
+
     # ----------------
     # Handle Weekly Schedule
     # ----------------
@@ -348,16 +357,6 @@ def provider_dashboard(request):
                     except ProviderSchedule.DoesNotExist:
                         pass
         
-        schedules = ProviderSchedule.objects.filter(provider=provider)
-        schedule_dict = {day :{"available_time":""} for day in DAYS_OF_WEEK}
-
-        for s in schedules:
-            schedule_dict[s.day_of_week] = {
-            "available_time": s.available_time,
-            "blocked_time": s.blocked_time,
-            "booked_slots": s.booked_slots
-        }
-
         return redirect('provider_dashboard')
     
 
