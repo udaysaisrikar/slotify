@@ -434,9 +434,10 @@
                       <p class="small">
                         <i class="bi bi-geo-alt me-1"></i>{{provider.address}}
                         <br />
-                        <i class="bi bi-clock me-1"></i>Available: {{
-                        provider.start_hours|default:"09:00" }} - {{
-                        provider.end_hours|default:"17:00" }} <br />
+                        <i class="bi bi-clock me-1"></i>Available:
+                        {{provider.start_hours|time:"h:i A"}} -
+                        {{provider.end_hours|time:"h:i A"}}
+                        <br />
                         <i class="bi bi-award"></i> 10+ years of experience
                       </p>
                       <div class="d-flex gap-2 mb-2">

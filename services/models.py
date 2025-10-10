@@ -17,7 +17,8 @@ class Services(models.Model):
 
 class ProviderSchedule(models.Model):
     schedule_id = models.BigAutoField(primary_key=True)
-    service_id = models.ForeignKey(Services, on_delete=models.CASCADE)
+    service = models.ForeignKey(Services, on_delete=models.CASCADE)
+    provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE, null=True, blank=True)
     day_of_week = models.CharField(
         max_length=10,
         choices=[

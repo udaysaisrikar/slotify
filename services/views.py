@@ -1,6 +1,7 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Services, ServiceCategory
-
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Services, ServiceCategory, ProviderSchedule
+from users.models import ServiceProvider
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 def category_view(request, category_name):
@@ -15,3 +16,4 @@ def category_view(request, category_name):
     }
 
     return render(request, 'common_category_page.html', context)
+

@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
 from .models import Customer, ServiceProvider
-from services.models import ServiceCategory
+from services.models import ServiceCategory, Services
 from django.core.mail import send_mail
 from django.db import transaction
+from services.models import ProviderSchedule
 # Create your views here.
 
 
@@ -13,9 +14,29 @@ def customer_dashboard(request):
         return redirect('home')
     
     customer_id = request.session.get('customer_id')
-    customer_name = request.session.get('customer_fname')
     customer = Customer.objects.get(customer_id = customer_id)
-    return render(request, 'customer_dashboard.html', {'customer':customer})
+    providers = ServiceProvider.objects.all()
+
+    # Searching providers
+    if request.method == "POST":
+        customer_id = request.session.get('customer_id')
+        customer = Customer.objects.get(pk=customer_id)
+        category = request.POST.get('category')
+        date = request.POST.get('date')
+        query = request.POST.get('query')
+
+        providers = ServiceProvider.objects.all()
+
+        if category:
+            providers = providers.filter(category_name__icontains=category)
+        if query:
+            providers = providers.filter(business_name__icontains=query)
+        if date:
+            pass
+
+    return render(request, 'customer_dashboard.html',{'providers':providers, 'customer':customer})
+
+
 
 # Customer Sign Up
 def customer_signup(request):
@@ -99,13 +120,6 @@ def generate_provider_id():
 
 
 
-def provider_dashboard(request):
-    provider_id = request.session.get('provider_id')
-    if not provider_id:
-        return redirect('home')
-    
-    provider = ServiceProvider.objects.get(provider_id=provider_id)
-    return render(request, 'provider_dashboard.html',{'provider':provider})
 
 # Provider Sign Up
 def provider_signup(request):
@@ -272,23 +286,123 @@ def delete_account(request):
 
 
 
-# Customer Searching Providers
-def search_providers(request):
-    if request.method == "POST":
-        category = request.POST.get('category')
-        date = request.POST.get('date')
-        query = request.POST.get('query')
-
-        providers = ServiceProvider.objects.all()
-
-        if category:
-            providers = providers.filter(category_name__icontains=category)
-        if query:
-            providers = providers.filter(business_name__icontains=query)
-        if date:
-            pass
-
-        return render(request, 'customer_dashboard.html', {'providers':providers})
+# Provider Dashboard
+DAYS_OF_WEEK = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+def provider_dashboard(request):
+    provider_id = request.session.get('provider_id')
+    if not provider_id:
+        return redirect('home')
     
-    return redirect('customer_dashboard')
+    provider = ServiceProvider.objects.get(provider_id=provider_id)
+    category = provider.category_id
+
+    # ----------------
+    # Handle Add Service form submission
+    # ----------------
+    if request.method == 'POST' and 'service_name' in request.POST:
+        service_name = request.POST.get('service_name')
+        description = request.POST.get('description','')
+        duration = request.POST.get('duration','')
+
+        if service_name:
+            Services.objects.create(
+                service_name=service_name,
+                description=description,
+                duration=duration,
+                category_id=category,
+                provider_id=provider,
+            )
+        return redirect('provider_dashboard')
+    # Fetch all services added by this provider
+    services = Services.objects.filter(provider_id=provider)
+    categories = ServiceCategory.objects.all()
+
+    # ----------------
+    # Handle Weekly Schedule
+    # ----------------
+    if request.method == "POST" and 'schedule_submit' in request.POST:
+        for day in DAYS_OF_WEEK:
+            active = request.POST.get(f'{day}_active')
+            start_time = request.POST.get(f'{day}_start')
+            end_time = request.POST.get(f'{day}_end')
+
+            if active:
+                available_time = f"{start_time}-{end_time}"
+                for service in services:
+                    schedule, created = ProviderSchedule.objects.get_or_create(
+                        provider = provider,
+                        service=service,
+                        day_of_week=day,
+                        defaults={"available_time":available_time}
+                    )
+
+                    if not created:
+                        schedule.available_time = available_time
+                        schedule.save()
+            else:
+                for service in services:
+                    try:
+                        schedule = ProviderSchedule.objects.get(provider=provider, service=service, day_of_week=day)
+                        schedule.available_time = ""
+                        schedule.save()
+                    except ProviderSchedule.DoesNotExist:
+                        pass
         
+        schedules = ProviderSchedule.objects.filter(provider=provider)
+        schedule_dict = {day :{"available_time":""} for day in DAYS_OF_WEEK}
+
+        for s in schedules:
+            schedule_dict[s.day_of_week] = {
+            "available_time": s.available_time,
+            "blocked_time": s.blocked_time,
+            "booked_slots": s.booked_slots
+        }
+
+        return redirect('provider_dashboard')
+    
+
+    # -------------
+    # Handle Blocking time
+    # -------------
+    if request.method == "POST" and "block_time_submit" in request.POST:
+        provider_id = request.session.get('provider_id')
+        provider = ServiceProvider.objects.get(provider_id=provider_id)
+
+        day = request.POST.get("block_day")
+        date = request.POST.get("block_date")
+        start_time = request.POST.get("block_start")
+        end_time = request.POST.get("block_end")
+
+        # Apply block to all services of this provider
+        services = Services.objects.filter(provider_id=provider_id)
+
+        for service in services:
+            schedule, created = ProviderSchedule.objects.get_or_create(
+                provider=provider,
+                service=service,
+                day_of_week=day,
+                defaults={"available_time":f"{start_time}-{end_time}"}
+            )
+
+            blocked_list = schedule.blocked_time or []
+            blocked_list.append({
+                "date":date,
+                "start":start_time,
+                "end":end_time
+            })
+            schedule.blocked_time = blocked_list
+            schedule.save()
+        return render('provider_dashboard')
+    
+    schedules = ProviderSchedule.objects.filter(provider=provider)
+    
+        
+    context = {
+        'provider':provider,
+        'services':services,
+        'categories':categories,
+        'schedule_dict':schedule_dict,
+        'days_of_week':DAYS_OF_WEEK
+    }
+
+    return render(request, 'provider_dashboard.html', context)
