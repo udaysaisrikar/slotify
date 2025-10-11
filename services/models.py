@@ -29,3 +29,4 @@ class ProviderSchedule(models.Model):
     available_time = models.CharField(max_length=20)
     booked_slots = models.JSONField(default=dict, blank=True) #JSON Object
     blocked_time = models.JSONField(default=list, blank=True)
+    

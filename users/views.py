@@ -317,14 +317,7 @@ def provider_dashboard(request):
     services = Services.objects.filter(provider_id=provider)
     categories = ServiceCategory.objects.all()
 
-    schedules = ProviderSchedule.objects.filter(provider=provider)
-    schedule_dict = {day :{"available_time":""} for day in DAYS_OF_WEEK}
-    for s in schedules:
-        schedule_dict[s.day_of_week] = {
-        "available_time": s.available_time,
-        "blocked_time": s.blocked_time,
-        "booked_slots": s.booked_slots
-    }
+    
 
     # ----------------
     # Handle Weekly Schedule
@@ -368,9 +361,11 @@ def provider_dashboard(request):
         provider = ServiceProvider.objects.get(provider_id=provider_id)
 
         day = request.POST.get("block_day")
-        date = request.POST.get("block_date")
+        # date = request.POST.get("block_date", "")
         start_time = request.POST.get("block_start")
         end_time = request.POST.get("block_end")
+        if not (day and start_time and end_time):
+            return redirect('provider_dashboard')
 
         # Apply block to all services of this provider
         services = Services.objects.filter(provider_id=provider_id)
@@ -385,16 +380,30 @@ def provider_dashboard(request):
 
             blocked_list = schedule.blocked_time or []
             blocked_list.append({
-                "date":date,
+                "day":day,
                 "start":start_time,
                 "end":end_time
             })
             schedule.blocked_time = blocked_list
             schedule.save()
-        return render('provider_dashboard')
+            
+        return redirect('provider_dashboard')
     
+    # ----------------
+    # Storing into schedule_dict
+    # ----------------
     schedules = ProviderSchedule.objects.filter(provider=provider)
-    
+    schedules = ProviderSchedule.objects.filter(provider=provider)
+    schedule_dict = {day :{"available_time":""} for day in DAYS_OF_WEEK}
+    for s in schedules:
+        start, end = s.available_time.split("-")
+        schedule_dict[s.day_of_week] = {
+        "available_time": s.available_time,
+        "start_time":start,
+        "end_time":end,
+        "blocked_time": s.blocked_time,
+        "booked_slots": s.booked_slots
+    }
         
     context = {
         'provider':provider,

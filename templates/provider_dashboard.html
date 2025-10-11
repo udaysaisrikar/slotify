@@ -925,13 +925,13 @@
                             type="time"
                             name="{{ day }}_start"
                             class="form-control form-control-sm"
-                            value="{% if schedule_dict.day %}{{ schedule_dict.day.available_time|slice:':5' }}{% else %}09:00{% endif %}"
+                            value="{{ schedule_dict.day.start_time|default:"09:00" }}"
                             />
                             <input
                             type="time"
                             name="{{ day }}_end"
                             class="form-control form-control-sm"
-                            value="{% if schedule_dict.day %}{{ schedule_dict.day.available_time|slice:'6:' }}{% else %}17:00{% endif %}"
+                            value="{{ schedule_dict.day.end_time|default:"17:00" }}"
                             />
                         </div>
                         </div>
@@ -2097,7 +2097,7 @@ Comprehensive health assessment and medical advice for various health concerns.<
               <button
                 type="submit"
                 class="btn btn-primary"
-                data-bs-dismiss="modal"
+                {% comment %} data-bs-dismiss="modal" {% endcomment %}
               >
                 Save Changes
               </button>
