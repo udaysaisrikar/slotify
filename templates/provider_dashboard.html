@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% load custom_tags %}
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -906,35 +907,36 @@
                         {% csrf_token %}
                         <input type="hidden" name="schedule_submit" value="1">
                         {% for day in days_of_week %}
-                        <div class="mb-3">
-                        <div
-                            class="d-flex justify-content-between align-items-center mb-2"
-                        >
-                            <span class="fw-semibold">{{ day }}</span>
-                            <label class="toggle-switch">
-                            <input type="checkbox" name="{{day}}_active"
-                            {% if schedule_dict.day %}
-                                {% if schedule_dict.day.available_time %}
-                             checked {% endif %}
-                            {% endif %}/>
-                            <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <input
-                            type="time"
-                            name="{{ day }}_start"
-                            class="form-control form-control-sm"
-                            value="{{ schedule_dict.day.start_time|default:"09:00" }}"
-                            />
-                            <input
-                            type="time"
-                            name="{{ day }}_end"
-                            class="form-control form-control-sm"
-                            value="{{ schedule_dict.day.end_time|default:"17:00" }}"
-                            />
-                        </div>
-                        </div>
+                          {% with schedule=schedule_dict|get_item:day %}
+                            <div class="mb-3">
+                            <div
+                                class="d-flex justify-content-between align-items-center mb-2"
+                            >
+                                <span class="fw-semibold">{{ day }}</span>
+                                <label class="toggle-switch">
+                                <input type="checkbox" name="{{day}}_active"
+                                {% if schedule.active %}
+                                checked 
+                                {% endif %}/>
+                                <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <input
+                                type="time"
+                                name="{{ day }}_start"
+                                class="form-control form-control-sm"
+                                value="{{ schedule.start_time|default:"09:00" }}"
+                                />
+                                <input
+                                type="time"
+                                name="{{ day }}_end"
+                                class="form-control form-control-sm"
+                                value="{{ schedule.end_time|default:"17:00" }}"
+                                />
+                            </div>
+                            </div>
+                          {% endwith %}
                         {% endfor %}
                     
                         <button type="submit" class="btn btn-primary w-100">Save Schedule</button>

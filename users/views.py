@@ -6,8 +6,11 @@ from services.models import ServiceCategory, Services
 from django.core.mail import send_mail
 from django.db import transaction
 from services.models import ProviderSchedule
+from datetime import datetime
 # Create your views here.
 
+def to_time(t):
+    return datetime.strptime(t, "%H:%M").time()
 
 def customer_dashboard(request):
     if 'customer_id' not in request.session:
@@ -287,7 +290,7 @@ def delete_account(request):
 
 
 # Provider Dashboard
-DAYS_OF_WEEK = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+DAYS_OF_WEEK = ["Monday","Tuesday", "Wednesday","Thursday","Friday","Saturday","Sunday"]
 def provider_dashboard(request):
     provider_id = request.session.get('provider_id')
     if not provider_id:
@@ -349,7 +352,7 @@ def provider_dashboard(request):
                         schedule.save()
                     except ProviderSchedule.DoesNotExist:
                         pass
-        
+        messages.success(request, "Your weekly schedule is updated successfully")
         return redirect('provider_dashboard')
     
 
@@ -361,7 +364,7 @@ def provider_dashboard(request):
         provider = ServiceProvider.objects.get(provider_id=provider_id)
 
         day = request.POST.get("block_day")
-        # date = request.POST.get("block_date", "")
+        date = request.POST.get("block_date", "")
         start_time = request.POST.get("block_start")
         end_time = request.POST.get("block_end")
         if not (day and start_time and end_time):
@@ -369,40 +372,60 @@ def provider_dashboard(request):
 
         # Apply block to all services of this provider
         services = Services.objects.filter(provider_id=provider_id)
-
+        success = False
         for service in services:
             schedule, created = ProviderSchedule.objects.get_or_create(
                 provider=provider,
                 service=service,
                 day_of_week=day,
-                defaults={"available_time":f"{start_time}-{end_time}"}
             )
+            # Validate block time lies within available time (if available)
+            if schedule.available_time:
+                avail_start_str, avail_end_str = schedule.available_time.split('-')
+                avail_start = to_time(avail_start_str)
+                avail_end = to_time(avail_end_str)
+                block_start = to_time(start_time)
+                block_end = to_time(end_time)
+                if not (avail_start <= block_start < avail_end and avail_start < block_end <= avail_end):
+                    messages.error(
+                        request,
+                        f"Blocked time ({block_start}-{block_end}) must be within your available hours ({avail_start}-{avail_end}) for {day}."
+                    )   
+                    break  # skip saving for this service    
+                # return redirect('provider_dashboard')
 
             blocked_list = schedule.blocked_time or []
             blocked_list.append({
-                "day":day,
+                "date":date,
                 "start":start_time,
                 "end":end_time
             })
+            
             schedule.blocked_time = blocked_list
             schedule.save()
-            
+            success = True
+        if success:
+            messages.success(request, f"Time blocked successfully for {day}")
         return redirect('provider_dashboard')
     
     # ----------------
     # Storing into schedule_dict
     # ----------------
     schedules = ProviderSchedule.objects.filter(provider=provider)
-    schedules = ProviderSchedule.objects.filter(provider=provider)
-    schedule_dict = {day :{"available_time":""} for day in DAYS_OF_WEEK}
+    schedule_dict = {day :{"available_time":"", "start_time": "09:00", "end_time": "17:00", "active": False} for day in DAYS_OF_WEEK}
     for s in schedules:
-        start, end = s.available_time.split("-")
+        if s.available_time:
+            try:
+                start, end = s.available_time.split("-")
+            except ValueError:
+                start, end = "09:00", "17:00"
         schedule_dict[s.day_of_week] = {
         "available_time": s.available_time,
         "start_time":start,
         "end_time":end,
         "blocked_time": s.blocked_time,
-        "booked_slots": s.booked_slots
+        "booked_slots": s.booked_slots,
+        "active":True,
     }
         
     context = {
