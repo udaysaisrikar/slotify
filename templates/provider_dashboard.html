@@ -1107,14 +1107,14 @@ Comprehensive health assessment and medical advice for various health concerns.<
                 </div>
               </div>
             </div>
-        </div>
+           <!-- <-- FIX: closes #services-section -->
 
-            <!--Customers section-->
-            <div
-              id="customers-section"
-              class="content-section"
-              style="display: none"
-            >
+          <!--Customers section-->
+          <div
+            id="customers-section"
+            class="content-section"
+            style="display: none"
+          >
               <div
                 class="d-flex justify-content-between align-items-center mb-4"
               >
@@ -1871,6 +1871,7 @@ Dr. Sarah Smith is a dedicated General Practitioner with over 15 years of experi
                 </div>
               </div>
             </div>
+        </div>
           </div>
         </div>
       </div>
@@ -1878,54 +1879,49 @@ Dr. Sarah Smith is a dedicated General Practitioner with over 15 years of experi
 
     <!-- Scripts -->
     <script>
-      // Initialize Lucide icons
-      lucide.createIcons();
+        // Initialize Lucide icons
+        lucide.createIcons();
 
-      // Dashboard navigation
-      document.addEventListener("DOMContentLoaded", function () {
-        const sidebarLinks = document.querySelectorAll(".sidebar-link");
-        const contentSections = document.querySelectorAll(".content-section");
+        // Dashboard navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const contentSections = document.querySelectorAll('.content-section');
 
-        sidebarLinks.forEach((link) => {
-          link.addEventListener("click", function (e) {
-            e.preventDefault();
-
-            // Remove active class from all links
-            sidebarLinks.forEach((l) => l.classList.remove("active"));
-
-            // Add active class to clicked link
-            this.classList.add("active");
-
-            // Hide all content sections
-            contentSections.forEach((section) => {
-              section.style.display = "none";
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Hide all content sections
+                    contentSections.forEach(section => {
+                        section.style.display = 'none';
+                    });
+                    
+                    // Show the selected section
+                        const targetSection = this.getAttribute('data-section');
+                        const targetElement = document.getElementById(targetSection + '-section');
+                        if (targetElement) {
+                            targetElement.style.display = '';
+                        }
+                    });
+                });
+    
+                // Toggle switches for availability
+                const toggleSwitches = document.querySelectorAll('.toggle-switch input');
+                toggleSwitches.forEach(toggle => {
+                    toggle.addEventListener('change', function() {
+                        const timeInputs = this.closest('.mb-3').querySelectorAll('input[type="time"]');
+                        timeInputs.forEach(input => {
+                            input.disabled = !this.checked;
+                        });
+                    });
+                });
             });
-
-            // Show the selected section
-            const targetSection = this.getAttribute("data-section");
-            const targetElement = document.getElementById(
-              targetSection + "-section"
-            );
-            if (targetElement) {
-              targetElement.style.display = "";
-            }
-          });
-        });
-
-        // Toggle switches for availability
-        const toggleSwitches = document.querySelectorAll(
-          ".toggle-switch input"
-        );
-        toggleSwitches.forEach((toggle) => {
-          toggle.addEventListener("change", function () {
-            const timeInputs =
-              this.closest(".mb-3").querySelectorAll('input[type="time"]');
-            timeInputs.forEach((input) => {
-              input.disabled = !this.checked;
-            });
-          });
-        });
-      });
     </script>
 
     <!-- Reschedule Modal (move outside dropdown for proper Bootstrap behavior) -->
@@ -2160,23 +2156,13 @@ Comprehensive health assessment and medical advice for various health concerns.<
 
     <!-- JS to auto-close offcanvas when link is clicked -->
     <script>
-      document
-        .querySelectorAll("#mobileSidebar .sidebar-link")
-        .forEach((link) => {
-          link.addEventListener("click", () => {
-            const offcanvasElement = document.getElementById("mobileSidebar");
-            const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
-            offcanvas.hide();
-          });
+        document.querySelectorAll('#mobileSidebar .sidebar-link').forEach(link => {
+            link.addEventListener('click', () => {
+                const offcanvasElement = document.getElementById('mobileSidebar');
+                const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                offcanvas.hide();
+            });
         });
     </script>
-
-    {% if messages %}
-    <script>
-      {% for message in messages %}
-      alert("{{ message }}")
-      {% endfor %}
-    </script>
-    {% endif %}
   </body>
 </html>
