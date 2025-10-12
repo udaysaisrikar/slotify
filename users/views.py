@@ -414,19 +414,30 @@ def provider_dashboard(request):
     schedules = ProviderSchedule.objects.filter(provider=provider)
     schedule_dict = {day :{"available_time":"", "start_time": "09:00", "end_time": "17:00", "active": False} for day in DAYS_OF_WEEK}
     for s in schedules:
+        start, end = "09:00", "17:00"
         if s.available_time:
+            active = True
             try:
                 start, end = s.available_time.split("-")
             except ValueError:
                 start, end = "09:00", "17:00"
-        schedule_dict[s.day_of_week] = {
-        "available_time": s.available_time,
-        "start_time":start,
-        "end_time":end,
-        "blocked_time": s.blocked_time,
-        "booked_slots": s.booked_slots,
-        "active":True,
-    }
+            schedule_dict[s.day_of_week] = {
+                "available_time": s.available_time,
+                "start_time":start,
+                "end_time":end,
+                "blocked_time": s.blocked_time,
+                "booked_slots": s.booked_slots,
+                "active":True,
+            }
+        else:
+            schedule_dict[s.day_of_week] = {
+                "available_time": "",
+                "start_time":start,
+                "end_time":end,
+                "blocked_time": [],
+                "booked_slots": s.booked_slots,
+                "active":False,
+            }
         
     context = {
         'provider':provider,
