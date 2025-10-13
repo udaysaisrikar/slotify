@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
 from .models import Customer, ServiceProvider
@@ -7,11 +7,15 @@ from django.core.mail import send_mail
 from django.db import transaction
 from services.models import ProviderSchedule
 from datetime import datetime
+from appointments.models import Appointments
+from django.views.decorators.http import require_POST
 # Create your views here.
+
 
 def to_time(t):
     return datetime.strptime(t, "%H:%M").time()
 
+# Customer Dashboard
 def customer_dashboard(request):
     if 'customer_id' not in request.session:
         return redirect('home')
@@ -315,7 +319,56 @@ def provider_dashboard(request):
                 category_id=category,
                 provider_id=provider,
             )
+            messages.success(request, "Service added Successfully!")
         return redirect('provider_dashboard')
+    
+
+
+    # ---------------
+    # Handle Edit Service
+    # ---------------
+    if request.method == "POST" and request.POST.get("action") == "edit_service":
+        provider_id = request.session.get('provider_id')
+        provider = ServiceProvider(provider_id=provider_id)
+
+        service_id = request.POST.get("service_id")
+        name = request.POST.get("name")
+        description = request.POST.get("description")
+        duration = request.POST.get("duration")
+
+        try:
+            service = Services.objects.get(service_id=service_id, provider_id=provider)
+            service.name = name
+            service.description = description
+            service.duration = duration
+            service.save()
+            messages.success(request, "Service Updated Successfully!")
+        except Services.DoesNotExist:
+            messages.error(request, "Service Not Found!")
+
+        return redirect('provider_dashboard')
+    
+
+
+    # ----------------
+    # Handle Delete Service
+    # ----------------
+    if request.method == "POST" and request.POST.get("action") == "delete_service":
+        provider_id = request.session.get('provider_id')
+        provider = ServiceProvider.objects.get(provider_id=provider_id)
+
+        service_id = request.POST.get("service_id")
+        try:
+            service = Services.objects.get(service_id=service_id, provider_id=provider)
+            service.delete()
+            messages.success(request, "Service deleted Successfully!")
+        except Services.DoesNotExist:
+            messages.error(request, "Service not found!")
+        
+        return redirect('provider_dashboard')
+    
+    
+    
     # Fetch all services added by this provider
     services = Services.objects.filter(provider_id=provider)
     categories = ServiceCategory.objects.all()
@@ -367,7 +420,9 @@ def provider_dashboard(request):
         date = request.POST.get("block_date", "")
         start_time = request.POST.get("block_start")
         end_time = request.POST.get("block_end")
+
         if not (day and start_time and end_time):
+            messages.error(request, "Incomplete block time data.")
             return redirect('provider_dashboard')
 
         # Apply block to all services of this provider
@@ -408,6 +463,180 @@ def provider_dashboard(request):
             messages.success(request, f"Time blocked successfully for {day}")
         return redirect('provider_dashboard')
     
+
+    # ----------------
+    # Appointment actions
+    # ----------------
+
+    # Accept Appointment
+    if request.method == "POST" and "accept_appointment" in request.POST:
+        appointment_id = request.POST.get("appointment_id")
+        try:
+            appointment = Appointments.objects.get(appointment_id=appointment_id, provider=provider)
+            service = appointment.service
+            appt_time = appointment.appointment_datetime
+            day = appt_time.strftime("%A")
+
+            # Save booked slot in schedule
+            schedule, _ = ProviderSchedule.objects.get_or_create(
+                provider=provider, service=service, day_of_week=day
+            )
+            booked_slots = schedule.booked_slots or {}
+            date_str = appt_time.strftime("%Y-%m-%d")
+            time_str = appt_time.strftime("%H:%M")
+            if date_str not in booked_slots:
+                booked_slots[date_str] = []
+            booked_slots[date_str].append(time_str)
+            schedule.booked_slots = booked_slots
+            schedule.save()
+
+            # Update appointment status
+            appointment.status = "Confirmed"
+            appointment.save()
+            messages.success(request, "Appointment accepted successfully.")
+        except Appointments.DoesNotExist:
+            messages.error(request, "Appointment not found.")
+        
+        return redirect('provider_dashboard')
+    
+    # Cancel Appointment
+    if request.method == "POST" and "cancel_appointment" in request.POST:
+        appointment_id = request.POST.get("appointment_id")
+        try:
+            appointment = Appointments.objects.get(appointment_id=appointment_id, provider=provider)
+            appointment.status = "Cancelled"
+            appointment.save()
+            messages.info(request, "Appointment cancelled successfully.")
+        except Appointments.DoesNotExist:
+            messages.error(request, "Appointment not found.")
+        return redirect('provider_dashboard')
+
+    # Reschedule Appointment
+    if request.method == "POST" and "reschedule_submit" in request.POST:
+        appointment_id = request.POST.get("appointment_id")
+        new_date = request.POST.get("reschedule_date")
+        new_time = request.POST.get("reschedule_time")
+
+        if not (appointment_id and new_date and new_time):
+            messages.error(request, "Incomplete reschedule data.")
+            return redirect('provider_dashboard')
+
+        try:
+            appointment = Appointments.objects.get(appointment_id=appointment_id, provider=provider)
+        except Appointments.DoesNotExist:
+            messages.error(request, "Appointment not found.")
+            return redirect('provider_dashboard')
+
+        # Keep old datetime to remove old booked slot later
+        old_dt = appointment.appointment_datetime
+        old_date_str = old_dt.strftime("%Y-%m-%d")
+        old_time_str = old_dt.strftime("%H:%M")
+        old_day = old_dt.strftime("%A")
+        service = appointment.service
+
+        # Parse new datetime and compute day/date strings
+        try:
+            new_dt = datetime.strptime(f"{new_date} {new_time}", "%Y-%m-%d %H:%M")
+        except ValueError:
+            messages.error(request, "Invalid date/time format.")
+            return redirect('provider_dashboard')
+
+        new_day = new_dt.strftime("%A")
+        new_date_str = new_dt.strftime("%Y-%m-%d")
+        new_time_str = new_dt.strftime("%H:%M")
+
+         # 1) Check provider availability for this service on new_day
+        schedule = ProviderSchedule.objects.filter(provider=provider, service=service, day_of_week=new_day).first()
+        if not schedule or not schedule.available_time:
+            messages.error(request, "Provider not available on selected day.")
+            return redirect('provider_dashboard')
+        
+        # 2) Validate within available_time
+        try:
+            avail_start_str, avail_end_str = schedule.available_time.split('-')
+            avail_start, avail_end = to_time(avail_start_str), to_time(avail_end_str)
+        except Exception:
+            messages.error(request, "Provider available_time format is invalid.")
+            return redirect('provider_dashboard')
+
+        if not (avail_start <= to_time(new_time_str) <= avail_end):
+            messages.error(request, "Selected time is outside provider's available hours.")
+            return redirect('provider_dashboard')
+        
+        # 3) Check blocked_time conflicts on target schedule
+        for blocked in schedule.blocked_time or []:
+            # blocked entries stored as dicts { "day":..., "start":..., "end":... }
+            b_start = blocked.get("start") or blocked.get("time")
+            b_end = blocked.get("end") or b_start
+            if b_start and b_end:
+                # if new_time falls inside any blocked interval -> deny
+                if b_start <= new_time_str <= b_end:
+                    messages.error(request, "Selected time is blocked by provider.")
+                    return redirect('provider_dashboard')
+
+         # 4) Check already booked slots on target schedule
+        booked_slots = schedule.booked_slots or {}
+        times_on_new_date = booked_slots.get(new_date_str, [])
+        # times_on_new_date may contain strings ("HH:MM") or dicts with time/appointment_id
+        def time_in_list(lst, t):
+            for item in lst:
+                if isinstance(item, str) and item == t:
+                    return True
+                if isinstance(item, dict) and (item.get("time") == t or str(item.get("appointment_id")) == str(appointment_id)):
+                    return True
+            return False
+        
+        if time_in_list(times_on_new_date, new_time_str):
+            messages.error(request, "Selected slot is already booked.")
+            return redirect('provider_dashboard')
+        
+        # 5) Remove old slot from old schedule's booked_slots (if it exists)
+        try:
+            old_schedule = ProviderSchedule.objects.filter(provider=provider, service=service, day_of_week=old_day).first()
+            if old_schedule:
+                old_bs = old_schedule.booked_slots or {}
+                if old_date_str in old_bs:
+                    new_list = []
+                    for item in old_bs[old_date_str]:
+                        # keep items that are not the old_time (handle string or dict)
+                        if isinstance(item, str):
+                            if item != old_time_str:
+                                new_list.append(item)
+                        elif isinstance(item, dict):
+                            # dict may include appointment_id or time
+                            if str(item.get("appointment_id")) != str(appointment_id) and item.get("time") != old_time_str:
+                                new_list.append(item)
+                    if new_list:
+                        old_bs[old_date_str] = new_list
+                    else:
+                        # remove the date key if no slots remain that date
+                        old_bs.pop(old_date_str, None)
+                    old_schedule.booked_slots = old_bs
+                    old_schedule.save()
+        except Exception:
+            # non-fatal; continue
+            pass
+
+         # 6) Add new slot to target schedule.booked_slots
+        booked_slots = schedule.booked_slots or {}
+        lst = booked_slots.get(new_date_str, [])
+        # append either time string or dict — keep format consistent with accept flow
+        # we'll append a dict with appointment_id and time to be robust
+        lst.append({"time": new_time_str, "appointment_id": appointment.appointment_id})
+        booked_slots[new_date_str] = lst
+        schedule.booked_slots = booked_slots
+        schedule.save()
+
+        # 7) Update appointment datetime & status
+        appointment.appointment_datetime = new_dt
+        appointment.status = "Pending"   # or keep Confirmed if you want auto-confirm
+        appointment.save()
+
+        messages.success(request, "Appointment rescheduled and booked successfully.")
+        return redirect('provider_dashboard')
+
+
+
     # ----------------
     # Storing into schedule_dict
     # ----------------
@@ -438,13 +667,29 @@ def provider_dashboard(request):
                 "booked_slots": s.booked_slots,
                 "active":False,
             }
+
+
+    # ---------------
+    # Handle Appointments Display
+    # ---------------
+    provider_id = request.session.get('provider_id')
+    provider = ServiceProvider.objects.get(provider_id=provider_id)
+    pending_appointments = Appointments.objects.filter(provider=provider, status='Pending').order_by('-appointment_datetime')
+    confirmed_appointments = Appointments.objects.filter(provider=provider, status='Confirmed').order_by('-appointment_datetime')
+    completed_appointments = Appointments.objects.filter(provider=provider, status='Completed').order_by('-appointment_datetime')
+    cancelled_appointments = Appointments.objects.filter(provider=provider, status='Cancelled').order_by('-appointment_datetime')
         
+    category = provider.category_name
     context = {
         'provider':provider,
         'services':services,
-        'categories':categories,
+        'category':category,
         'schedule_dict':schedule_dict,
-        'days_of_week':DAYS_OF_WEEK
+        'days_of_week':DAYS_OF_WEEK,
+        'pending_appointments':pending_appointments,
+        'confirmed_appointments':confirmed_appointments,
+        'completed_appointments':completed_appointments,
+        'cancelled_appointments':cancelled_appointments,
     }
 
     return render(request, 'provider_dashboard.html', context)
