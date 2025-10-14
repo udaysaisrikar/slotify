@@ -1843,8 +1843,8 @@
         </div>
     </div>
 
-    <!-- Appointment modal-->
-    <div class="modal fade appointment" aria-labelledby="appointment-modal-label" aria-hidden="true" tabindex="-1">
+     <!-- Appointment modal-->
+    <div class="modal fade appointment" id = 'appointmentModal' aria-labelledby="appointment-modal-label" aria-hidden="true" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
             <div class="modal-header modal-header-custom">
@@ -1853,6 +1853,26 @@
                     <i class="bi bi-calendar-heart me-2"></i>Book Your Appointment
                 </h4>
                 <p class="mb-0 opacity-90">Schedule your visit with (SP name)</p>
+                <script>
+                // Remove Next/Previous buttons at Summary and Success sections
+                document.addEventListener('DOMContentLoaded', function () {
+                    // Hide modal footer when summary or success is shown
+                    const summaryContent = document.getElementById('summaryContent');
+                    const successContent = document.getElementById('successContent');
+                    const modalFooter = document.getElementById('modalFooterNav');
+                    function hideFooterIfNeeded() {
+                        if (!modalFooter) return;
+                        if ((summaryContent && summaryContent.style.display !== 'none') ||
+                            (successContent && successContent.style.display !== 'none')) {
+                            modalFooter.style.display = 'none';
+                        }
+                    }
+                    // Observe changes to summary/success display
+                    const observer = new MutationObserver(hideFooterIfNeeded);
+                    if (summaryContent) observer.observe(summaryContent, { attributes: true, attributeFilter: ['style'] });
+                    if (successContent) observer.observe(successContent, { attributes: true, attributeFilter: ['style'] });
+                });
+                </script>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -1982,35 +2002,69 @@
                 </button>
                 </div>
             </div>
-            <script>
-            // Hide navigation buttons at summary and success steps
-            document.addEventListener('DOMContentLoaded', function () {
-                function updateFooterNavVisibility() {
-                const summaryContent = document.getElementById('summaryContent');
-                const successContent = document.getElementById('successContent');
-                const modalFooter = document.getElementById('modalFooterNav');
-                if (!modalFooter) return;
-                // Hide footer if summary or success is visible
-                if ((summaryContent && summaryContent.style.display !== 'none') ||
-                    (successContent && successContent.style.display !== 'none')) {
-                    modalFooter.style.display = 'none';
-                } else {
-                    modalFooter.style.display = '';
-                }
-                }
-                // Observe step-content changes
-                const observer = new MutationObserver(updateFooterNavVisibility);
-                ['summaryContent', 'successContent'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) observer.observe(el, { attributes: true, attributeFilter: ['style'] });
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            // Show only the section that matches the initially active sidebar link
+            const activeLink = document.querySelector('.sidebar-link.active');
+            if (activeLink) {
+                contentSections.forEach(section => section.style.display = 'none');
+                const targetSection = activeLink.getAttribute('data-section');
+                const targetElement = document.getElementById(targetSection + '-section');
+                if (targetElement) targetElement.style.display = 'block';
+            }
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e){
+                    e.preventDefault();
+
+                    //remove active class for all links
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+
+                    //add active to clicked link
+                    this.classList.add('active');
+
+                    //hide all content sections
+                    contentSections.forEach(section => {
+                        section.style.display = 'none';
+                    });
+
+                    //display selected section by activated link
+                    const targetSection = this.getAttribute('data-section');
+                    const targetElement = document.getElementById(targetSection + '-section');
+                    if(targetElement)
+                    {
+                        targetElement.style.display = 'block';
+                    }
                 });
-                // Initial check
-                updateFooterNavVisibility();
             });
-            </script>
-            </div>
-        </div>
-    </div>
+
+            // Limit date input in Book Appointment section
+            const bookDateInput = document.querySelector('#book-appointment-section input[type="date"]');
+            if (bookDateInput) {
+                const today = new Date();
+                const minDate = today.toISOString().split('T')[0];
+                const maxDateObj = new Date(today);
+                maxDateObj.setDate(today.getDate() + 3);
+                const maxDate = maxDateObj.toISOString().split('T')[0];
+                bookDateInput.min = minDate;
+                bookDateInput.max = maxDate;
+                bookDateInput.value = minDate; // Optionally set default value to today
+            }
+
+            // Profile Section: Restrict DOB to 13+ years only
+            const dobInput = document.querySelector('#profile-section input[type="date"]');
+            if (dobInput) {
+                const today = new Date();
+                const minYear = today.getFullYear() - 120; // reasonable lower bound
+                const maxDate = new Date(today.getFullYear() - 13, today.getMonth(), today.getDate());
+                dobInput.max = maxDate.toISOString().split('T')[0];
+                dobInput.min = new Date(minYear, 0, 1).toISOString().split('T')[0];
+            }
+        });
+    </script>
     <script>
     <!-- JS to auto-close offcanvas when link is clicked -->
         document.querySelectorAll('#mobileSidebar .sidebar-link').forEach(link => {
@@ -2019,6 +2073,249 @@
                 const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
                 offcanvas.hide();
             });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const stepIds = ['stepContent1', 'stepContent2', 'stepContent3', 'stepContent4'];
+            const contents = stepIds.map(id => document.getElementById(id)).filter(Boolean);
+            const steps = Array.from(document.querySelectorAll('.progress-step'));
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            let current = 0; // index into stepIds
+
+            function showStep(index) {
+                // clamp
+                index = Math.max(0, Math.min(index, stepIds.length - 1));
+                current = index;
+
+                // show/hide contents
+                contents.forEach((el, i) => {
+                    if (i === index) {
+                        el.style.display = '';
+                        el.classList.add('active');
+                    } else {
+                        el.style.display = 'none';
+                        el.classList.remove('active');
+                    }
+                });
+
+                // update progress indicators (replace number with check for completed)
+                steps.forEach((s, i) => {
+                    s.classList.remove('active', 'completed');
+                    // restore numeric label if previously replaced
+                    if (!s.dataset.number) s.dataset.number = s.textContent.trim();
+                    if (i < index) {
+                        s.classList.add('completed');
+                        s.innerHTML = '<i class="bi bi-check-lg"></i>';
+                    } else if (i === index) {
+                        s.classList.add('active');
+                        s.textContent = s.dataset.number;
+                    } else {
+                        s.textContent = s.dataset.number;
+                    }
+                });
+
+                // prev button visibility: hide on first step
+                if (prevBtn) prevBtn.style.display = index === 0 ? 'none' : '';
+
+                // next button label/icon (keep icon)
+                if (nextBtn) nextBtn.innerHTML = 'Next<i class="bi bi-arrow-right ms-2"></i>';
+                // update next enabled/disabled state for this step
+                if (typeof updateNextState === 'function') updateNextState();
+            }
+
+            // initialize to first step
+            showStep(0);
+
+            // Disable next by default until required input is provided for the current step
+            function updateNextState() {
+                if (!nextBtn) return;
+
+                // Step 0: service must be selected
+                if (current === 0) {
+                    const hasService = !!document.querySelector('.service-option.service-selected');
+                    nextBtn.disabled = !hasService;
+                    return;
+                }
+
+                // Step 1: date must be selected
+                if (current === 1) {
+                    const dateVal = document.getElementById('appointmentDate')?.value;
+                    nextBtn.disabled = !dateVal;
+                    return;
+                }
+
+                // Step 2: time must be selected
+                if (current === 2) {
+                    const hasTime = !!document.querySelector('.time-slot-btn.selected');
+                    nextBtn.disabled = !hasTime;
+                    return;
+                }
+
+                // Step 3 (notes) - optional, allow next
+                nextBtn.disabled = false;
+            }
+
+            // run initially
+            updateNextState();
+
+            // set appointment date min to today and max to today + 3 days
+            const appointmentDate = document.getElementById('appointmentDate');
+            if (appointmentDate) {
+                const today = new Date();
+                const maxDate = new Date();
+                maxDate.setDate(maxDate.getDate() + 3);
+
+                const format = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                appointmentDate.min = format(today);
+                appointmentDate.max = format(maxDate);
+                // default to today if empty
+                if (!appointmentDate.value) appointmentDate.value = appointmentDate.min;
+            }
+
+            // Service selection behavior (single selection) + keyboard support
+            const serviceButtons = document.querySelectorAll('.service-option');
+            serviceButtons.forEach(btn => {
+                // accessibility
+                btn.setAttribute('role', 'button');
+                btn.setAttribute('tabindex', '0');
+                btn.setAttribute('aria-pressed', 'false');
+
+                btn.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+
+                btn.addEventListener('click', function () {
+                    // remove selected class from all
+                    serviceButtons.forEach(b => {
+                        b.classList.remove('service-selected');
+                        b.setAttribute('aria-pressed', 'false');
+                    });
+                    // add to clicked
+                    this.classList.add('service-selected');
+                    this.setAttribute('aria-pressed', 'true');
+
+                    // update summary display if present
+                    const serviceName = this.querySelector('.fw-bold')?.textContent?.trim() || '';
+                    const summaryService = document.getElementById('summaryService');
+                    if (summaryService) summaryService.textContent = serviceName;
+                    // update nav state
+                    if (typeof updateNextState === 'function') updateNextState();
+                });
+            });
+
+            // Time slot selection (single selection) with keyboard support; skip unavailable
+            const timeButtons = document.querySelectorAll('.time-slot-btn');
+            const clickableTimeButtons = Array.from(timeButtons).filter(b => !b.classList.contains('unavailable'));
+            clickableTimeButtons.forEach(btn => {
+                btn.setAttribute('role', 'button');
+                btn.setAttribute('tabindex', '0');
+                btn.setAttribute('aria-pressed', btn.classList.contains('selected') ? 'true' : 'false');
+
+                btn.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+
+                btn.addEventListener('click', function () {
+                    // remove selected from all clickable time buttons
+                    clickableTimeButtons.forEach(b => {
+                        b.classList.remove('selected');
+                        b.setAttribute('aria-pressed', 'false');
+                    });
+                    // add to clicked
+                    this.classList.add('selected');
+                    this.setAttribute('aria-pressed', 'true');
+
+                    // update summary time if present
+                    const timeVal = this.getAttribute('data-time') || this.textContent.trim();
+                    const summaryTime = document.getElementById('summaryTime');
+                    if (summaryTime) summaryTime.textContent = timeVal;
+                    // update nav state
+                    if (typeof updateNextState === 'function') updateNextState();
+                });
+            });
+
+            // update next state when date changes
+            if (appointmentDate) appointmentDate.addEventListener('change', function () { if (typeof updateNextState === 'function') updateNextState(); });
+
+            // expose navigation functions to global scope so buttons can call them
+            window.nextStep = function () {
+                // if not on the last defined step, advance normally
+                if (current < stepIds.length - 1) {
+                    showStep(current + 1);
+                    return;
+                }
+
+                // if on the last step (additional notes), show summary-only view
+                const summaryContent = document.getElementById('summaryContent');
+                const modalFooter = document.querySelector('.modal-footer');
+                if (summaryContent) {
+                    // populate summary fields
+                    const selectedService = document.querySelector('.service-option.service-selected .fw-bold')?.textContent?.trim() || '-';
+                    const selectedTime = document.querySelector('.time-slot-btn.selected')?.getAttribute('data-time') || document.querySelector('.time-slot-btn.selected')?.textContent?.trim() || '-';
+                    const selectedDate = document.getElementById('appointmentDate')?.value || '-';
+                    const notes = document.getElementById('appointmentNotes')?.value || '-';
+
+                    document.getElementById('sumService').textContent = selectedService;
+                    document.getElementById('sumTime').textContent = selectedTime;
+                    document.getElementById('sumDate').textContent = selectedDate;
+                    document.getElementById('sumNotes').textContent = notes;
+
+                    // hide other step contents
+                    const allStepContents = document.querySelectorAll('.step-content');
+                    allStepContents.forEach(sc => sc.style.display = 'none');
+
+                    // show summary
+                    summaryContent.style.display = '';
+
+                    // hide modal footer (so only the Book button appears inside summary)
+                    if (modalFooter) modalFooter.style.display = 'none';
+                }
+            };
+
+            window.previousStep = function () {
+                if (current > 0) {
+                    showStep(current - 1);
+                }
+            };
+
+            // Book button handler (placeholder) - replace with real booking API call as needed
+            const bookBtn = document.getElementById('bookBtn');
+            if (bookBtn) {
+                bookBtn.addEventListener('click', function () {
+                    // Simulate booking success and show success content
+                    const summaryContent = document.getElementById('summaryContent');
+                    const successContent = document.getElementById('successContent');
+                    const modalFooter = document.querySelector('.modal-footer');
+                    if (summaryContent) summaryContent.style.display = 'none';
+                    if (modalFooter) modalFooter.style.display = 'none';
+                    if (successContent) successContent.style.display = '';
+
+                    // mark all progress steps as completed with check icons
+                    steps.forEach(s => {
+                        if (!s.dataset.number) s.dataset.number = s.textContent.trim();
+                        s.classList.add('completed');
+                        s.classList.remove('active');
+                        s.innerHTML = '<i class="bi bi-check-lg"></i>';
+                    });
+                });
+            }
+
+            // close success handler
+            const closeSuccessBtn = document.getElementById('closeSuccessBtn');
+            if (closeSuccessBtn) {
+                closeSuccessBtn.addEventListener('click', function () {
+                    // reload page to reset modal (or you can close the modal if implemented)
+                    location.reload();
+                });
+            }
         });
          
     </script>
