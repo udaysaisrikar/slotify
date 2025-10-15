@@ -4,8 +4,8 @@ from .models import Appointments
 
 @admin.register(Appointments)
 class AppointmentsAdmin(admin.ModelAdmin):
-    list_display = ('appointment_id', 'customer', 'provider', 'service', 'appointment_datetime', 'status', 'rating')
+    list_display = ('appointment_id', 'customer', 'provider', 'service', 'app_start_time', 'status', 'rating')
     search_fields = ('customer__first_name', 'provider__business_name', 'service__service_name')
-    list_filter = ('status', 'appointment_datetime')
+    list_filter = ('status', 'app_start_time')
 
     

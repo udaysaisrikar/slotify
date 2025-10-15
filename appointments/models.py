@@ -11,7 +11,8 @@ class Appointments(models.Model):
         ('Cancelled', 'Cancelled'),
     ]
     appointment_id = models.BigAutoField(primary_key=True)
-    appointment_datetime = models.DateTimeField()
+    app_start_time = models.DateTimeField()
+    app_end_time = models.DateTimeField(blank=True, null=True)
     cust_req = models.CharField(max_length=255, blank=True, null=True)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending')
 
