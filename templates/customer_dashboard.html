@@ -1770,6 +1770,7 @@ Write the review here (optional)</textarea
             }
         });
     </script>
+    <!-- To pass Provider Id -->
     <script>
       document.addEventListener("DOMContentLoaded", function() {
         const bookButton = document.querySelectorAll(".book-now-btn");
@@ -1793,6 +1794,46 @@ Write the review here (optional)</textarea
         });
       });
     </script>
+
+    <!-- To pass Selected Date and ProviderId and Display Time Slots -->
+    <script>
+        document.getElementById("appointmentDate").addEventListener("change", function () {
+            const selectedDate = this.value;
+            const providerId = "{{ selected_provider.provider_id|default:'' }}";
+            if (!selectedDate || !providerId) return;
+        
+            fetch("{% url 'get_time_slots' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({ appointment_date: selectedDate, provider_id: providerId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const slotContainer = document.querySelector(".time-slot-grid");
+                if (!slotContainer) return;
+                slotContainer.innerHTML = "";
+            
+                if (data.time_slots.length === 0) {
+                    slotContainer.innerHTML = '<p class="text-muted"> No available time slots for this date. </p>';
+                    return;
+                }
+              
+                data.time_slots.forEach(slot => {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "time-slot-btn" + (slot.available ? "" : " unavailable");
+                    btn.dataset.time = slot.time;
+                    btn.textContent = slot.time;
+                    slotContainer.appendChild(btn);
+                });
+            })
+            .catch(err => console.error("Error:", err));
+        });
+      </script>
+
     {% if messages %}
     <script>
       {% for message in messages %}

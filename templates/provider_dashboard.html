@@ -2420,7 +2420,7 @@ Dr. Sarah Smith is a dedicated General Practitioner with over 15 years of experi
                 <h4 class="fw-bold mb-2">
                     <i class="bi bi-calendar-heart me-2"></i>Book Your Appointment
                 </h4>
-                <p class="mb-0 opacity-90">Schedule your visit with (SP name)</p>
+                <p class="mb-0 opacity-90">Schedule your visit with {{ provider.name }}</p>
                 <script>
                 // Remove Next/Previous buttons at Summary and Success sections
                 document.addEventListener('DOMContentLoaded', function () {
@@ -2907,6 +2907,46 @@ Dr. Sarah Smith is a dedicated General Practitioner with over 15 years of experi
           document.getElementById('edit-service-duration').value = serviceDuration;
         });
       </script>
+
+      <!-- To pass Selected Date and Display Time Slots -->
+    <script>
+        document.getElementById("appointmentDate").addEventListener("change", function () {
+            const selectedDate = this.value;
+            const providerId = "{{ provider.provider_id|default:'' }}";
+            if (!selectedDate || !providerId) return;
+        
+            fetch("{% url 'get_time_slots' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({ appointment_date: selectedDate, provider_id: providerId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const slotContainer = document.querySelector(".time-slot-grid");
+                if (!slotContainer) return;
+                slotContainer.innerHTML = "";
+            
+                if (data.time_slots.length === 0) {
+                    slotContainer.innerHTML = '<p class="text-muted"> No available time slots for this date. </p>';
+                    return;
+                }
+              
+                data.time_slots.forEach(slot => {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "time-slot-btn" + (slot.available ? "" : " unavailable");
+                    btn.dataset.time = slot.time;
+                    btn.textContent = slot.time;
+                    slotContainer.appendChild(btn);
+                });
+            })
+            .catch(err => console.error("Error:", err));
+        });
+      </script>
+      
 
       {% if messages %}
       <script>

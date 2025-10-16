@@ -7,7 +7,9 @@ urlpatterns = [
     path('cus_signin/', views.customer_signin, name='cus_signin'),
     path('cus_logout/', views.customer_logout, name='cus_logout'),
     path('customer-dashboard/', views.customer_dashboard, name='customer_dashboard'),
-    path('set-selcted-provider/', views.set_selected_provider, name='set_selected_provider'),
+    path('set-selected-provider/', views.set_selected_provider, name='set_selected_provider'),
+    path('set-selected-date/', views.set_selected_date, name='set_selected_date'),
+    path('get-time-slots/', views.get_time_slots, name='get_time_slots'),
 
     # Service Provider
     path('sp_signup/', views.provider_signup, name='sp_signup'),
