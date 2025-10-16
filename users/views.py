@@ -9,11 +9,24 @@ from services.models import ProviderSchedule
 from datetime import datetime, timedelta, date
 from appointments.models import Appointments
 import json
+from django.http import JsonResponse
 # Create your views here.
 
 
 def to_time(t):
     return datetime.strptime(t, "%H:%M").time()
+
+
+def set_selected_provider(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        provider_id = data.get("provider_id")
+
+        request.session["selected_provider_id"] = provider_id
+        return JsonResponse({"message":"Provider stored in session"})
+    return JsonResponse({"error":"Invalid request"}, status=400)
+
+
 
 # Customer Dashboard
 def customer_dashboard(request):
@@ -46,44 +59,43 @@ def customer_dashboard(request):
     time_slots = []
     selected_date = None
     selected_provider = None
-    if request.method == "POST" and 'provider_id' in request.POST:
-        provider_id = request.POST.get("provider_id")
-        print("PID:", provider_id)
-        if provider_id:
-            selected_provider = get_object_or_404(ServiceProvider, provider_id=provider_id)
-            services = Services.objects.filter(provider_id=selected_provider)
-
-            # ----- Displaying time slots -----
-            selected_date = request.POST.get('appointment_date')
-            time_slots = []
-            if selected_date:
-                # find schedule by weekday
-                weekday = datetime.strptime(selected_date, "%Y-%m-%d").strftime("%A")
-                schedule = ProviderSchedule.objects.filter(provider=selected_provider, day_of_week=weekday).first()
-                if schedule and schedule.available_time:
-                    try:
-                        start_str, end_str = schedule.available_time.split("-")
-                        start = datetime.strptime(start_str, "%H:%M")
-                        end = datetime.strptime(end_str, "%H:%M")
-                        # Build all hourly slots
-                        while start < end:
-                            slot_time = start.strftime("%H:%M")
-                            time_slots.append(slot_time)
-                            start += timedelta(hours=1)
-                        
-                        # Get blocked or booked
-                        blocked_times = [b for b in schedule.blocked_time if b["date"] == selected_date]
-                        booked_for_date = schedule.booked_slots.get(selected_date, [])
-                        # Mark each slot
-                        for i, slot in enumerate(time_slots):
-                            is_blocked = any(b["start"] == slot for b in blocked_times)
-                            is_booked = slot in booked_for_date
-                            time_slots[i] = {
-                                "time":slot,
-                                "available":not (is_blocked or is_booked)
-                            }
-                    except Exception as e:
-                        print("Error:",e)
+    provider_id = request.session.get("selected_provider_id")
+    
+    print("PID:", provider_id)
+    if provider_id:
+        selected_provider = get_object_or_404(ServiceProvider, provider_id=provider_id)
+        services = Services.objects.filter(provider_id=selected_provider)
+        # ----- Displaying time slots -----
+        selected_date = request.POST.get('appointment_date')
+        time_slots = []
+        if selected_date:
+            # find schedule by weekday
+            weekday = datetime.strptime(selected_date, "%Y-%m-%d").strftime("%A")
+            schedule = ProviderSchedule.objects.filter(provider=selected_provider, day_of_week=weekday).first()
+            if schedule and schedule.available_time:
+                try:
+                    start_str, end_str = schedule.available_time.split("-")
+                    start = datetime.strptime(start_str, "%H:%M")
+                    end = datetime.strptime(end_str, "%H:%M")
+                    # Build all hourly slots
+                    while start < end:
+                        slot_time = start.strftime("%H:%M")
+                        time_slots.append(slot_time)
+                        start += timedelta(hours=1)
+                    
+                    # Get blocked or booked
+                    blocked_times = [b for b in schedule.blocked_time if b["date"] == selected_date]
+                    booked_for_date = schedule.booked_slots.get(selected_date, [])
+                    # Mark each slot
+                    for i, slot in enumerate(time_slots):
+                        is_blocked = any(b["start"] == slot for b in blocked_times)
+                        is_booked = slot in booked_for_date
+                        time_slots[i] = {
+                            "time":slot,
+                            "available":not (is_blocked or is_booked)
+                        }
+                except Exception as e:
+                    print("Error:",e)
 
     context = {
         'providers':providers,
@@ -391,7 +403,7 @@ def provider_dashboard(request):
 
         try:
             service = Services.objects.get(service_id=service_id, provider_id=provider)
-            service.name = name
+            service.service_name = name
             service.description = description
             service.duration = duration
             service.save()
@@ -472,9 +484,8 @@ def provider_dashboard(request):
         day = request.POST.get("block_day")
         date = request.POST.get("block_date", "")
         start_time = request.POST.get("block_start")
-        end_time = request.POST.get("block_end")
 
-        if not (day and start_time and end_time):
+        if not (day and start_time):
             messages.error(request, "Incomplete block time data.")
             return redirect('provider_dashboard')
 
@@ -493,20 +504,27 @@ def provider_dashboard(request):
                 avail_start = to_time(avail_start_str)
                 avail_end = to_time(avail_end_str)
                 block_start = to_time(start_time)
-                block_end = to_time(end_time)
-                if not (avail_start <= block_start < avail_end and avail_start < block_end <= avail_end):
+                if not (avail_start <= block_start < avail_end):
                     messages.error(
                         request,
-                        f"Blocked time ({block_start}-{block_end}) must be within your available hours ({avail_start}-{avail_end}) for {day}."
+                        f"Blocked time ({block_start}) must be within your available hours ({avail_start}-{avail_end}) for {day}."
                     )   
                     break  # skip saving for this service    
                 # return redirect('provider_dashboard')
 
             blocked_list = schedule.blocked_time or []
+            already_exists = any(
+                b["date"] == date and b["start"] == start_time
+                for b in blocked_list
+            )
+
+            if already_exists:
+                messages.warning(request, f"Time {start_time} on {day} is already blocked.")
+                break  # skip adding duplicate
+
             blocked_list.append({
                 "date":date,
                 "start":start_time,
-                "end":end_time
             })
             
             schedule.blocked_time = blocked_list
@@ -549,10 +567,10 @@ def provider_dashboard(request):
                         for b in schedule.blocked_time or []:
                             if b["date"] == selected_date:
                                 block_start = datetime.strptime(b["start"], "%H:%M")
-                                block_end = datetime.strptime(b["end"], "%H:%M")
+                                
                                 # Check if slot overlaps with blocked time
                                 print(block_start)
-                                if not (slot_end <= block_start or slot_st >= block_end):
+                                if not (slot_end <= block_start):
                                     available = False
                                     break
 

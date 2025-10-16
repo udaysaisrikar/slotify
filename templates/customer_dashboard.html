@@ -652,9 +652,6 @@
                         <span class="badge bg-light text-dark"
                           >{{provider.category_name}}</span
                         >
-                        <span class="badge bg-light text-dark"
-                          >Color Treatment</span
-                        >
                       </div>
                     </div>
                     <div class="col-md-3 mb-3 text-end">
@@ -662,9 +659,10 @@
                         <div class="status-available mb-3">Available</div>
                         <input type="hidden" name="provider_id" value="{{ provider.provider_id }}">
                         <button
-                            class="btn btn-primary" 
+                            class="btn btn-primary book-now-btn" 
                             data-bs-toggle="modal" 
                             data-bs-target="#appointmentModal"
+                            data-provider-id="{{ provider.provider_id }}"
                             >Book Now</button>
                         
                         <button
@@ -1090,29 +1088,33 @@
             ></button>
           </div>
           <div class="modal-body p-4">
+            {% if selected_provider %}
             <h5 class="fw-bold fs-5">Service Provider Title</h5>
             <div class="details-element">
               <span>Provider name: </span>
-              <span id="provider-name">Uday Sai Srikar</span>
+              <span id="provider-name">{{ selected_provider.name }}</span>
             </div>
             <div class="details-element">
               <span>Category: </span>
-              <span id="provider-category">IT & Technical support</span>
+              <span id="provider-category">{{ selected_provider.category_name }}</span>
             </div>
             <div class="details-element">
               <span>E-mail: </span>
-              <span id="provider-email">uday@gmail.com</span>
+              <span id="provider-email">{{ selected_provider.email_id }}</span>
             </div>
             <div class="details-element">
               <span>Phone: </span>
-              <span id="provider-phno">9618742368</span>
+              <span id="provider-phno">{{ selected_provider.phone_no }}</span>
             </div>
             <div class="details-element">
               <span>Address: </span>
-              <span id="provider-address">East Godavari-533343</span>
+              <span id="provider-address">{{ selected_provider.address }}</span>
             </div>
-            <button class="btn btn-secondary mt-3">View Services</button>
+            <br>
           </div>
+          {% else %}
+            <p class="text-muted"> No details found. </p>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -1295,7 +1297,11 @@ Write the review here (optional)</textarea
                 <h4 class="fw-bold mb-2">
                     <i class="bi bi-calendar-heart me-2"></i>Book Your Appointment
                 </h4>
-                <p class="mb-0 opacity-90">Schedule your visit with (SP name)</p>
+                {% if selected_provider %}
+                  <p class="mb-0 opacity-90">Schedule your visit with {{ selected_provider.name }} </p>
+                {% else %}
+                  <p class="mb-0 opacity-90">Schedule your visit with (SP Name) </p>
+                {% endif %}
                 <script>
                 // Remove Next/Previous buttons at Summary and Success sections
                 document.addEventListener('DOMContentLoaded', function () {
@@ -1332,6 +1338,7 @@ Write the review here (optional)</textarea
                 <div class="step-content active" id="stepContent1">
                 <div class="appointment-form-section">
                     <label class="form-label-custom">
+                      <input type="hidden" id="selectedProviderId" name="provider_d">
                     <i class="bi bi-briefcase"></i>Select Service
                     </label>
                     <div class="list-group" style="max-height: 220px; overflow-y: auto;">
@@ -1762,6 +1769,29 @@ Write the review here (optional)</textarea
                 });
             }
         });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const bookButton = document.querySelectorAll(".book-now-btn");
+        const providerIdInput = document.getElementById("selectedProviderId");
+        bookButton.forEach(btn => {
+          btn.addEventListener("click", function() {
+            const providerId = this.getAttribute("data-provider-id");
+            // Store locally
+            providerIdInput.value = providerId;
+
+            // Send to Django via AJAX 
+            fetch("{% url 'set_selected_provider' %}",{
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+              },
+              body: JSON.stringify({ provider_id: providerId })
+            });
+          });
+        });
+      });
     </script>
     {% if messages %}
     <script>

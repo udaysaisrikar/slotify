@@ -7,6 +7,7 @@ urlpatterns = [
     path('cus_signin/', views.customer_signin, name='cus_signin'),
     path('cus_logout/', views.customer_logout, name='cus_logout'),
     path('customer-dashboard/', views.customer_dashboard, name='customer_dashboard'),
+    path('set-selcted-provider/', views.set_selected_provider, name='set_selected_provider'),
 
     # Service Provider
     path('sp_signup/', views.provider_signup, name='sp_signup'),
