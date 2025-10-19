@@ -108,13 +108,65 @@ def customer_dashboard(request):
                 except Exception as e:
                     print("Error:",e)
 
+    # ----------------------
+    # Handle Cancellation
+    # ----------------------
+    if request.method == "POST" and "cancel_app" in request.POST:
+        appointment_id = request.POST.get("cancel_app")
+        try:
+            appointment = Appointments.objects.get(appointment_id=appointment_id, customer__customer_id=customer_id)
+            appointment.status = "Cancelled"
+            appointment.save()
+
+            # Update Booked slots
+            day_of_week = appointment.app_start_time.strftime("%A")
+            schedule = ProviderSchedule.objects.filter(provider=appointment.provider, service=appointment.service, day_of_week=day_of_week).first()
+            print(schedule)
+            if schedule:
+                booked_slots = schedule.booked_slots or {}
+                print("Book", booked_slots)
+                date_str = appointment.app_start_time.date().isoformat()
+                print("Date", date_str)
+                booked_for_date = schedule.booked_slots.get(date_str, [])
+                
+                booked_for_date = [
+                    b for b in booked_for_date
+                    if b["start"] != appointment.app_start_time.strftime("%H:%M") or 
+                        b["end"] != appointment.app_end_time.strftime("%H:%M")
+                ]
+                print("book", booked_for_date)
+                if booked_for_date:
+                    schedule.booked_slots[date_str] = booked_for_date
+                else:
+                    schedule.booked_slots.pop(date_str, None)
+
+                schedule.save()
+                messages.success(request, "Appointment Cancelled Successfully!")
+        except Appointments.DoesNotExist:
+            pass
+        return redirect('customer_dashboard')
+        
+
+    # -----------------------
+    # Fetching all Appointments of Customer
+    # -----------------------
+    appointments = Appointments.objects.filter(customer__customer_id = customer_id)
+
+    # Categorize by Status
+    upcoming = appointments.filter(status="Pending")
+    completed = appointments.filter(status='Completed')
+    cancelled = appointments.filter(status='Cancelled')
+
     context = {
         'providers':providers,
         'customer':customer,
         'services':services,
         'time_slots':time_slots,
         'selected_date':selected_date,
-        'selected_provider':selected_provider
+        'selected_provider':selected_provider,
+        'upcoming':upcoming,
+        'completed':completed,
+        'cancelled':cancelled
     }
 
     return render(request, 'customer_dashboard.html', context)
@@ -667,57 +719,51 @@ def get_time_slots(request):
         elif user_type == "provider":
             provider_id = request.session.get("provider_id")
 
+        selected_service_id= data.get("service_id")
+        selected_service = get_object_or_404(Services, service_id=selected_service_id)
         selected_date = data.get("appointment_date")
         print("📅 New date received:", selected_date, "for Provider:", provider_id)
 
         provider = get_object_or_404(ServiceProvider, provider_id=provider_id)
         weekday = datetime.strptime(selected_date, "%Y-%m-%d").strftime("%A")
-        schedules = ProviderSchedule.objects.filter(provider=provider, day_of_week=weekday)
+        schedule = ProviderSchedule.objects.filter(provider=provider, service=selected_service, day_of_week=weekday).first()
 
-        slot_map = {}
         time_slots = []
-        for schedule in schedules:
-            if schedule and schedule.available_time:
-                try:
-                    start_str, end_str = schedule.available_time.split("-")
-                    start = datetime.strptime(start_str, "%H:%M")
-                    end = datetime.strptime(end_str, "%H:%M")
+        if schedule and schedule.available_time:
+            try:
+                start_str, end_str = schedule.available_time.split("-")
+                start = datetime.strptime(start_str, "%H:%M")
+                end = datetime.strptime(end_str, "%H:%M")
+                while start < end:
+                    slot_time = start.strftime("%H:%M")
+                    slot_st = start
+                    slot_end = start + timedelta(minutes=int(schedule.service.duration))
+                    available = True
 
-                    while start < end:
-                        slot_time = start.strftime("%H:%M")
-                        slot_st = start
-                        slot_end = start + timedelta(minutes=schedule.service.duration)
-                        available = True
+                    # ---- Blocked times ----
+                    blocked_times = [b for b in schedule.blocked_time if b.get("date") == selected_date]
+                    for b in blocked_times:
+                        blocked_start = datetime.strptime(b["start"], "%H:%M")
+                        if slot_st == blocked_start:
+                            available = False
+                            break
 
-                        # Blocked times
-                        blocked_times = [b for b in schedule.blocked_time if b.get("date") == selected_date]
-                        for b in blocked_times:
-                            blocked_start = datetime.strptime(b["start"], "%H:%M")
-                            if slot_st == blocked_start:
-                                available = False
-                                break
+                    # ---- Booked times ----
+                    booked_for_date = schedule.booked_slots.get(selected_date, [])
+                    for booked in booked_for_date:
+                        booked_start = datetime.strptime(booked["start"], "%H:%M")
+                        booked_end = datetime.strptime(booked["end"], "%H:%M")
+                        # Overlap Check
+                        if not (slot_end <= booked_start or slot_st >= booked_end):
+                            available = False
+                            break
+                    time_slots.append({"time":slot_time, "available":available})
+                    
+                    start += timedelta(hours=1)
+            except Exception as e:
+                print("Error in get_time_slots:", e)
 
-                        # Booked times
-                        booked_for_date = schedule.booked_slots.get(selected_date, [])
-                        for booked in booked_for_date:
-                            booked_start = datetime.strptime(booked["start"], "%H:%M")
-                            booked_end = datetime.strptime(booked["end"], "%H:%M")
-                            # Overlap Check
-                            if not (slot_end <= booked_start or slot_st >= booked_end):
-                                available = False
-                                break
-
-                        if slot_time in slot_map:
-                            slot_map[slot_time] = slot_map[slot_time] and available
-                        else:
-                            slot_map[slot_time] = available
-                        
-                        start += timedelta(hours=1)
-
-                except Exception as e:
-                    print("Error in get_time_slots:", e)
-
-        time_slots = [{"time":t, "available":a} for t,a in sorted(slot_map.items())]
+        
         print(time_slots)
 
         return JsonResponse({"time_slots": time_slots})

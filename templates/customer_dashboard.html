@@ -700,9 +700,12 @@
                 <p>Manage your appointments and view history.</p>
               </div>
               <button class="btn btn-primary" 
-                data-bs-toggle="modal" 
-                data-bs-target="#appointmentModal">
-                <i class="bi bi-calendar-plus me-2"></i>Book New
+                data-bs-toggle="modal" >
+                <i class="bi bi-calendar-plus me-2"></i>
+                <span style="cursor: pointer"
+                    onclick="document.querySelector('[data-section=book-appointment]').click();">
+                     Book New
+                  </span>
               </button>
             </div>
 
@@ -715,7 +718,7 @@
                   data-bs-target="#upcoming"
                 >
                   Upcoming
-                  <span class="badge bg-primary rounded-pill ms-2">4</span>
+                  <span class="badge bg-primary rounded-pill ms-2">{{ upcoming|length }}</span>
                 </button>
               </li>
               <li class="nav-item">
@@ -725,7 +728,7 @@
                   data-bs-target="#completed"
                 >
                   Completed
-                  <span class="badge bg-secondary rounded-pill ms-2">8</span>
+                  <span class="badge bg-secondary rounded-pill ms-2">{{ completed|length }}</span>
                 </button>
               </li>
               <li class="nav-item">
@@ -735,7 +738,7 @@
                   data-bs-target="#cancelled"
                 >
                   Cancelled
-                  <span class="badge bg-danger rounded-pill ms-2">2</span>
+                  <span class="badge bg-danger rounded-pill ms-2">{{ cancelled|length }}</span>
                 </button>
               </li>
             </ul>
@@ -743,127 +746,177 @@
             <div class="tab-content">
               <!-- Upcoming Appointments -->
               <div class="tab-pane fade show active" id="upcoming">
-                <div class="appointment-card">
-                  <div class="row align-items-center">
-                    <div class="col-md-1">
-                      <div class="text-center">
-                        <div class="fw-bold text-primary">29</div>
-                        <div class="small text-muted">AUG</div>
+                {% if upcoming %}
+                  {% for app in upcoming %}
+                    <div class="appointment-card">
+                      <div class="row align-items-center">
+                        <div class="col-md-1">
+                          <div class="text-center">
+                            <div class="fw-bold text-primary">{{ app.app_start_time|date:"d" }}</div>
+                            <div class="small text-muted">{{ app.app_start_time|date:"M" }}</div>
+                          </div>
+                        </div>
+                        <div class="col-md-2">
+                          <i
+                            class="bi bi-person-circle"
+                            style="font-size: 2rem"
+                          ></i>
+                        </div>
+                        <div class="col-md-5">
+                          <h6 class="fw-semibold mb-1">{{ app.provider.name }}</h6>
+                          <p class="text-muted small mb-1">{{ app.service.service_name }}</p>
+                          <p class="small mb-0">
+                            <i class="bi bi-clock me-1"></i>{{ app.app_start_time|time:"H:i" }} - {{ app.app_end_time|time:"H:i" }}<br />
+                            <i class="bi bi-geo-alt me-1"></i> {{ app.provider.address }}
+                          </p>
+                        </div>
+                        <div class="col-md-2 text-center">
+                          <span class="appointment-status status-confirmed"
+                            >{{ app.status }}</span
+                          >
+                        </div>
+                        <div class="col-md-2 text-end">
+                          <div class="dropdown">
+                            <button
+                              class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                              type="button"
+                              data-bs-toggle="dropdown"
+                            >
+                              Actions
+                            </button>
+                            <ul class="dropdown-menu">
+                              <li>
+                                <a
+                                  class="dropdown-item"
+                                  href="#"
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#provider-modal"
+                                  ><i class="bi bi-eye me-2"></i>View Details</a
+                                >
+                              </li>
+                              <li>
+                                <button
+                                  class="dropdown-item"
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#rescheduleModal"
+                                  data-appointment-id="{{ app.appointment_id }}"
+                                  ><i class="bi bi-calendar me-2"></i>Reschedule</button
+                                >
+                              </li>
+                              <li><hr class="dropdown-divider" /></li>
+                              <li>
+                                <form method="POST" style="display:inline;">
+                                  {% csrf_token %}
+                                  <input type="hidden" name="cancel_app" value="{{ app.appointment_id }}">
+                                  <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>Cancel
+                                  </button>
+                                </form>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div class="col-md-2">
-                      <i
-                        class="bi bi-person-circle"
-                        style="font-size: 2rem"
-                      ></i>
-                    </div>
-                    <div class="col-md-5">
-                      <h6 class="fw-semibold mb-1">Dr. Sarah Smith</h6>
-                      <p class="text-muted small mb-1">General Consultation</p>
-                      <p class="small mb-0">
-                        <i class="bi bi-clock me-1"></i>3:00 PM - 3:30 PM<br />
-                        <i class="bi bi-geo-alt me-1"></i>Downtown Medical
-                        Center
-                      </p>
-                    </div>
-                    <div class="col-md-2 text-center">
-                      <span class="appointment-status status-confirmed"
-                        >Confirmed</span
-                      >
-                    </div>
-                    <div class="col-md-2 text-end">
-                      <div class="dropdown">
-                        <button
-                          class="btn btn-outline-secondary btn-sm dropdown-toggle"
-                          type="button"
-                          data-bs-toggle="dropdown"
-                        >
-                          Actions
-                        </button>
-                        <ul class="dropdown-menu">
-                          <li>
-                            <a
-                              class="dropdown-item"
-                              href="#"
-                              data-bs-toggle="modal"
-                              data-bs-target="#provider-modal"
-                              ><i class="bi bi-eye me-2"></i>View Details</a
-                            >
-                          </li>
-                          <li>
-                            <a
-                              class="dropdown-item"
-                              href="#"
-                              data-bs-toggle="modal"
-                              data-bs-target="#rescheduleModal"
-                              ><i class="bi bi-calendar me-2"></i>Reschedule</a
-                            >
-                          </li>
-                          <li><hr class="dropdown-divider" /></li>
-                          <li>
-                            <a class="dropdown-item text-danger" href="#"
-                              ><i class="bi bi-x-circle me-2"></i>Cancel</a
-                            >
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="text-center py-5">
+                    <i class="bi bi-calendar-check display-4 text-muted mb-3"></i>
+                    <h5 class="text-muted">No upcoming appointments</h5>
+                    <p class="text-muted">Book your first appointment today!</p>
                   </div>
-                </div>
+                {% endif %}
               </div>
 
               <!-- Completed Appointments -->
               <div class="tab-pane fade" id="completed">
-                <div class="appointment-card">
-                  <div class="row align-items-center">
-                    <div class="col-md-1">
-                      <div class="text-center">
-                        <div class="fw-bold text-muted">28</div>
-                        <div class="small text-muted">JUL</div>
+                {% if completed %}
+                  {% for app in completed %}
+                    <div class="appointment-card">
+                      <div class="row align-items-center">
+                        <div class="col-md-1">
+                          <div class="text-center">
+                            <div class="fw-bold text-muted">{{ app.app_start_time|date:"d" }}</div>
+                            <div class="small text-muted">{{ app.app_start_time|date:"M" }}</div>
+                          </div>
+                        </div>
+                        <div class="col-md-2">
+                          <i
+                            class="bi bi-person-circle"
+                            style="font-size: 2rem"
+                          ></i>
+                        </div>
+                        <div class="col-md-5">
+                          <h6 class="fw-semibold mb-1">{{ app.provider.name }}</h6>
+                          <p class="text-muted small mb-1">{{ app.service.service_name }}</p>
+                          <p class="small mb-0">
+                            <i class="bi bi-clock me-1"></i>{{ app.app_start_time|time:"H:i" }} - {{ app.app_end_time|time:"H:i" }}<br />
+                            <i class="bi bi-geo-alt me-1"></i>{{ app.provider.address }}
+                          </p>
+                        </div>
+                        <div class="col-md-2 text-center">
+                          <span class="appointment-status status-completed"
+                            >Completed</span
+                          >
+                        </div>
+                        <div class="col-md-2 text-end">
+                          <div class="dropdown">
+                            <button
+                              class="btn btn-outline-secondary btn-sm"
+                              type="button"
+                              data-bs-toggle="modal"
+                              data-bs-target="#rate-review-Modal"
+                            >
+                              Rate & Review
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div class="col-md-2">
-                      <i
-                        class="bi bi-person-circle"
-                        style="font-size: 2rem"
-                      ></i>
-                    </div>
-                    <div class="col-md-5">
-                      <h6 class="fw-semibold mb-1">Lisa Anderson</h6>
-                      <p class="text-muted small mb-1">Hair Styling</p>
-                      <p class="small mb-0">
-                        <i class="bi bi-clock me-1"></i>2:00 PM - 3:30 PM<br />
-                        <i class="bi bi-geo-alt me-1"></i>Glamour Salon
-                      </p>
-                    </div>
-                    <div class="col-md-2 text-center">
-                      <span class="appointment-status status-completed"
-                        >Completed</span
-                      >
-                    </div>
-                    <div class="col-md-2 text-end">
-                      <div class="dropdown">
-                        <button
-                          class="btn btn-outline-secondary btn-sm"
-                          type="button"
-                          data-bs-toggle="modal"
-                          data-bs-target="#rate-review-Modal"
-                        >
-                          Rate & Review
-                        </button>
-                      </div>
-                    </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="text-center py-5">
+                    <i class="bi bi-calendar-check display-4 text-muted mb-3"></i>
+                    <h5 class="text-muted">No completed appointments</h5>
+                    <p class="text-muted">Book more appointments to see them here.</p>
                   </div>
-                </div>
+                {% endif %}
               </div>
 
               <!-- Cancelled Appointments -->
               <div class="tab-pane fade" id="cancelled">
-                <div class="text-center py-5">
-                  <i class="bi bi-calendar-x display-4 text-muted mb-3"></i>
-                  <h5 class="text-muted">No cancelled appointments</h5>
-                  <p class="text-muted">Keep up the good work!</p>
-                </div>
+                {% if cancelled %}
+                  {% for app in cancelled %}
+                    <div class="appointment-card">
+                      <div class="row align-items-center">
+                        <div class="col-md-1 text-center">
+                            <div class="fw-bold text-danger">{{ app.app_start_time|date:"d" }}</div>
+                            <div class="small text-muted">{{ app.app_start_time|date:"M" }}</div>
+                        </div>
+                        <div class="col-md-2">
+                            <i class="bi bi-person-circle" style="font-size: 2rem"></i>
+                        </div>
+                        <div class="col-md-5">
+                          <h6 class="fw-semibold mb-1">{{ app.provider.name }}</h6>
+                          <p class="text-muted small mb-1">{{ app.service.service_name }}</p>
+                          <p class="small mb-0">
+                          <i class="bi bi-clock me-1"></i>{{ app.app_start_time|time:"H:i" }} - {{ app.app_end_time|time:"H:i" }}<br />
+                              <i class="bi bi-geo-alt me-1"></i>{{ app.provider.address }}
+                          </p>
+                        </div>
+                        <div class="col-md-2 text-center">
+                          <span class="appointment-status status-cancelled">Cancelled</span>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="text-center py-5">
+                    <i class="bi bi-calendar-x display-4 text-muted mb-3"></i>
+                    <h5 class="text-muted">No cancelled appointments</h5>
+                    <p class="text-muted">Keep up the good work!</p>
+                  </div>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -1129,7 +1182,8 @@
     >
       <div class="modal-dialog">
         <div class="modal-content">
-          <form>
+          <form method="POST" action="{% url 'reschedule_app' %}">
+            {% csrf_token %}
             <div class="modal-header">
               <h5 class="modal-title" id="rescheduleModalLabel">
                 Reschedule Appointment
@@ -1142,11 +1196,13 @@
               ></button>
             </div>
             <div class="modal-body">
+              <input type="hidden" name="appointment_id" id="appointment-id-input">
               <div class="mb-3">
                 <label for="reschedule-date" class="form-label">Date</label>
                 <input
                   type="date"
                   class="form-control"
+                  name="reschedule_date"
                   id="reschedule-date"
                   required
                 />
@@ -1156,6 +1212,7 @@
                 <input
                   type="time"
                   class="form-control"
+                  name="reschedule_time"
                   id="reschedule-time"
                   required
                 />
@@ -1163,9 +1220,9 @@
             </div>
             <div class="modal-footer">
               <button
-                type="button"
+                type="submit"
                 class="btn btn-primary"
-                data-bs-dismiss="modal"
+                
               >
                 Save Changes
               </button>
@@ -1859,7 +1916,7 @@ Write the review here (optional)</textarea
                           "Content-Type": "application/json",
                           "X-CSRFToken": "{{ csrf_token }}"
                       },
-                      body: JSON.stringify({ appointment_date: selectedDate, provider_id: providerId })
+                      body: JSON.stringify({ appointment_date: selectedDate, provider_id: providerId, service_id: selectedServiceId })
                   })
                   .then(res => res.json())
                   .then(data => {
@@ -2001,6 +2058,17 @@ Write the review here (optional)</textarea
       });
       </script>
 
+      <!-- To pass Appointment ID -->
+       <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const modal = document.getElementById('rescheduleModal');
+          modal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const appointmentId = button.getAttribute('data-appointment-id');
+            modal.querySelector('#appointment-id-input').value = appointmentId;
+          });
+        });
+       </script>
 
 
 
