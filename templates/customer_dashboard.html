@@ -766,7 +766,7 @@
                           <h6 class="fw-semibold mb-1">{{ app.provider.name }}</h6>
                           <p class="text-muted small mb-1">{{ app.service.service_name }}</p>
                           <p class="small mb-0">
-                            <i class="bi bi-clock me-1"></i>{{ app.app_start_time|time:"H:i" }} - {{ app.app_end_time|time:"H:i" }}<br />
+                            <i class="bi bi-clock me-1"></i>{{ app.app_start_time|time:"H:i A" }} - {{ app.app_end_time|time:"H:i A" }}<br />
                             <i class="bi bi-geo-alt me-1"></i> {{ app.provider.address }}
                           </p>
                         </div>
@@ -866,6 +866,7 @@
                               type="button"
                               data-bs-toggle="modal"
                               data-bs-target="#rate-review-Modal"
+                              data-appointment-id="{{ app.appointment_id }}"
                             >
                               Rate & Review
                             </button>
@@ -1242,7 +1243,9 @@
     >
       <div class="modal-dialog">
         <div class="modal-content">
-          <form>
+          <form method="POST" action="{% url 'review_rating' %}">
+            {% csrf_token %}
+            <input type="hidden" id="appointment-id-input" name="appointment_id" >
             <div class="modal-header">
               <h5 class="modal-title" id="rateModalLabel">Rate and Review</h5>
               <button
@@ -1256,51 +1259,17 @@
               <div class="mb-3">
                 <label class="form-label">Rating</label>
                 <div class="rating" style="font-size: 1.5rem">
-                  <input
-                    type="radio"
-                    class="btn-check"
-                    name="rating"
-                    id="star1"
-                    autocomplete="off"
-                    value="1"
-                  />
-                  <label class="bi bi-star text-warning" for="star1"></label>
-                  <input
-                    type="radio"
-                    class="btn-check"
-                    name="rating"
-                    id="star2"
-                    autocomplete="off"
-                    value="2"
-                  />
-                  <label class="bi bi-star text-warning" for="star2"></label>
-                  <input
-                    type="radio"
-                    class="btn-check"
-                    name="rating"
-                    id="star3"
-                    autocomplete="off"
-                    value="3"
-                  />
-                  <label class="bi bi-star text-warning" for="star3"></label>
-                  <input
-                    type="radio"
-                    class="btn-check"
-                    name="rating"
-                    id="star4"
-                    autocomplete="off"
-                    value="4"
-                  />
-                  <label class="bi bi-star text-warning" for="star4"></label>
-                  <input
-                    type="radio"
-                    class="btn-check"
-                    name="rating"
-                    id="star5"
-                    autocomplete="off"
-                    value="5"
-                  />
-                  <label class="bi bi-star text-warning" for="star5"></label>
+                  {% for i in "12345" %}
+                    <input
+                      type="radio"
+                      class="btn-check"
+                      name="rating"
+                      id="star{{ i }}"
+                      autocomplete="off"
+                      value="{{ i }}"
+                    />
+                    <label class="bi bi-star text-warning" for="star{{ i }}"></label>
+                  {% endfor %}
                   <script>
                     document
                       .querySelectorAll('input[name="rating"]')
@@ -1325,17 +1294,21 @@
                 </div>
               </div>
               <div class="mb-3">
-                <label class="form-label">Review</label>
-                <textarea class="form-control" rows="3">
-Write the review here (optional)</textarea
-                >
+                <label class="form-label">Review (Optional)</label>
+                <textarea 
+                  class="form-control" 
+                  rows="3"   
+                  name="comments"
+                  >
+                  
+              </textarea>
               </div>
             </div>
             <div class="modal-footer">
               <button
-                type="button"
+                type="submit"
                 class="btn btn-primary"
-                data-bs-dismiss="modal"
+                
               >
                 Submit review
               </button>
@@ -1859,9 +1832,6 @@ Write the review here (optional)</textarea
           let selectedServiceId = null;
           let selectedTime = null;
 
-          
-      
-
           // --- Service selection (single select) ---
           document.querySelectorAll(".service-option").forEach(btn => {
               btn.addEventListener("click", function () {
@@ -2062,6 +2032,16 @@ Write the review here (optional)</textarea
        <script>
         document.addEventListener('DOMContentLoaded', function() {
           const modal = document.getElementById('rescheduleModal');
+          modal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const appointmentId = button.getAttribute('data-appointment-id');
+            modal.querySelector('#appointment-id-input').value = appointmentId;
+          });
+        });
+       </script>
+       <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const modal = document.getElementById('rate-review-Modal');
           modal.addEventListener('show.bs.modal', function(event) {
             const button = event.relatedTarget;
             const appointmentId = button.getAttribute('data-appointment-id');

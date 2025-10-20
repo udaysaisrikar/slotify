@@ -1209,7 +1209,7 @@
             </div>
             <div class="row">
               <div class="col-lg-8">
-                {% for service in services %}
+                {% for service in all_services %}
                 <div class="service-item">
                   <div class="d-flex justify-content-between align-items-start">
                     <div>
@@ -1415,19 +1415,23 @@ Comprehensive health assessment and medical advice for various health concerns.<
                       </select>
                     </div>
                   </div>
-
+                  {% for customer in all_customers %}
                   <div class="appointment-card">
                     <div class="row align-items-center">
                       <div class="col-md-4">
-                        <h6 class="fw-semibold mb-1">Customer-1</h6>
-                        <p class="small mb-0">
-                          <i class="bi bi-calendar me-1"></i>Last visit: July
-                          28, 2025
-                        </p>
+                        <h6 class="fw-semibold mb-1">{{ customer.first_name }} {{ customer.last_name }}</h6>
+                          <p class="small mb-0">
+                            <i class="bi bi-calendar me-1"></i>Last visit: 
+                            {% if customer.last_visit %}
+                              {{ customer.last_visit }}
+                            {% else %}
+                              No visits Yet
+                            {% endif %}
+                          </p>
                       </div>
                       <div class="col-md-3">
                         <div class="text-center">
-                          <div class="fw-bold text-primary">12</div>
+                          <div class="fw-bold text-primary">{{ customer.total_visits }}</div>
                           <small class="text-muted">Total Visits</small>
                         </div>
                       </div>
@@ -1451,7 +1455,11 @@ Comprehensive health assessment and medical advice for various health concerns.<
                               >
                             </li>
                             <li>
-                              <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target=".appointment"
+                              <a class="dropdown-item book-customer-btn" 
+                                  href="#" 
+                                  data-bs-toggle="modal" 
+                                  data-bs-target=".appointment"
+                                  data-customer-id="{{ customer.customer_id }}"
                                 ><i class="bi bi-calendar-plus me-2"></i>Book
                                 Appointment</a
                               >
@@ -1461,6 +1469,7 @@ Comprehensive health assessment and medical advice for various health concerns.<
                       </div>
                     </div>
                   </div>
+                  {% endfor %}
                 </div>
 
                 <div class="col-lg-4">
@@ -2194,10 +2203,8 @@ Dr. Sarah Smith is a dedicated General Practitioner with over 15 years of experi
     >
       <div class="modal-dialog">
         <div class="modal-content">
-          <form method="POST" action="{% url 'provider_dashboard' %}">
+          <form method="POST" action="{% url 'reschedule_app' %}">
             {% csrf_token %}
-            <input type="hidden" name="appointment_id" id="reschedule-appointment-id">
-            <input type="hidden" name="reschedule_appointment" value="1">
             <div class="modal-header">
               <h5 class="modal-title" id="rescheduleModalLabel">
                 Reschedule Appointment
@@ -2210,6 +2217,7 @@ Dr. Sarah Smith is a dedicated General Practitioner with over 15 years of experi
               ></button>
             </div>
             <div class="modal-body">
+              <input type="hidden" name="appointment_id" id="appointment-id-input">
               <div class="mb-3">
                 <label for="reschedule-date" class="form-label">Date</label>
                 <input
@@ -2235,7 +2243,6 @@ Dr. Sarah Smith is a dedicated General Practitioner with over 15 years of experi
               <button
                 type="submit"
                 class="btn btn-primary"
-                data-bs-dismiss="modal"
               >
                 Save Changes
               </button>
@@ -2462,7 +2469,8 @@ Dr. Sarah Smith is a dedicated General Practitioner with over 15 years of experi
                     <div class="list-group" style="max-height: 220px; overflow-y: auto;">
                       {% if services_book %}
                         {% for service in services_book %} 
-                          <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center service-option">
+                          <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center service-option"
+                                    data-service-id="{{ service.service_id }}">
                               <div>
                               <span class="fw-bold">{{ service.service_name }}</span>
                               <div class="text-muted small">{{ service.description|default:"No Description Available"|truncatewords:8 }}</div>
@@ -2882,14 +2890,6 @@ Dr. Sarah Smith is a dedicated General Practitioner with over 15 years of experi
             }
         });
     </script>
-    <!-- JS to pass Appointment ID -->
-    <script>
-      document.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget;
-        const appointmentId = button.getAttribute('data-appointment-id');
-        document.getElementById('reschedule-appointment-id').value = appointmentId;
-      });
-    </script>
 
     <!-- For Edit Modal -->
       <script>
@@ -2908,46 +2908,230 @@ Dr. Sarah Smith is a dedicated General Practitioner with over 15 years of experi
         });
       </script>
 
-      <!-- To pass Selected Date and Display Time Slots -->
+      <!-- To pass Selected Date and ProviderId and Display Time Slots -->
     <script>
-        document.getElementById("appointmentDate").addEventListener("change", function () {
-            const selectedDate = this.value;
-            const providerId = "{{ provider.provider_id|default:'' }}";
-            if (!selectedDate || !providerId) return;
-        
-            fetch("{% url 'get_time_slots' %}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": "{{ csrf_token }}"
-                },
-                body: JSON.stringify({ appointment_date: selectedDate, provider_id: providerId })
-            })
-            .then(res => res.json())
-            .then(data => {
-                const slotContainer = document.querySelector(".time-slot-grid");
-                if (!slotContainer) return;
-                slotContainer.innerHTML = "";
-            
-                if (data.time_slots.length === 0) {
-                    slotContainer.innerHTML = '<p class="text-muted"> No available time slots for this date. </p>';
-                    return;
-                }
-              
-                data.time_slots.forEach(slot => {
-                    const btn = document.createElement("button");
-                    btn.type = "button";
-                    btn.className = "time-slot-btn" + (slot.available ? "" : " unavailable");
-                    btn.dataset.time = slot.time;
-                    btn.textContent = slot.time;
-                    slotContainer.appendChild(btn);
-                });
-            })
-            .catch(err => console.error("Error:", err));
-        });
-      </script>
-      
+      document.addEventListener("DOMContentLoaded", function () {
+          let selectedServiceId = null;
+          let selectedTime = null;
+          let selectedCustomerId = null;
 
+          // --- Service selection (single select) ---
+          document.querySelectorAll(".service-option").forEach(btn => {
+              btn.addEventListener("click", function () {
+                  // remove selection from all
+                  document.querySelectorAll(".service-option").forEach(b => b.classList.remove("service-selected"));
+                  this.classList.add("service-selected");
+
+                  selectedServiceId = this.dataset.serviceId;
+                  console.log("Service:", selectedServiceId);
+                  // optional: update summary
+                  const serviceName = this.querySelector('.fw-bold')?.textContent || '';
+                  const summaryService = document.getElementById('sumService');
+                  if (summaryService) summaryService.textContent = serviceName;
+
+                  if (typeof updateNextState === 'function') updateNextState();
+              });
+          });
+
+          // --- Time slot selection (event delegation) ---
+          const slotContainer = document.querySelector(".time-slot-grid");
+          if (slotContainer) {
+              slotContainer.addEventListener("click", function (e) {
+                  if (e.target.classList.contains("time-slot-btn") && !e.target.classList.contains("unavailable")) {
+                      // remove previous selection
+                      slotContainer.querySelectorAll(".time-slot-btn").forEach(b => b.classList.remove("selected"));
+
+                      // mark clicked
+                      e.target.classList.add("selected");
+                      selectedTime = e.target.dataset.time;
+
+                      // optional: update summary
+                      const summaryTime = document.getElementById('sumTime');
+                      if (summaryTime) summaryTime.textContent = selectedTime;
+
+                      if (typeof updateNextState === 'function') updateNextState();
+                  }
+              });
+          }
+
+          // --- Fetch new time slots when date changes ---
+          const appointmentDate = document.getElementById("appointmentDate");
+          if (appointmentDate) {
+              appointmentDate.addEventListener("change", function () {
+                  const selectedDate = this.value;
+                  const providerId = "{{ provider.provider_id|default:'' }}";
+                  console.log("Date1:", selectedDate); 
+                  console.log("ID:", providerId);
+                  if (!selectedDate || !providerId) return;
+
+                  fetch("{% url 'get_time_slots' %}", {
+                      method: "POST",
+                      headers: {
+                          "Content-Type": "application/json",
+                          "X-CSRFToken": "{{ csrf_token }}"
+                      },
+                      body: JSON.stringify({ appointment_date: selectedDate, provider_id: providerId, service_id: selectedServiceId })
+                  })
+                  .then(res => res.json())
+                  .then(data => {
+                      slotContainer.innerHTML = "";
+                      selectedTime = null; // reset selection
+                      
+                      if (typeof updateNextState === 'function') updateNextState();
+
+                      const summaryTime = document.getElementById('sumTime');
+						          if (summaryTime) summaryTime.textContent = "";
+                      if (data.time_slots.length === 0) {
+                          slotContainer.innerHTML = '<p class="text-muted">No available time slots for this date.</p>';
+                          return;
+                      }
+
+                      data.time_slots.forEach(slot => {
+                          const btn = document.createElement("button");
+                          btn.type = "button";
+                          btn.className = "time-slot-btn" + (slot.available ? "" : " unavailable");
+                          btn.dataset.time = slot.time;
+                          btn.textContent = slot.time;
+                          
+                           // Add click & keyboard events dynamically
+                          if (slot.available) {
+                              btn.addEventListener('click', function () {
+                                  slotContainer.querySelectorAll(".time-slot-btn").forEach(b => b.classList.remove('selected'));
+                                   
+                                  this.classList.add("selected");
+                                  selectedTime = this.dataset.time;
+                                  console.log("Time:", selectedTime)
+                                  
+                                  if (summaryTime) summaryTime.textContent = selectedTime;
+
+                                  if (typeof updateNextState === 'function') updateNextState();
+                              });
+
+                              btn.addEventListener('keydown', function (e) {
+                                  if (e.key === 'Enter' || e.key === ' ') {
+                                      e.preventDefault();
+                                      this.click();
+                                  }
+                              });
+                          }
+
+                          slotContainer.appendChild(btn);
+                      });
+                  })
+                  .catch(err => console.error("Error fetching time slots:", err));
+              });
+          }
+
+          document.querySelectorAll(".book-customer-btn").forEach(btn => {
+            btn.addEventListener("click", function() {
+              selectedCustomerId = this.getAttribute("data-customer-id");
+              console.log("Selected Customer ID:", selectedCustomerId);
+            });
+          });
+
+
+          // --- Final booking button ---
+          const bookBtn = document.getElementById("bookBtn");
+          if (bookBtn) {
+              bookBtn.addEventListener("click", function () {
+                  const notes = document.getElementById("appointmentNotes")?.value || '';
+                  const appointmentDateVal = appointmentDate?.value;
+
+                  if (!selectedServiceId || !selectedTime || !appointmentDateVal) {
+                      alert("Please select service, date, and time before booking!");
+                      return;
+                  }
+
+                  fetch("{% url 'book_appointment' %}", {
+                      method: "POST",
+                      headers: {
+                          "Content-Type": "application/json",
+                          "X-CSRFToken": "{{ csrf_token }}"
+                      },
+                      body: JSON.stringify({
+                          service_id: selectedServiceId,
+                          appointment_date: appointmentDateVal,
+                          selected_time: selectedTime,
+                          customer_id: selectedCustomerId,
+                          notes: notes
+                      })
+                  })
+                  .then(res => res.json())
+                  .then(data => {
+                      if (data.success) {
+                          // Show success section
+                          document.getElementById("summaryContent").style.display = "none";
+                          document.getElementById("successContent").style.display = "block";
+                      } else {
+                          alert("Booking failed: " + data.error);
+                      }
+                  })
+                  .catch(err => console.error("Booking error:", err));
+              });
+          }
+      });
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          const nextBtn = document.getElementById('nextBtn');
+          const appointmentDate = document.getElementById('appointmentDate');
+
+          // This function is called by both your modal steps and slot selection script
+          window.updateNextState = function () {
+              if (!nextBtn) return;
+
+              // Detect current step from visible content
+              const visibleStep = document.querySelector('.step-content.active');
+              if (!visibleStep) return;
+
+              // Step 0 → Service selection
+              if (visibleStep.id === 'stepContent1') {
+                  const hasService = !!document.querySelector('.service-option.service-selected');
+                  nextBtn.disabled = !hasService;
+                  return;
+              }
+
+              // Step 1 → Date selection
+              if (visibleStep.id === 'stepContent2') {
+                  const dateVal = appointmentDate?.value;
+                  nextBtn.disabled = !dateVal;
+                  return;
+              }
+
+              // Step 2 → Time slot selection
+              if (visibleStep.id === 'stepContent3') {
+                  const hasTime = !!document.querySelector('.time-slot-btn.selected');
+                  nextBtn.disabled = !hasTime;
+                  return;
+              }
+
+              // Step 3 → Notes (always enabled)
+              nextBtn.disabled = false;
+          };
+
+          // Call once initially
+          updateNextState();
+
+          // Re-check when date changes
+          if (appointmentDate) {
+              appointmentDate.addEventListener('change', updateNextState);
+          }
+      });
+      </script>
+
+      <!-- To pass Appointment ID -->
+       <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const modal = document.getElementById('rescheduleModal');
+          modal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const appointmentId = button.getAttribute('data-appointment-id');
+            modal.querySelector('#appointment-id-input').value = appointmentId;
+          });
+        });
+       </script>
+       
       {% if messages %}
       <script>
         {% for message in messages %}

@@ -9,6 +9,7 @@ from services.models import ProviderSchedule
 from datetime import datetime, timedelta, date
 from appointments.models import Appointments
 import json
+from django.utils import timezone
 from django.http import JsonResponse
 # Create your views here.
 
@@ -150,8 +151,13 @@ def customer_dashboard(request):
     # -----------------------
     # Fetching all Appointments of Customer
     # -----------------------
+    now = timezone.now()
+    Appointments.objects.filter(
+        customer__customer_id = customer_id, 
+        app_end_time__lt=now
+        ).exclude(status__in=["Completed", "Cancelled", "Confirmed"]).update(status="Completed")
+    
     appointments = Appointments.objects.filter(customer__customer_id = customer_id)
-
     # Categorize by Status
     upcoming = appointments.filter(status="Pending")
     completed = appointments.filter(status='Completed')
@@ -498,7 +504,7 @@ def provider_dashboard(request):
     
     
     # Fetch all services added by this provider
-    services = Services.objects.filter(provider_id=provider)
+    all_services = Services.objects.filter(provider_id=provider)
     categories = ServiceCategory.objects.all()
 
     
@@ -514,7 +520,7 @@ def provider_dashboard(request):
 
             if active:
                 available_time = f"{start_time}-{end_time}"
-                for service in services:
+                for service in all_services:
                     schedule, created = ProviderSchedule.objects.get_or_create(
                         provider = provider,
                         service=service,
@@ -526,7 +532,7 @@ def provider_dashboard(request):
                         schedule.available_time = available_time
                         schedule.save()
             else:
-                for service in services:
+                for service in all_services:
                     try:
                         schedule = ProviderSchedule.objects.get(provider=provider, service=service, day_of_week=day)
                         schedule.available_time = ""
@@ -598,22 +604,26 @@ def provider_dashboard(request):
         return redirect('provider_dashboard')
 
 
-    # Passing Services to Book Appointment
-    provider_id = request.session.get('provider_id')
+    # Fetching Services of Selected Provider to Book Appointment
     services_book = None
+    time_slots = []
+    selected_date = None
+    selected_provider = None
+    provider_id = request.session.get("provider_id")
+    
+    print("PID:", provider_id)
     if provider_id:
-        provider = get_object_or_404(ServiceProvider, provider_id=provider_id)
-        services_book = Services.objects.filter(provider_id=provider)
+        selected_provider = get_object_or_404(ServiceProvider, provider_id=provider_id)
+        services_book = Services.objects.filter(provider_id=selected_provider)
 
         # ----- Displaying time slots -----
-        selected_date = datetime.today().date()
-        
+        selected_date = datetime.today().strftime("%Y-%m-%d")
+        print("View:",selected_date)
         time_slots = []
         if selected_date:
             # find schedule by weekday
-            weekday = selected_date.strftime("%A")
-            schedule = ProviderSchedule.objects.filter(provider=provider, day_of_week=weekday).first()
-            
+            weekday = datetime.today().strftime("%A")
+            schedule = ProviderSchedule.objects.filter(provider=selected_provider, day_of_week=weekday).first()
             if schedule and schedule.available_time:
                 try:
                     start_str, end_str = schedule.available_time.split("-")
@@ -621,39 +631,21 @@ def provider_dashboard(request):
                     end = datetime.strptime(end_str, "%H:%M")
                     # Build all hourly slots
                     while start < end:
-                        slot_st = start,
-                        slot_end = start + timedelta(hours=1),
                         slot_time = start.strftime("%H:%M")
-                        # Initially
-                        available = True
-                       
-                       # Check blocked times
-                        for b in schedule.blocked_time or []:
-                            if b["date"] == selected_date:
-                                block_start = datetime.strptime(b["start"], "%H:%M")
-                                
-                                # Check if slot overlaps with blocked time
-                                print(block_start)
-                                if not (slot_end <= block_start):
-                                    available = False
-                                    break
-
-                        # Check Booked Slots
-                        booked_for_date = schedule.booked_slots.get(selected_date, [])
-                        for booked in booked_for_date:
-                            booked_start = datetime.strptime(booked["start"], "%H:%M")
-                            booked_end = datetime.strptime(booked["end"], "%H:%M")
-                            if not (slot_end <= booked_start or slot_st >= booked_end):
-                                available = False
-                                break
-                        
-                        time_slots.append({
-                            "time": slot_time,
-                            "available": available
-                        })
-
+                        time_slots.append(slot_time)
                         start += timedelta(hours=1)
-
+                    
+                    # Get blocked or booked
+                    blocked_times = [b for b in schedule.blocked_time if b["date"] == selected_date]
+                    booked_for_date = schedule.booked_slots.get(selected_date, [])
+                    # Mark each slot
+                    for i, slot in enumerate(time_slots):
+                        is_blocked = any(b["start"] == slot for b in blocked_times)
+                        is_booked = slot in booked_for_date
+                        time_slots[i] = {
+                            "time":slot,
+                            "available":not (is_blocked or is_booked)
+                        }
                 except Exception as e:
                     print("Error:",e)
 
@@ -689,6 +681,13 @@ def provider_dashboard(request):
             }
 
 
+    # Get Customers Who has Appointments
+    all_customers = Customer.objects.all()
+    for customer in all_customers:
+        last_appointment = Appointments.objects.filter(provider=provider, customer=customer).order_by('-app_end_time').first()
+        customer.last_visit = last_appointment.app_end_time.strftime("%d %b %Y") if last_appointment else None
+        customer.total_visits = Appointments.objects.filter(provider=provider, customer=customer).count()
+
     # ---------------
     # Handle Appointments Display
     # ---------------
@@ -696,13 +695,14 @@ def provider_dashboard(request):
     category = provider.category_name
     context = {
         'provider':provider,
-        'services':services,
+        'all_services':all_services,
         'category':category,
         'schedule_dict':schedule_dict,
         'days_of_week':DAYS_OF_WEEK,
         'services_book':services_book,
         'time_slots':time_slots,
-        'selected_date':selected_date
+        'selected_date':selected_date,
+        'all_customers':all_customers
     }
 
     return render(request, 'provider_dashboard.html', context)

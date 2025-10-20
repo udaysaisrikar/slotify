@@ -16,11 +16,20 @@ from django.contrib import messages
 def book_appointment_view(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        # Get customer
-        customer_id = request.session.get('customer_id')
-        customer = Customer.objects.get(customer_id=customer_id)
+        user_type = request.session.get('user_type')
+        customer_id = None
+        provider_id = None
+        if user_type == 'customer':
+            provider_id = request.session.get("selected_provider_id")
+            customer_id = request.session.get('customer_id')
+        elif user_type == 'provider':
+            provider_id = request.session.get("provider_id")
+            customer_id = data.get('customer_id')
 
-        provider_id = request.session.get("selected_provider_id")
+        if not all([provider_id, customer_id]):
+            return JsonResponse({'success': False, 'error': 'Missing provider or customer ID'})
+        
+        customer = Customer.objects.get(customer_id=customer_id)
         selected_date = data.get("appointment_date")
 
         selected_date_obj = datetime.strptime(selected_date, "%Y-%m-%d").date()
@@ -79,6 +88,7 @@ def book_appointment_view(request):
     return JsonResponse({"success": False, "error": "Invalid request"})
 
 
+# ----- Reschedule -----
 def reschedule_app(request):
     if request.method == "POST":
         app_id = request.POST.get("appointment_id")
@@ -158,6 +168,26 @@ def reschedule_app(request):
         appointment.save()
 
         messages.success(request, "Appointment rescheduled successfully.")
+        return redirect('customer_dashboard')
+    
+    return redirect('customer_dashboard')
+
+
+
+# ------ Rating-Review -------
+def review_rating(request):
+    if request.method == "POST":
+        app_id = request.POST.get("appointment_id")
+        rating = request.POST.get("rating")
+        comments = request.POST.get("comments")
+
+        appointment = get_object_or_404(Appointments, appointment_id = app_id)
+
+        appointment.rating = rating
+        appointment.comments = comments or ""
+        appointment.save()
+
+        messages.success(request, "Review Submitted Successfully.")
         return redirect('customer_dashboard')
     
     return redirect('customer_dashboard')
