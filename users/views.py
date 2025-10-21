@@ -157,11 +157,10 @@ def customer_dashboard(request):
         app_end_time__lt=now
         ).exclude(status__in=["Completed", "Cancelled", "Confirmed"]).update(status="Completed")
     
-    appointments = Appointments.objects.filter(customer__customer_id = customer_id)
     # Categorize by Status
-    upcoming = appointments.filter(status="Pending")
-    completed = appointments.filter(status='Completed')
-    cancelled = appointments.filter(status='Cancelled')
+    upcoming = Appointments.objects.filter(customer=customer, status__in=["Pending", "Confirmed"]).order_by('app_start_time')
+    completed = Appointments.objects.filter(customer=customer, status='Completed').order_by('-app_start_time')
+    cancelled = Appointments.objects.filter(customer=customer, status='Cancelled').order_by('-app_start_time')
 
     context = {
         'providers':providers,
@@ -649,6 +648,45 @@ def provider_dashboard(request):
                 except Exception as e:
                     print("Error:",e)
 
+    # ----------------------
+    # Handle Cancellation
+    # ----------------------
+    if request.method == "POST" and "cancel_app" in request.POST:
+        appointment_id = request.POST.get("cancel_app")
+
+        try:
+            appointment = Appointments.objects.get(appointment_id=appointment_id)
+            appointment.status = "Cancelled"
+            appointment.save() 
+            
+            # Update Booked slots
+            day_of_week = appointment.app_start_time.strftime("%A")
+            schedule = ProviderSchedule.objects.filter(provider=appointment.provider, service=appointment.service, day_of_week=day_of_week).first()
+            print(schedule)
+            if schedule:
+                booked_slots = schedule.booked_slots or {}
+                print("Book", booked_slots)
+                date_str = appointment.app_start_time.date().isoformat()
+                print("Date", date_str)
+                booked_for_date = schedule.booked_slots.get(date_str, [])
+                
+                booked_for_date = [
+                    b for b in booked_for_date
+                    if b["start"] != appointment.app_start_time.strftime("%H:%M") or 
+                        b["end"] != appointment.app_end_time.strftime("%H:%M")
+                ]
+                print("book", booked_for_date)
+                if booked_for_date:
+                    schedule.booked_slots[date_str] = booked_for_date
+                else:
+                    schedule.booked_slots.pop(date_str, None)
+
+                schedule.save()
+                messages.success(request, "Appointment Cancelled Successfully!")
+        except Appointments.DoesNotExist:
+            pass
+        return redirect('provider_dashboard')
+
     # ----------------
     # Storing into schedule_dict
     # ----------------
@@ -688,9 +726,31 @@ def provider_dashboard(request):
         customer.last_visit = last_appointment.app_end_time.strftime("%d %b %Y") if last_appointment else None
         customer.total_visits = Appointments.objects.filter(provider=provider, customer=customer).count()
 
+    # Accept Appointment
+    if request.method == "POST":
+        app_id = request.POST.get("appointment_id")
+        if "accept_appointment" in request.POST:
+                Appointments.objects.filter(appointment_id=app_id).update(status="Confirmed")
+                messages.success(request, "Appointment Accepted Successsfully!")
+
+
+
     # ---------------
     # Handle Appointments Display
     # ---------------
+    # Categorize appointments
+    pending_apps = Appointments.objects.filter(provider=provider, status="Pending").order_by('-app_start_time')
+    confirmed_apps = Appointments.objects.filter(provider=provider, status="Confirmed").order_by('-app_start_time')
+    completed_apps = Appointments.objects.filter(provider=provider, status="Completed").order_by('-app_start_time')
+    cancelled_apps = Appointments.objects.filter(provider=provider, status="Cancelled").order_by('-app_start_time')
+
+    # Automatically mark completed ones
+    now = timezone.now()
+    Appointments.objects.filter(
+        provider=provider, 
+        app_end_time__lt=now
+        ).exclude(status__in=["Completed", "Cancelled", "Confirmed"]).update(status="Completed")
+    
     
     category = provider.category_name
     context = {
@@ -702,7 +762,11 @@ def provider_dashboard(request):
         'services_book':services_book,
         'time_slots':time_slots,
         'selected_date':selected_date,
-        'all_customers':all_customers
+        'all_customers':all_customers,
+        "pending_apps": pending_apps,
+        "confirmed_apps": confirmed_apps,
+        "completed_apps": completed_apps,
+        "cancelled_apps": cancelled_apps,
     }
 
     return render(request, 'provider_dashboard.html', context)

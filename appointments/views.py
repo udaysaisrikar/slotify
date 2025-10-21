@@ -90,6 +90,7 @@ def book_appointment_view(request):
 
 # ----- Reschedule -----
 def reschedule_app(request):
+    user_type = request.session.get('user_type')
     if request.method == "POST":
         app_id = request.POST.get("appointment_id")
         new_date = request.POST.get("reschedule_date")
@@ -168,9 +169,9 @@ def reschedule_app(request):
         appointment.save()
 
         messages.success(request, "Appointment rescheduled successfully.")
-        return redirect('customer_dashboard')
+        return redirect(f'{user_type}_dashboard')
     
-    return redirect('customer_dashboard')
+    return redirect(f'{user_type}_dashboard')
 
 
 

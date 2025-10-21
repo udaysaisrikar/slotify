@@ -908,7 +908,7 @@
                   data-bs-target="#pending-requests"
                 >
                   Pending Requests
-                  <span class="badge bg-warning rounded-pill ms-2">1</span>
+                  <span class="badge bg-warning rounded-pill ms-2">{{ pending_apps|length }}</span>
                 </button>
               </li>
               <li class="nav-item">
@@ -918,7 +918,7 @@
                   data-bs-target="#confirmed-apps"
                 >
                   Confirmed
-                  <span class="badge bg-success rounded-pill ms-2">1</span>
+                  <span class="badge bg-success rounded-pill ms-2">{{ confirmed_apps|length }}</span>
                 </button>
               </li>
               <li class="nav-item">
@@ -928,7 +928,7 @@
                   data-bs-target="#completed-apps"
                 >
                   Completed
-                  <span class="badge bg-secondary rounded-pill ms-2">1</span>
+                  <span class="badge bg-secondary rounded-pill ms-2">{{ completed_apps|length }}</span>
                 </button>
               </li>
               <li class="nav-item">
@@ -938,7 +938,7 @@
                   data-bs-target="#cancelled-apps"
                 >
                   Cancelled
-                  <span class="badge bg-danger rounded-pill ms-2">1</span>
+                  <span class="badge bg-danger rounded-pill ms-2">{{ cancelled_apps|length }}</span>
                 </button>
               </li>
             </ul>
@@ -947,164 +947,180 @@
               <!-- Pending Requests -->
 
               <div class="tab-pane fade show active" id="pending-requests">
-                <div class="appointment-card">
-                  <div class="row align-items-center">
-                    <div class="col-md-1">
-                      <div class="text-center">
-                        <div class="fw-bold text-warning">01</div>
-                        <div class="small text-muted">AUG</div>
+                {% if pending_apps %}
+                  {% for app in pending_apps %}
+                  <div class="appointment-card">
+                    <div class="row align-items-center">
+                      <div class="col-md-1">
+                        <div class="text-center">
+                          <div class="fw-bold text-warning">{{ app.app_start_time|date:"d" }}</div>
+                          <div class="small text-muted">{{ app.app_start_time|date:"M" }}</div>
+                        </div>
                       </div>
-                    </div>
-                    <div class="col-md-4">
-                      <h6 class="fw-semibold mb-1">Customer</h6>
-                      <p class="text-muted small mb-1">Initial Consultation</p>
-                      <p class="small mb-0">
-                        <i class="bi bi-clock me-1"></i>Preferred: 2:00 PM -
-                        3:00 PM<br />
-                        <i class="bi bi-telephone me-1"></i>+91 2345678234
-                      </p>
-                    </div>
-                    <div class="col-md-2 text-center">
-                      <span class="appointment-status status-pending"
-                        >Pending</span
-                      >
-                      <div class="small text-muted mt-1">
-                        Requested 2 hours ago
+                      <div class="col-md-4">
+                        <h6 class="fw-semibold mb-1">{{ app.customer.first_name }}</h6>
+                        <p class="text-muted small mb-1">{{ app.service.service_name }}</p>
+                        <p class="small mb-0">
+                          <i class="bi bi-clock me-1"></i>Preferred: {{ app.app_start_time|date:"h:i A" }} - {{ app.app_end_time|date:"h:i A" }}
+                          <br />
+                          <i class="bi bi-telephone me-1"></i>{{ app.customer.phone_no }}
+                        </p>
                       </div>
-                    </div>
-                    <div class="col-md-3 text-end">
-                      <div class="d-flex gap-2">
-                        <!-- Accept Appointment -->
-                        <form method="POST" action="{% url 'provider_dashboard' %}">
-                          {% csrf_token %}
-                          <input type="hidden" name="accept_appointment" value="1">
-                          <input type="hidden" name="appointment_id" value="{{ app.appointment_id }}">
-                          <button type="submit" class="btn btn-sm btn-success">
-                            <i class="bi bi-check-lg"></i> Accept
-                          </button>
-                        </form>
-                        <!-- Reschedule Appointment -->
-                        <button
-                          class="btn btn-sm btn-warning"
-                          data-bs-toggle="modal"
-                          data-bs-target="#rescheduleModal"
-                          data-appointment-id="{{ app.appointment_id }}"
+                      <div class="col-md-2 text-center">
+                        <span class="appointment-status status-pending"
+                          >Pending</span
                         >
-                          <i class="bi bi-calendar me-2"></i> Reschedule
-                        </button>
-
-                        <form method="POST" action="{% url 'provider_dashboard' %}">
-                          {% csrf_token %}
-                          <input type="hidden" name="cancel_appointment" value="1">
-                          <input type="hidden" name="appointment_id" value="{{ app.appointment_id }}">
-                          <button type="submit" class="btn btn-sm btn-outline-danger">
-                            <i class="bi bi-x-lg"></i> Decline
+                        <div class="small text-muted mt-1">
+                          Requested 2 hours ago
+                        </div>
+                      </div>
+                      <div class="col-md-3 text-end">
+                        <div class="d-flex gap-2">
+                          <!-- Accept Appointment -->
+                          <form method="POST" action="{% url 'provider_dashboard' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="accept_appointment" value="1">
+                            <input type="hidden" name="appointment_id" value="{{ app.appointment_id }}">
+                            <button type="submit" class="btn btn-sm btn-success">
+                              <i class="bi bi-check-lg"></i> Accept
+                            </button>
+                          </form>
+                          <!-- Reschedule Appointment -->
+                          <button
+                            class="btn btn-sm btn-warning"
+                            data-bs-toggle="modal"
+                            data-bs-target="#rescheduleModal"
+                            data-appointment-id="{{ app.appointment_id }}"
+                          >
+                            <i class="bi bi-calendar me-2"></i> Reschedule
                           </button>
-                        </form>
+                          <form method="POST" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="cancel_app" value="{{ app.appointment_id }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                              <i class="bi bi-x-lg"></i> Decline
+                            </button>
+                          </form>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="text-center py-5">
+                    <i class="bi bi-calendar-check display-4 text-muted mb-3"></i>
+                    <h5 class="text-muted">No Pending Requests right now.</h5>
+                  </div>
+                {% endif %}
               </div>
 
               <!-- Confirmed Appointments -->
 
               <div class="tab-pane fade" id="confirmed-apps">
-                <div class="appointment-card">
-                  <div class="row align-items-center">
-                    <div class="col-md-1">
-                      <div class="text-center">
-                        <div class="fw-bold text-success">01</div>
-                        <div class="small text-muted">AUG</div>
+                {% if confirmed_apps %}
+                  {% for app in confirmed_apps %}
+                    <div class="appointment-card">
+                      <div class="row align-items-center">
+                        <div class="col-md-1">
+                          <div class="text-center">
+                            <div class="fw-bold text-success">{{ app.app_start_time|date:"d" }}</div>
+                            <div class="small text-muted">{{ app.app_start_time|date:"M" }}</div>
+                          </div>
+                        </div>
+                        <div class="col-md-5">
+                          <h6 class="fw-semibold mb-1">{{app.customer.first_name }}</h6>
+                          <p class="text-muted small mb-1">{{ app.service.service_name }}</p>
+                          <p class="small mb-0">
+                            <i class="bi bi-clock me-1"></i>{{ app.app_start_time|date:"h:i A" }} - {{ app.app_end_time|date:"h:i A" }}<br />
+                            <i class="bi bi-telephone me-1"></i>+91 {{ app.customer.phone_no }}
+                          </p>
+                        </div>
+                        <div class="col-md-2 text-center">
+                          <span class="appointment-status status-confirmed"
+                            >Confirmed</span
+                          >
+                        </div>
                       </div>
                     </div>
-                    <div class="col-md-5">
-                      <h6 class="fw-semibold mb-1">Customer</h6>
-                      <p class="text-muted small mb-1">General Consultation</p>
-                      <p class="small mb-0">
-                        <i class="bi bi-clock me-1"></i>9:00 AM - 9:30 AM<br />
-                        <i class="bi bi-telephone me-1"></i>+91 1234567890
-                      </p>
-                    </div>
-                    <div class="col-md-2 text-center">
-                      <span class="appointment-status status-confirmed"
-                        >Confirmed</span
-                      >
-                    </div>
-                    <div class="col-md-2 text-end">
-                      <div class="dropdown">
-                        <button
-                          class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                          type="button"
-                          data-bs-toggle="dropdown"
-                        >
-                          Actions
-                        </button>
-                        <ul class="dropdown-menu">
-                          <li>
-                            <a
-                              class="dropdown-item"
-                              href="#"
-                              data-bs-toggle="modal"
-                              data-bs-target="#rescheduleModal"
-                            >
-                              <i class="bi bi-calendar me-2"></i>Reschedule
-                            </a>
-                          </li>
-                          <li>
-                            <a class="dropdown-item text-danger" href="#"
-                              ><i class="bi bi-x-circle me-2"></i>Cancel</a
-                            >
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="text-center py-5">
+                    <i class="bi bi-calendar-check display-4 text-muted mb-3"></i>
+                    <h5 class="text-muted">No Confirmed appointments</h5>
                   </div>
-                </div>
+                {% endif %}
               </div>
 
               <!-- Completed Appointments -->
               <div class="tab-pane fade" id="completed-apps">
-                <div class="appointment-card">
-                  <div class="row align-items-center">
-                    <div class="col-md-1">
-                      <div class="text-center">
-                        <div class="fw-bold text-success">01</div>
-                        <div class="small text-muted">AUG</div>
+                {% if completed_apps %}
+                  {% for app in completed_apps %}
+                    <div class="appointment-card">
+                      <div class="row align-items-center">
+                        <div class="col-md-1">
+                          <div class="text-center">
+                            <div class="fw-bold text-success">{{ app.app_start_time|date:"d" }}</div>
+                            <div class="small text-muted">{{ app.app_start_time|date:"M" }}</div>
+                          </div>
+                        </div>
+                        <div class="col-md-5">
+                          <h6 class="fw-semibold mb-1">{{ app.customer.first_name }}</h6>
+                          <p class="text-muted small mb-1">{{ app.service.service_name }}</p>
+                          <p class="small mb-0">
+                            <i class="bi bi-clock me-1"></i>{{ app.app_start_time|date:"h:i A" }} - {{ app.app_end_time|date:"h:i A" }}
+                            <br />
+                            <i class="bi bi-telephone me-1"></i>+91 {{ app.customer.phone_no }}
+                          </p>
+                        </div>
+                        <div class="col-md-2 text-center">
+                          <span class="appointment-status status-completed"
+                            >Completed</span
+                          >
+                        </div>
                       </div>
                     </div>
-                    <div class="col-md-5">
-                      <h6 class="fw-semibold mb-1">Customer</h6>
-                      <p class="text-muted small mb-1">General Consultation</p>
-                      <p class="small mb-0">
-                        <i class="bi bi-clock me-1"></i>9:00 AM - 9:30 AM<br />
-                        <i class="bi bi-telephone me-1"></i>+91 1234567890
-                      </p>
-                    </div>
+                  {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                    <i class="bi bi-calendar-check display-4 text-muted mb-3"></i>
+                    <h5 class="text-muted">No Completed appointments</h5>
                   </div>
-                </div>
+                {% endif %}
               </div>
 
               <!-- Cancelled Appointments -->
               <div class="tab-pane fade" id="cancelled-apps">
-                <div class="appointment-card">
-                  <div class="row align-items-center">
-                    <div class="col-md-1">
-                      <div class="text-center">
-                        <div class="fw-bold text-success">01</div>
-                        <div class="small text-muted">AUG</div>
+                {% if cancelled_apps %}
+                  {% for app in cancelled_apps %}
+                    <div class="appointment-card">
+                      <div class="row align-items-center">
+                        <div class="col-md-1">
+                          <div class="text-center">
+                            <div class="fw-bold text-success">{{ app.app_start_time|date:"d" }}</div>
+                            <div class="small text-muted">{{ app.app_start_time|date:"M" }}</div>
+                          </div>
+                        </div>
+                        <div class="col-md-5">
+                          <h6 class="fw-semibold mb-1">{{ app.customer.first_name }}</h6>
+                          <p class="text-muted small mb-1">{{ app.service.service_name }}</p>
+                          <p class="small mb-0">
+                            <i class="bi bi-clock me-1"></i>{{ app.app_start_time|date:"h:i A" }} - {{ app.app_end_time|date:"h:i A" }}
+                            <br />
+                            <i class="bi bi-telephone me-1"></i>+91 {{ app.customer.phone_no }}
+                          </p>
+                        </div>
+                        <div class="col-md-2 text-center">
+                          <span class="appointment-status status-cancelled">Cancelled</span>
+                        </div>
                       </div>
                     </div>
-                    <div class="col-md-5">
-                      <h6 class="fw-semibold mb-1">Customer</h6>
-                      <p class="text-muted small mb-1">General Consultation</p>
-                      <p class="small mb-0">
-                        <i class="bi bi-clock me-1"></i>9:00 AM - 9:30 AM<br />
-                        <i class="bi bi-telephone me-1"></i>+91 1234567890
-                      </p>
-                    </div>
+                  {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                    <i class="bi bi-calendar-x display-4 text-muted mb-3"></i>
+                    <h5 class="text-muted">No cancelled appointments</h5>
                   </div>
-                </div>
+                {% endif %}
               </div>
             </div>
           </div>
