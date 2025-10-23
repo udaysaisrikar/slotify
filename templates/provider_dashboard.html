@@ -970,9 +970,9 @@
                         <span class="appointment-status status-pending"
                           >Pending</span
                         >
-                        <div class="small text-muted mt-1">
+                        {% comment %} <div class="small text-muted mt-1">
                           Requested 2 hours ago
-                        </div>
+                        </div> {% endcomment %}
                       </div>
                       <div class="col-md-3 text-end">
                         <div class="d-flex gap-2">
@@ -1813,28 +1813,28 @@ Comprehensive health assessment and medical advice for various health concerns.<
               </div>
               <div class="row">
                 <div class="col-lg-8">
+                  {% for review in reviews %}
                   <div class="review-card">
                     <div
                       class="d-flex justify-content-between align-items-start mb-3"
                     >
                       <div class="d-flex">
                         <div>
-                          <h6 class="fw-semibold mb-1">Customer</h6>
+                          <h6 class="fw-semibold mb-1">{{ review.customer.first_name }}</h6>
                           <div class="rating mb-2">
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
+                            {% for i in "12345" %}
+                              {% if forloop.counter <= review.rating %}
+                                <i class="bi bi-star-fill text-warning"></i>
+                              {% else %}
+                                <i class="bi bi-star"></i>
+                              {% endif %}
+                            {% endfor %}
                           </div>
                           <p class="mb-2">
-                            ServiceProvider is incredibly professional and
-                            caring. The consultation was thorough and I felt
-                            heard throughout the entire process. Highly
-                            recommend!
+                            {{ review.comments }}
                           </p>
                           <small class="text-muted"
-                            >General Consultation • July 28, 2025</small
+                            >{{ review.service.service_name }} • {{ review.app_start_time|date:"F d, Y" }}</small
                           >
                         </div>
                       </div>
@@ -1856,12 +1856,15 @@ Comprehensive health assessment and medical advice for various health concerns.<
                       </div>
                     </div>
                   </div>
+                  {% empty %}
+                    <p class="text-muted"> No reviews yet.</p>
+                  {% endfor %}
 
-                  <div class="text-center mt-4">
+                  {% comment %} <div class="text-center mt-4">
                     <button class="btn btn-outline-primary">
                       Load More Reviews
                     </button>
-                  </div>
+                  </div> {% endcomment %}
                 </div>
 
                 <div class="col-lg-4">

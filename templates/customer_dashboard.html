@@ -13,6 +13,7 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
       rel="stylesheet"
     />
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="{% static 'css/style.css'%}" />
     <link rel="stylesheet" href="{% static 'css/customer_style.css' %}" />
@@ -774,7 +775,7 @@
                         <div class="col-md-2 text-center">
                           {% if app.status == "Confirmed" %}
                           <span class="appointment-status status-confirmed">
-                            Confirmed</span
+                            Confirmed</span>
                           {% elif app.status == "Pending" %}
                             <span class="appointment-status status-pending">
                               Pending</span>
@@ -869,8 +870,8 @@
                         <div class="col-md-2 text-end">
                           <div class="dropdown">
                             <button
-                              class="btn btn-outline-secondary btn-sm"
                               type="button"
+                              class="btn btn-outline-secondary btn-sm"
                               data-bs-toggle="modal"
                               data-bs-target="#rate-review-Modal"
                               data-appointment-id="{{ app.appointment_id }}"
@@ -893,10 +894,6 @@
 
               <!-- Cancelled Appointments -->
               <div class="tab-pane fade" id="cancelled">
-                <p>DEBUG — Cancelled appointments count: {{ cancelled|length }}</p>
-                    {% for app in cancelled %}
-                      <p>{{ app.appointment_id }} — {{ app.status }}</p>
-                    {% endfor %}
                 {% if cancelled %}
                   {% for app in cancelled %}
                     <div class="appointment-card">
@@ -1196,6 +1193,7 @@
         <div class="modal-content">
           <form method="POST" action="{% url 'reschedule_app' %}">
             {% csrf_token %}
+            <input type="hidden" id="reschedule-appointment-id" name="appointment_id">
             <div class="modal-header">
               <h5 class="modal-title" id="rescheduleModalLabel">
                 Reschedule Appointment
@@ -1208,7 +1206,7 @@
               ></button>
             </div>
             <div class="modal-body">
-              <input type="hidden" name="appointment_id" id="appointment-id-input">
+              
               <div class="mb-3">
                 <label for="reschedule-date" class="form-label">Date</label>
                 <input
@@ -1256,7 +1254,7 @@
         <div class="modal-content">
           <form method="POST" action="{% url 'review_rating' %}">
             {% csrf_token %}
-            <input type="hidden" id="appointment-id-input" name="appointment_id" >
+            <input type="hidden" id="review-appointment-id" name="appointment_id">
             <div class="modal-header">
               <h5 class="modal-title" id="rateModalLabel">Rate and Review</h5>
               <button
@@ -2040,28 +2038,30 @@
       </script>
 
       <!-- To pass Appointment ID -->
-       <script>
+        <!-- Reschedule -->
+        <script>
         document.addEventListener('DOMContentLoaded', function() {
           const modal = document.getElementById('rescheduleModal');
           modal.addEventListener('show.bs.modal', function(event) {
             const button = event.relatedTarget;
             const appointmentId = button.getAttribute('data-appointment-id');
-            modal.querySelector('#appointment-id-input').value = appointmentId;
+            modal.querySelector('#reschedule-appointment-id').value = appointmentId;
           });
         });
-       </script>
+       </script> 
+        <!-- Rate Review -->
        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          const modal = document.getElementById('rate-review-Modal');
-          modal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const appointmentId = button.getAttribute('data-appointment-id');
-            modal.querySelector('#appointment-id-input').value = appointmentId;
+          document.addEventListener('DOMContentLoaded', () => {
+            const rateModal = document.getElementById('rate-review-Modal');
+            rateModal.addEventListener('show.bs.modal', function(event) {
+              const button = event.relatedTarget;
+              if (!button) return;
+
+              const appointmentId2 = button.getAttribute('data-appointment-id');
+              rateModal.querySelector('#review-appointment-id').value = appointmentId2;
+            });
           });
-        });
-       </script>
-
-
+        </script>
 
     {% if messages %}
     <script>
