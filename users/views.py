@@ -163,6 +163,15 @@ def customer_dashboard(request):
     completed = Appointments.objects.filter(customer=customer, status='Completed').order_by('-app_start_time')
     cancelled = Appointments.objects.filter(customer=customer, status='Cancelled').order_by('-app_start_time')
 
+    
+    total_appointments = upcoming.count() + completed.count() + cancelled.count()
+    attendence_rate = 0
+    if total_appointments > 0:
+        attendence_rate = int((completed.count() / total_appointments) * 100)
+
+    recent_appointments = Appointments.objects.filter(customer=customer).exclude(status="Cancelled").order_by('-app_start_time')[:3]
+
+        
     context = {
         'providers':providers,
         'customer':customer,
@@ -172,7 +181,9 @@ def customer_dashboard(request):
         'selected_provider':selected_provider,
         'upcoming':upcoming,
         'completed':completed,
-        'cancelled':cancelled
+        'cancelled':cancelled,
+        'attendence_rate':attendence_rate,
+        'recent_appointments':recent_appointments
     }
 
     return render(request, 'customer_dashboard.html', context)

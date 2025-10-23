@@ -467,25 +467,27 @@
             <div class="row">
               <div class="col-md-3 mb-4">
                 <div class="stat-card text-center">
-                  <div class="stat-card-number">NA</div>
+                  <div class="stat-card-number">{{ upcoming|length }}</div>
                   <div class="text-muted">Upcoming Appointments</div>
                 </div>
               </div>
               <div class="col-md-3 mb-4">
                 <div class="stat-card text-center">
-                  <div class="stat-card-number">NA</div>
+                  {% with total=upcoming.count|add:completed.count|add:cancelled.count %}
+                  <div class="stat-card-number">{{ total }}</div>
                   <div class="text-muted">Total Appointments</div>
+                  {% endwith %}
                 </div>
               </div>
               <div class="col-md-3 mb-4">
                 <div class="stat-card text-center">
-                  <div class="stat-card-number">NA</div>
-                  <div class="text-muted">Missed Appointments</div>
+                  <div class="stat-card-number">{{ cancelled|length }}</div>
+                  <div class="text-muted">Cancelled Appointments</div>
                 </div>
               </div>
               <div class="col-md-3 mb-4">
                 <div class="stat-card text-center">
-                  <div class="stat-card-number">NA</div>
+                  <div class="stat-card-number">{{ attendence_rate }}%</div>
                   <div class="text-muted">Attendance Rate</div>
                 </div>
               </div>
@@ -495,48 +497,54 @@
             <div class="row">
               <div class="col-lg-8">
                 <h4>Recent Appointments</h4>
-                <div class="appointment-card">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div class="d-flex">
-                      <i
-                        class="bi bi-person-circle me-3"
-                        style="font-size: 4rem; color: skyblue"
-                      ></i>
-                      <div>
-                        <h5 class="fw-semibold">Dr. John Doe</h5>
-                        <p class="text-muted small mb-1">
-                          General Consultation
-                        </p>
-                        <p class="text-muted small mb-0">
-                          <i class="bi bi-calendar me-1"></i>Today, 3:00 PM
-                          <i class="bi bi-geo-alt ms-3 me-1"></i>Downtown Clinic
-                        </p>
+                {% if recent_appointments %}
+                  {% for app in recent_appointments %}
+                  <div class="appointment-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <div class="d-flex">
+                        <i
+                          class="bi bi-person-circle me-3"
+                          style="font-size: 4rem; color: skyblue"
+                        ></i>
+                        <div>
+                          <h5 class="fw-semibold">{{ app.provider.name }}</h5>
+                          <p class="text-muted small mb-1">
+                            {{ app.service.service_name }}
+                          </p>
+                          <p class="text-muted small mb-0">
+                            <i class="bi bi-calendar me-1"></i>{{ app.app_start_time|date:"M d," }} {{ app.app_start_time|date:"h:i A" }}
+                            <i class="bi bi-geo-alt ms-3 me-1"></i>{{ app.provider.address }}
+                          </p>
+                        </div>
                       </div>
+                      <span class="appointment-status status-{{ app.status|lower }}"
+                        >{{ app.status }}</span
+                      >
                     </div>
-                    <span class="appointment-status status-confirmed"
-                      >Confirmed</span
-                    >
+                    <div class="mt-3">
+                      <button
+                        class="btn btn-sm btn-outline-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#provider-modal"
+                      >
+                        View Details
+                      </button>
+                      <button
+                        class="btn btn-sm btn-outline-secondary ms-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#rescheduleModal"
+                      >
+                        Reschedule
+                      </button>
+                    </div>
+                    <h6 class="mt-3">
+                      preview for the recent appointment display with styling
+                    </h6>
                   </div>
-                  <div class="mt-3">
-                    <button
-                      class="btn btn-sm btn-outline-primary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#provider-modal"
-                    >
-                      View Details
-                    </button>
-                    <button
-                      class="btn btn-sm btn-outline-secondary ms-2"
-                      data-bs-toggle="modal"
-                      data-bs-target="#rescheduleModal"
-                    >
-                      Reschedule
-                    </button>
-                  </div>
-                  <h6 class="mt-3">
-                    preview for the recent appointment display with styling
-                  </h6>
-                </div>
+                  {% endfor %}
+                {% else %}
+                  <p class="text-muted"> No Recent Appointments yet. </p>
+                {% endif %}
               </div>
               <!-- Sidebar for quick booking-->
               <div class="col-lg-4">
@@ -2040,14 +2048,14 @@
       <!-- To pass Appointment ID -->
         <!-- Reschedule -->
         <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          const modal = document.getElementById('rescheduleModal');
-          modal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const appointmentId = button.getAttribute('data-appointment-id');
-            modal.querySelector('#reschedule-appointment-id').value = appointmentId;
+          document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('rescheduleModal');
+            modal.addEventListener('show.bs.modal', function(event) {
+              const button = event.relatedTarget;
+              const appointmentId = button.getAttribute('data-appointment-id');
+              modal.querySelector('#reschedule-appointment-id').value = appointmentId;
+            });
           });
-        });
        </script> 
         <!-- Rate Review -->
        <script>
