@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {% load static %}
 {% load custom_tags %}
+{% load custom_filters %}
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -713,29 +714,41 @@
             <div class="row mb-4">
               <div class="col-md-4 mb-4">
                 <div class="stat-card text-center">
-                  <div class="stat-number">0</div>
+                  <div class="stat-number">{{ today_count }}</div>
                   <div class="text-muted">Today's Appointments</div>
-                  <small class="text-success">
-                    <i class="bi bi-arrow-up"></i> +0% from yesterday
-                  </small>
+                  {% if appointment_change >= 0 %}
+                    <small class="text-success">
+                      <i class="bi bi-arrow-up"></i> +{{ appointment_change }}% from yesterday
+                    </small>
+                  {% elif appointment_change < 0 %}
+                    <small class="text-danger">
+                      <i class="bi bi-arrow-down"></i> {{ appointment_change }}% from yesterday
+                    </small>
+                  {% endif %}
                 </div>
               </div>
               <div class="col-md-4 mb-4">
                 <div class="stat-card text-center">
-                  <div class="stat-number">0%</div>
+                  <div class="stat-number">{{ utilization }}%</div>
                   <div class="text-muted">Schedule Utilization</div>
                   <small class="text-warning">
-                    <i class="bi bi-dash"></i> 0% from last week
+                    <i class="bi bi-dash"></i> Weekly snapshot
                   </small>
                 </div>
               </div>
               <div class="col-md-4 mb-4">
                 <div class="stat-card text-center">
-                  <div class="stat-number">0.0</div>
+                  <div class="stat-number">{{ avg_rating }}</div>
                   <div class="text-muted">Average Rating</div>
-                  <small class="text-success">
-                    <i class="bi bi-arrow-up"></i> +0.0 this month
-                  </small>
+                  {% if rating_change >= 0 %}
+                    <small class="text-success">
+                      <i class="bi bi-arrow-up"></i> +{{ rating_change }} this month
+                    </small>
+                  {% elif rating_change < 0 %}
+                    <small class="text-danger">
+                      <i class="bi bi-arrow-down"></i> {{ rating_change }} this month
+                    </small>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -745,101 +758,38 @@
             <div class="row">
               <div class="col-lg-8">
                 <h4 class="fw-semibold mb-3">Today's Schedule</h4>
-                <div class="appointment-card">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div class="d-flex">
-                      <div>
-                        <h6 class="fw-semibold mb-1">Customer-1</h6>
-                        <p class="text-muted small mb-1">
-                          General Consultation
-                        </p>
-                        <p class="text-muted small mb-0">
-                          <i class="bi bi-clock me-1"></i>9:00 AM - 9:30 AM
-                          <i class="bi bi-telephone ms-3 me-1"></i>+91
-                          1234567890
-                        </p>
+                {% if todays_appmnts %}
+                  {% for app in todays_appmnts %}
+                  <div class="appointment-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <div class="d-flex">
+                        <div>
+                          <h6 class="fw-semibold mb-1">{{ app.customer.first_name }}</h6>
+                          <p class="text-muted small mb-1">
+                            {{ app.service.service_name }}
+                          </p>
+                          <p class="text-muted small mb-0">
+                            <i class="bi bi-clock me-1"></i>{{ app.app_start_time|date:"h:i A" }} - {{ app.app_end_time|date:"h:i A" }}
+                            <i class="bi bi-telephone ms-3 me-1"></i>+91
+                            {{ app.customer.phone_no }}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                      <span class="appointment-status status-confirmed"
-                        >Confirmed</span
-                      >
-                      <div class="dropdown">
-                        <button
-                          class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                          type="button"
-                          data-bs-toggle="dropdown"
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="appointment-status status-{{ app.status|lower }}"
+                          >{{ app.status }}</span
                         >
-                          Actions
-                        </button>
-                        <ul class="dropdown-menu">
-                          <li>
-                            <a
-                              class="dropdown-item"
-                              href="#"
-                              data-bs-toggle="modal"
-                              data-bs-target="#rescheduleModal"
-                            >
-                              <i class="bi bi-calendar me-2"></i>Reschedule
-                            </a>
-                          </li>
-                          <li>
-                            <a class="dropdown-item text-danger" href="#"
-                              ><i class="bi bi-x-circle me-2"></i>Cancel</a
-                            >
-                          </li>
-                        </ul>
                       </div>
                     </div>
                   </div>
-                </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="text-center py-5">
+                    <i class="bi bi-calendar-x display-4 text-muted mb-3"></i>
+                    <h5 class="text-muted">No appointments scheduled for today</h5>
+                  </div>
+                {% endif %}
 
-                <div class="appointment-card">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div class="d-flex">
-                      <div>
-                        <h6 class="fw-semibold mb-1">Customer-2</h6>
-                        <p class="text-muted small mb-1">Routine Checkup</p>
-                        <p class="text-muted small mb-0">
-                          <i class="bi bi-clock me-1"></i>11:30 AM - 12:00 PM
-                          <i class="bi bi-telephone ms-3 me-1"></i>+91
-                          4567890234
-                        </p>
-                      </div>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                      <span class="appointment-status status-pending"
-                        >Pending</span
-                      >
-                      <div class="dropdown">
-                        <button
-                          class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                          type="button"
-                          data-bs-toggle="dropdown"
-                        >
-                          Actions
-                        </button>
-                        <ul class="dropdown-menu">
-                          <li>
-                            <a
-                              class="dropdown-item"
-                              href="#"
-                              data-bs-toggle="modal"
-                              data-bs-target="#rescheduleModal"
-                              ><i class="bi bi-calendar me-2"></i>Reschedule</a
-                            >
-                          </li>
-                          <li><hr class="dropdown-divider" /></li>
-                          <li>
-                            <a class="dropdown-item text-danger" href="#"
-                              ><i class="bi bi-x-circle me-2"></i>Cancel</a
-                            >
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </div>
                 <div class="text-center mt-3">
                   <button class="btn btn-outline-primary">
                     View Full Schedule
@@ -849,23 +799,31 @@
 
               <div class="col-lg-4">
                 <h6 class="fw-semibold mt-4 mb-3">Recent Reviews</h6>
-                <div class="review-card">
-                  <div class="d-flex align-items-start">
-                    <div class="flex-grow-1">
-                      <div class="d-flex justify-content-between">
-                        <small class="fw-semibold">Customer</small>
-                        <div class="rating">
-                          <i class="bi bi-star"></i>
-                          <i class="bi bi-star"></i>
-                          <i class="bi bi-star"></i>
-                          <i class="bi bi-star"></i>
-                          <i class="bi bi-star"></i>
+                {% if recent_reviews %}
+                  {% for review in recent_reviews %}
+                  <div class="review-card">
+                    <div class="d-flex align-items-start">
+                      <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between">
+                          <small class="fw-semibold">{{ review.customer.first_name }}</small>
+                          <div class="rating mb-2">
+                            {% for i in "12345" %}
+                              {% if forloop.counter <= review.rating %}
+                                <i class="bi bi-star-fill text-warning"></i>
+                              {% else %}
+                                <i class="bi bi-star"></i>
+                              {% endif %}
+                            {% endfor %}
+                          </div>
                         </div>
+                        <p class="small text-muted mb-0">{{ review.comments }}</p>
                       </div>
-                      <p class="small text-muted mb-0">"review!"</p>
                     </div>
                   </div>
-                </div>
+                  {% endfor %}
+                {% else %}
+                  <p class="text-muted small">No recent reviews yet.</p>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -1431,61 +1389,65 @@ Comprehensive health assessment and medical advice for various health concerns.<
                       </select>
                     </div>
                   </div>
-                  {% for customer in all_customers %}
-                  <div class="appointment-card">
-                    <div class="row align-items-center">
-                      <div class="col-md-4">
-                        <h6 class="fw-semibold mb-1">{{ customer.first_name }} {{ customer.last_name }}</h6>
-                          <p class="small mb-0">
-                            <i class="bi bi-calendar me-1"></i>Last visit: 
-                            {% if customer.last_visit %}
-                              {{ customer.last_visit }}
-                            {% else %}
-                              No visits Yet
-                            {% endif %}
-                          </p>
-                      </div>
-                      <div class="col-md-3">
-                        <div class="text-center">
-                          <div class="fw-bold text-primary">{{ customer.total_visits }}</div>
-                          <small class="text-muted">Total Visits</small>
+                  {% if all_customers %}
+                    {% for customer in all_customers %}
+                    <div class="appointment-card">
+                      <div class="row align-items-center">
+                        <div class="col-md-4">
+                          <h6 class="fw-semibold mb-1">{{ customer.first_name }} {{ customer.last_name }}</h6>
+                            <p class="small mb-0">
+                              <i class="bi bi-calendar me-1"></i>Last visit: 
+                              {% if customer.last_visit %}
+                                {{ customer.last_visit }}
+                              {% else %}
+                                No visits Yet
+                              {% endif %}
+                            </p>
                         </div>
-                      </div>
-                      <div class="col-md-3 text-end">
-                        <div class="dropdown">
-                          <button
-                            class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                            type="button"
-                            data-bs-toggle="dropdown"
-                          >
-                            Actions
-                          </button>
-                          <ul class="dropdown-menu">
-                            <li>
-                              <a
-                                class="dropdown-item"
-                                href="#"
-                                data-bs-toggle="modal"
-                                data-bs-target="#provider-modal"
-                                ><i class="bi bi-eye me-2"></i>View Profile</a
-                              >
-                            </li>
-                            <li>
-                              <a class="dropdown-item book-customer-btn" 
-                                  href="#" 
-                                  data-bs-toggle="modal" 
-                                  data-bs-target=".appointment"
-                                  data-customer-id="{{ customer.customer_id }}"
-                                ><i class="bi bi-calendar-plus me-2"></i>Book
-                                Appointment</a
-                              >
-                            </li>
-                          </ul>
+                        <div class="col-md-3">
+                          <div class="text-center">
+                            <div class="fw-bold text-primary">{{ customer.total_visits }}</div>
+                            <small class="text-muted">Total Visits</small>
+                          </div>
+                        </div>
+                        <div class="col-md-3 text-end">
+                          <div class="dropdown">
+                            <button
+                              class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                              type="button"
+                              data-bs-toggle="dropdown"
+                            >
+                              Actions
+                            </button>
+                            <ul class="dropdown-menu">
+                              <li>
+                                <a
+                                  class="dropdown-item"
+                                  href="#"
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#provider-modal"
+                                  ><i class="bi bi-eye me-2"></i>View Profile</a
+                                >
+                              </li>
+                              <li>
+                                <a class="dropdown-item book-customer-btn" 
+                                    href="#" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target=".appointment"
+                                    data-customer-id="{{ customer.customer_id }}"
+                                  ><i class="bi bi-calendar-plus me-2"></i>Book
+                                  Appointment</a
+                                >
+                              </li>
+                            </ul>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  {% endfor %}
+                    {% endfor %}
+                  {% else %}
+                    <p class="text-muted"> No customer visisted yet </p>
+                  {% endif %}
                 </div>
 
                 <div class="col-lg-4">
@@ -1496,19 +1458,19 @@ Comprehensive health assessment and medical advice for various health concerns.<
                     <div class="card-body">
                       <div class="row text-center">
                         <div class="col-6 mb-3">
-                          <div class="fw-bold text-primary h4">0</div>
+                          <div class="fw-bold text-primary h4">{{ total_customers }}</div>
                           <small class="text-muted">Total Customers</small>
                         </div>
                         <div class="col-6 mb-3">
-                          <div class="fw-bold text-success h4">0</div>
+                          <div class="fw-bold text-success h4">{{ new_this_week }}</div>
                           <small class="text-muted">New This Week</small>
                         </div>
                         <div class="col-6">
-                          <div class="fw-bold text-warning h4">0</div>
+                          <div class="fw-bold text-warning h4">{{ regular_customers }}</div>
                           <small class="text-muted">Regular Patients</small>
                         </div>
                         <div class="col-6">
-                          <div class="fw-bold text-info h4">0%</div>
+                          <div class="fw-bold text-info h4">{{ retention_rate }}%</div>
                           <small class="text-muted">Retention Rate</small>
                         </div>
                       </div>
@@ -1520,24 +1482,27 @@ Comprehensive health assessment and medical advice for various health concerns.<
                       <h5 class="fw-semibold mb-0">Recent Activity</h5>
                     </div>
                     <div class="card-body">
-                      <div class="d-flex align-items-center mb-3">
-                        <div class="flex-grow-1">
-                          <div class="fw-semibold small">Customer-1</div>
-                          <div class="text-muted small">
-                            Booked appointment for Aug 5
+                      {% if recent_activities %}
+                        {% for activity in recent_activities %}
+                        <div class="d-flex align-items-center mb-3">
+                          <div class="flex-grow-1">
+                            <div class="fw-semibold small">{{ activity.customer.first_name }}</div>
+                              {% if activity.status == 'Completed' %}
+                                <div class="text-muted small">Completed appointment</div>
+                              {% elif activity.status == 'Cancelled' %}
+                                <div class="text-muted small">Cancelled appointment</div>
+                              {% else %}
+                                <div class="text-muted small">
+                                  Booked appointment for {{ activity.app_start_time|date:"M d" }}
+                                </div>
+                              {% endif %}
                           </div>
+                          <small class="text-muted">{{ activity.app_start_time|hours_since }}</small>
                         </div>
-                        <small class="text-muted">2h ago</small>
-                      </div>
-                      <div class="d-flex align-items-center mb-3">
-                        <div class="flex-grow-1">
-                          <div class="fw-semibold small">Customer-2</div>
-                          <div class="text-muted small">
-                            Completed consultation
-                          </div>
-                        </div>
-                        <small class="text-muted">1d ago</small>
-                      </div>
+                        {% endfor %}
+                      {% else %}
+                        <p class="text-muted small"> No Recent activities </p>
+                      {% endif %}
                     </div>
                   </div>
                 </div>
@@ -1930,7 +1895,7 @@ Comprehensive health assessment and medical advice for various health concerns.<
                             style="height: 8px"
                           >
                             <div
-                              class="progress-bar bg-warning"
+                              class="progress-bar bg-warning" 
                               style="width: 0%"
                             ></div>
                           </div>

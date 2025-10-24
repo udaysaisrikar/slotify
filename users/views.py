@@ -11,6 +11,7 @@ from appointments.models import Appointments
 import json
 from django.utils import timezone
 from django.http import JsonResponse
+from django.db.models import Avg, Count
 # Create your views here.
 
 
@@ -169,7 +170,7 @@ def customer_dashboard(request):
     if total_appointments > 0:
         attendence_rate = int((completed.count() / total_appointments) * 100)
 
-    recent_appointments = Appointments.objects.filter(customer=customer).exclude(status="Cancelled").order_by('-app_start_time')[:3]
+    recent_appointments = Appointments.objects.filter(customer=customer).exclude(status__in=["Cancelled","Completed"]).order_by('-app_start_time')[:3]
 
         
     context = {
@@ -732,7 +733,7 @@ def provider_dashboard(request):
 
 
     # Get Customers Who has Appointments
-    all_customers = Customer.objects.all()
+    all_customers = Customer.objects.filter(appointments__provider=provider).distinct()
     for customer in all_customers:
         last_appointment = Appointments.objects.filter(provider=provider, customer=customer).order_by('-app_end_time').first()
         customer.last_visit = last_appointment.app_end_time.strftime("%d %b %Y") if last_appointment else None
@@ -777,6 +778,68 @@ def provider_dashboard(request):
     completed_apps = Appointments.objects.filter(provider=provider, status="Completed").order_by('-app_start_time')
     cancelled_apps = Appointments.objects.filter(provider=provider, status="Cancelled").order_by('-app_start_time')
 
+    # Get today's appointments
+    today = datetime.today()
+    todays_appmnts = Appointments.objects.filter(
+        provider=provider,
+        app_start_time__date = today
+    ).order_by('app_start_time')
+
+    # Get recent reviews
+    recent_reviews = Appointments.objects.filter(
+        provider=provider,
+        rating__isnull=False
+    ).order_by('app_start_time')[:3]
+
+
+    yesterday = today - timedelta(days=today.weekday())
+    yesterday_appointments = Appointments.objects.filter(provider=provider, app_start_time__date=yesterday)
+    today_count = todays_appmnts.count()
+    yesterday_count = yesterday_appointments.count()
+    # % Change from yesterday
+    if yesterday_count > 0:
+        appointment_change = round(((today_count - yesterday_count) / yesterday_count) * 100)
+    else:
+        appointment_change = today_count * 100  # All new appointments
+
+    # Schedule utilization = (booked slots today / total available slots today) * 100
+    first_schedule = ProviderSchedule.objects.filter(provider=provider).first()
+    total_slots = len(first_schedule.available_time.split(',')) if schedule and first_schedule.available_time else 0
+    stat_booked_slots = todays_appmnts.count()
+    utilization = round((stat_booked_slots / total_slots) * 100) if total_slots > 0 else 0
+    # Avg rating and change from last month
+    avg_rating = Appointments.objects.filter(
+        provider=provider, status='completed', rating__isnull=False
+    ).aggregate(avg=Avg('rating'))['avg'] or 0
+    avg_rating = round(avg_rating, 1)
+
+    this_month = Appointments.objects.filter(
+        provider=provider, app_start_time__month=today.month, rating__isnull=False
+    ).aggregate(avg=Avg('rating'))['avg'] or 0
+    last_month = Appointments.objects.filter(
+        provider=provider, app_start_time__month=today.month - 1, rating__isnull=False
+    ).aggregate(avg=Avg('rating'))['avg'] or 0
+    rating_change = round(this_month - last_month, 1)
+
+
+    # For Customer Overview 
+    customers_all = Customer.objects.filter(appointments__provider=provider).distinct()
+    total_customers = customers_all.count()
+    # Customers who booked this week
+    one_week_ago = timezone.now() - timedelta(days=7)
+    new_this_week = customers_all.filter(appointments__app_start_time__gte=one_week_ago).distinct().count()
+    # Regular customers (more than 2 visits)
+    regular_customers = customers_all.annotate(visit_count=Count('appointments')).filter(visit_count__gt=2).count()
+
+    # Retention rate = (regular_customers / total_customers) * 100
+    retention_rate = int((regular_customers / total_customers) * 100) if total_customers > 0 else 0
+    # Recent activity — last 5 actions from appointments
+    recent_activities = (
+        Appointments.objects.filter(provider=provider)
+        .select_related('customer')
+        .order_by('-app_start_time')[:3]
+    )
+
     
     category = provider.category_name
     context = {
@@ -794,6 +857,18 @@ def provider_dashboard(request):
         "completed_apps": completed_apps,
         "cancelled_apps": cancelled_apps,
         "reviews":reviews,
+        "todays_appmnts":todays_appmnts,
+        "recent_reviews":recent_reviews,
+        "utilization":utilization,
+        "appointment_change":appointment_change,
+        "today_count":today_count,
+        "avg_rating":avg_rating,
+        "rating_change":rating_change,
+        "total_customers":total_customers,
+        "new_this_week":new_this_week,
+        "regular_customers":regular_customers,
+        "retention_rate":retention_rate,
+        "recent_activities":recent_activities,
     }
 
     return render(request, 'provider_dashboard.html', context)
