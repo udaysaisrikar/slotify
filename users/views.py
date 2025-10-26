@@ -84,7 +84,15 @@ def customer_dashboard(request):
                     schedule.booked_slots.pop(date_str, None)
 
                 schedule.save()
-                messages.success(request, "Appointment Cancelled Successfully!")
+            # ✅ Create notification for Customer
+            Notifications.objects.create(
+                user=appointment.customer,
+                provider=appointment.provider,
+                title="Appointment Cancelled",
+                message=f"Your appointment for '{appointment.service.service_name}' was cancelled by {appointment.customer.first_name}.",
+                created_at=timezone.now()
+            )
+            messages.success(request, "Appointment Cancelled Successfully!")
         except Appointments.DoesNotExist:
             pass
         return redirect('customer_dashboard')
@@ -407,10 +415,12 @@ def update_profile(request):
             name = request.POST.get('name') or provider.name
             email_id = request.POST.get('email') or provider.email_id
             phone_no = request.POST.get('phone_no') or provider.phone_no
+            address = request.POST.get('address') or provider.address
             # Update Provider
             provider.name = name
             provider.email_id = email_id
             provider.phone_no = phone_no
+            provider.address = address
             provider.save()
             messages.success(request, "Your profile updated successfully!")
 
@@ -962,6 +972,26 @@ def provider_dashboard(request):
             "color": "bg-secondary",
         })
 
+    # Review Analytics
+    reviews_all = Appointments.objects.filter(provider=provider, rating__isnull=False)
+
+    total_reviews_now = reviews_all.count()
+    avg_rating_now = round(reviews_all.aggregate(avg=Avg('rating'))['avg'] or 0, 1)
+
+    # Count of each rating (1 to 5)
+    rating_counts = {
+        5: reviews_all.filter(rating=5).count(),
+        4: reviews_all.filter(rating=4).count(),
+        3: reviews_all.filter(rating=3).count(),
+        2: reviews_all.filter(rating=2).count(),
+        1: reviews_all.filter(rating=1).count(),
+    }
+
+    # Calculate percentage for each rating
+    rating_percentages = {}
+    for star, count in rating_counts.items():
+        rating_percentages[star] = round((count / total_reviews_now) * 100, 1) if total_reviews_now > 0 else 0
+
     
     
     category = provider.category_name
@@ -998,6 +1028,10 @@ def provider_dashboard(request):
         "service_analytics":service_analytics,
         "total_appmts":total_appointments,
         "peak_data":peak_data,
+        "rating_percentage":rating_percentages,
+        "total_reviews_now":total_reviews_now,
+        "rating_counts":rating_counts,
+        "avg_rating_now":avg_rating_now
     }
 
     return render(request, 'provider_dashboard.html', context)

@@ -1829,82 +1829,38 @@ Comprehensive health assessment and medical advice for various health concerns.<
                       <h5 class="fw-semibold mb-0">Rating Overview</h5>
                     </div>
                     <div class="card-body text-center">
-                      <div class="display-4 fw-bold text-warning mb-2">0.0</div>
+                      <div class="display-4 fw-bold text-warning mb-2">{{ avg_rating_now|default:"0.0" }}</div>
                       <div class="rating mb-2">
-                        <i class="bi bi-star"></i>
-                        <i class="bi bi-star"></i>
-                        <i class="bi bi-star"></i>
-                        <i class="bi bi-star"></i>
-                        <i class="bi bi-star"></i>
+                        {% for i in 1|to:5 %}
+                          {% with star=i|star_type:avg_rating_now %}
+                            {% if star == "full" %}
+                              <i class="bi bi-star-fill text-warning"></i>
+                            {% elif star == "half" %}
+                              <i class="bi bi-star-half text-warning"></i>
+                            {% else %}
+                              <i class="bi bi-star text-warning"></i>
+                            {% endif %}
+                          {% endwith %}
+                        {% endfor %}
                       </div>
-                      <p class="text-muted">Based on 0 reviews</p>
+                      <p class="text-muted">Based on {{ total_reviews_now }} review{{ total_reviews_now|pluralize }}</p>
 
                       <div class="mt-4">
+                        {% for star in "54321" %}
                         <div class="d-flex align-items-center mb-2">
-                          <span class="me-2">5</span>
+                          <span class="me-2">{{ star }}</span>
                           <div
                             class="progress flex-grow-1 me-2"
                             style="height: 8px"
                           >
                             <div
                               class="progress-bar bg-warning"
-                              style="width: 0%"
+                              style="width: {{ rating_percentage|default_if_none:0|get_items:star }}%"
                             ></div>
                           </div>
-                          <span class="small">0</span>
+                          <span class="small">{{ rating_counts|get_items:star }}</span>
                         </div>
-                        <div class="d-flex align-items-center mb-2">
-                          <span class="me-2">4</span>
-                          <div
-                            class="progress flex-grow-1 me-2"
-                            style="height: 8px"
-                          >
-                            <div
-                              class="progress-bar bg-warning"
-                              style="width: 0%"
-                            ></div>
-                          </div>
-                          <span class="small">0</span>
-                        </div>
-                        <div class="d-flex align-items-center mb-2">
-                          <span class="me-2">3</span>
-                          <div
-                            class="progress flex-grow-1 me-2"
-                            style="height: 8px"
-                          >
-                            <div
-                              class="progress-bar bg-warning"
-                              style="width: 0%"
-                            ></div>
-                          </div>
-                          <span class="small">0</span>
-                        </div>
-                        <div class="d-flex align-items-center mb-2">
-                          <span class="me-2">2</span>
-                          <div
-                            class="progress flex-grow-1 me-2"
-                            style="height: 8px"
-                          >
-                            <div
-                              class="progress-bar bg-warning" 
-                              style="width: 0%"
-                            ></div>
-                          </div>
-                          <span class="small">0</span>
-                        </div>
-                        <div class="d-flex align-items-center">
-                          <span class="me-2">1</span>
-                          <div
-                            class="progress flex-grow-1 me-2"
-                            style="height: 8px"
-                          >
-                            <div
-                              class="progress-bar bg-warning"
-                              style="width: 0%"
-                            ></div>
-                          </div>
-                          <span class="small">0</span>
-                        </div>
+                         {% endfor %}
                       </div>
                     </div>
                   </div>
@@ -2045,10 +2001,7 @@ Dr. Sarah Smith is a dedicated General Practitioner with over 15 years of experi
                         </div>
                         <div class="mb-3">
                           <label class="form-label fw-semibold">Address</label>
-                          <textarea class="form-control" rows="3">
-123 Medical Plaza Drive
-                                                                                    Suite 200
-                                                                                New York, NY 10001</textarea
+                          <textarea class="form-control" rows="3" name="address"> {{ provider.address }} </textarea
                           >
                         </div>
                         <button type="submit" class="btn btn-primary">

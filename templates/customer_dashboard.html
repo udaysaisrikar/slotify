@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% load custom_filters %}
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -1095,7 +1096,7 @@
                     <div>
                       <h6 class="mb-1 {% if not notification.is_read %}fw-semibold{% endif %} ">{{ note.title }}</h6>
                       <p class="mb-1 small">{{ note.message }}</p>
-                      <small class="text-muted">{{ note.created_at|timesince }} ago</small>
+                      <small class="text-muted">{{ note.created_at|hours_since }} </small>
                     </div>
                   </div>
                   {% if not note.is_read %}
