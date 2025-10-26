@@ -758,13 +758,8 @@
             <div class="row">
               <div class="col-lg-8">
                 <h4 class="fw-semibold mb-3">Today's Schedule</h4>
-<<<<<<< HEAD
-                {% if todays_appmnts %}
-                  {% for app in todays_appmnts %}
-=======
                 {% if today_schedule %}
                   {% for app in today_schedule %}
->>>>>>> 5b385ca (Again almost done)
                   <div class="appointment-card">
                     <div class="d-flex justify-content-between align-items-start">
                       <div class="d-flex">
@@ -797,14 +792,10 @@
 
                 <div class="text-center mt-3">
                   <button class="btn btn-outline-primary">
-<<<<<<< HEAD
-                    View Full Schedule
-=======
                     <span
                     style="cursor: pointer"
                     onclick="document.querySelector('[data-section=schedule]').click();"
                     >View Full Schedule</span>
->>>>>>> 5b385ca (Again almost done)
                   </button>
                 </div>
               </div>
@@ -1126,40 +1117,6 @@
                     </div>
                   </div>
                   <div class="appointment-card">
-<<<<<<< HEAD
-                    <div class="d-flex justify-content-between align-items-start">
-                      <div class="d-flex">
-                        <div>
-                          <h6 class="fw-semibold mb-1">Customer-1</h6>
-                          <p class="text-muted small mb-1">General Consultation</p>
-                          <p class="text-muted small mb-0">
-                            <i class="bi bi-clock me-1"></i>9:00 AM - 9:30 AM
-                            <i class="bi bi-telephone ms-3 me-1"></i>+91 1234567890
-                          </p>
-                        </div>
-                      </div>
-                      <div class="d-flex align-items-center gap-2">
-                        <span class="appointment-status status-confirmed">Confirmed</span>
-                        <div class="dropdown">
-                          <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            Actions
-                          </button>
-                          <ul class="dropdown-menu">
-                            <li>
-                              <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#rescheduleModal">
-                                <i class="bi bi-calendar me-2"></i>Reschedule
-                              </a>
-                            </li>
-                            <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-x-circle me-2"></i>Cancel</a></li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="text-center mt-3">
-                    <button class="btn btn-outline-primary">View Full Schedule</button>
-                  </div>
-=======
                     {% if todays_appmnts %}
                       {% for app in todays_appmnts %}
                       <div class="d-flex justify-content-between align-items-start">
@@ -1214,7 +1171,6 @@
                   {% comment %} <div class="text-center mt-3">
                     <button class="btn btn-outline-primary">View Full Schedule</button>
                   </div> {% endcomment %}
->>>>>>> 5b385ca (Again almost done)
                 </div>
               </div>
               <div class="col-lg-4">
@@ -1355,44 +1311,14 @@
                       <h5 class="fw-semibold mb-0">Service Analytics</h5>
                     </div>
                     <div class="card-body">
+                      {% for service in service_analytics %}
                       <div class="mb-3">
                         <div class="d-flex justify-content-between">
-                          <span>Service-1</span>
-                          <span class="fw-semibold">0%</span>
+                          <span>{{ service.name }}</span>
+                          <span class="fw-semibold">{{ service.percentage }}%</span>
                         </div>
                         <div class="progress mt-1" style="height: 6px">
                           <div
-<<<<<<< HEAD
-                            class="progress-bar bg-primary"
-                            style="width: 0%"
-                          ></div>
-                        </div>
-                      </div>
-                      <div class="mb-3">
-                        <div class="d-flex justify-content-between">
-                          <span>Service-2</span>
-                          <span class="fw-semibold">0%</span>
-                        </div>
-                        <div class="progress mt-1" style="height: 6px">
-                          <div
-                            class="progress-bar bg-success"
-                            style="width: 0%"
-                          ></div>
-                        </div>
-                      </div>
-                      <div class="mb-3">
-                        <div class="d-flex justify-content-between">
-                          <span>Service-3</span>
-                          <span class="fw-semibold">0%</span>
-                        </div>
-                        <div class="progress mt-1" style="height: 6px">
-                          <div
-                            class="progress-bar bg-warning"
-                            style="width: 0%"
-                          ></div>
-                        </div>
-                      </div>
-=======
                             class="progress-bar {% cycle 'bg-primary' 'bg-success' 'bg-warning' 'bg-info' 'bg-danger' %}"
                             style="width: {{ service.percentage }}%"
                           ></div>
@@ -1401,7 +1327,6 @@
                       {% empty %}
                         <p class="text-muted"> No Services Found </p>
                       {% endfor %}
->>>>>>> 5b385ca (Again almost done)
                     </div>
                   </div>
 
