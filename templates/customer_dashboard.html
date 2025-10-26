@@ -654,7 +654,9 @@
                         {{provider.start_hours|time:"h:i A"}} -
                         {{provider.end_hours|time:"h:i A"}}
                         <br />
-                        <i class="bi bi-award"></i> 10+ years of experience
+                        {% if provider.experience %}
+                        <i class="bi bi-award"></i> {{ provider.experience }} years of experience
+                        {% endif %}
                       </p>
                       <div class="d-flex gap-2 mb-2">
                         <span class="badge bg-light text-dark"

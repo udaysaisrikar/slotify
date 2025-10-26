@@ -1108,12 +1108,6 @@
                     class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="fw-semibold mb-0">Today's Schedule</h5>
                     <div class="d-flex gap-2">
-                      <button class="btn btn-sm btn-outline-primary">
-                        <i class="bi bi-arrow-left"></i>
-                      </button>
-                      <button class="btn btn-sm btn-outline-primary">
-                        <i class="bi bi-arrow-right"></i>
-                      </button>
                     </div>
                   </div>
                   <div class="appointment-card">
@@ -1793,22 +1787,6 @@ Comprehensive health assessment and medical advice for various health concerns.<
                           >
                         </div>
                       </div>
-                      <div class="dropdown">
-                        <button
-                          class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                          type="button"
-                          data-bs-toggle="dropdown"
-                        >
-                          Actions
-                        </button>
-                        <ul class="dropdown-menu">
-                          <li>
-                            <a class="dropdown-item" href="#"
-                              ><i class="bi bi-reply me-2"></i>Reply</a
-                            >
-                          </li>
-                        </ul>
-                      </div>
                     </div>
                   </div>
                   {% empty %}
@@ -1937,7 +1915,8 @@ Comprehensive health assessment and medical advice for various health concerns.<
                             <input
                               type="text"
                               class="form-control"
-                              value="General Practitioner"
+                              name="title"
+                              value="{{ provider.title }}"
                             />
                           </div>
                         </div>
@@ -1945,8 +1924,7 @@ Comprehensive health assessment and medical advice for various health concerns.<
                           <label class="form-label fw-semibold"
                             >Bio/Description</label
                           >
-                          <textarea class="form-control" rows="4">
-Dr. Sarah Smith is a dedicated General Practitioner with over 15 years of experience in family medicine. She specializes in preventive care, chronic disease management, and patient education. Dr. Smith is committed to providing compassionate, comprehensive healthcare to patients of all ages.</textarea
+                          <textarea class="form-control" rows="4" name="description"> {{ provider.description }} </textarea
                           >
                         </div>
                         <div class="row">
@@ -1954,7 +1932,7 @@ Dr. Sarah Smith is a dedicated General Practitioner with over 15 years of experi
                             <label class="form-label fw-semibold"
                               >Years of Experience</label
                             >
-                            <input type="text" class="form-control" />
+                            <input type="text" name="experience" class="form-control" value="{{ provider.experience }}"/>
                           </div>
                           <div class="col-md-6 mb-3">
                             <label class="form-label fw-semibold">Tags</label>

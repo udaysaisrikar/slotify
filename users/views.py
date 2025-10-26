@@ -416,11 +416,17 @@ def update_profile(request):
             email_id = request.POST.get('email') or provider.email_id
             phone_no = request.POST.get('phone_no') or provider.phone_no
             address = request.POST.get('address') or provider.address
+            experience = request.POST.get('experience') or provider.experience
+            title = request.POST.get('title') or provider.title
+            description = request.POST.get('description') or provider.description
             # Update Provider
             provider.name = name
             provider.email_id = email_id
             provider.phone_no = phone_no
             provider.address = address
+            provider.experience = experience
+            provider.title = title
+            provider.description = description
             provider.save()
             messages.success(request, "Your profile updated successfully!")
 
