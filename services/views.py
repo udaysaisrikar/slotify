@@ -17,3 +17,8 @@ def category_view(request, category_name):
 
     return render(request, 'common_category_page.html', context)
 
+
+# def filter_providers(request):
+#     category = request.POST.get("category")
+#     selected_date = request.POST.get("date")
+#     time_slot = request.POST.get("time")

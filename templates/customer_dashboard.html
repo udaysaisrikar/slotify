@@ -808,7 +808,12 @@
                                   class="dropdown-item"
                                   href="#"
                                   data-bs-toggle="modal"
-                                  data-bs-target="#provider-modal"
+                                  data-bs-target="#providerModal"
+                                  data-provider-name="{{ app.provider.name }}"
+                                  data-service="{{app.provider.category_name }}"
+                                  data-address="{{ app.provider.address }}"
+                                  data-email="{{ app.provider.email_id }}"
+                                  data-phone="{{ app.provider.phone_no }}"
                                   ><i class="bi bi-eye me-2"></i>View Details</a
                                 >
                               </li>
@@ -1048,33 +1053,6 @@
                 <div class="delete-user-card p-3 mb-4">
                   <h5 class="mb-3">Forget Password</h5>
                   <p>Wanna modify your password?</p>
-                  <div class="mb-3 text-start">
-                    <label class="form-label fw-semibold"
-                      >Enter new password</label
-                    >
-                    <input
-                      type="password"
-                      class="form-control"
-                      name="new_password"
-                    />
-                  </div>
-                  <div class="mb-3 text-start">
-                    <label class="form-label fw-semibold"
-                      >Confirm password</label
-                    >
-                    <input
-                      type="password"
-                      class="form-control"
-                      name="confirm_new_password"
-                    />
-                  </div>
-                  <div class="mb-3 text-start">
-                    <label class="form-label fw-semibold"
-                      >Enter confirmation code</label
-                    >
-                    <p>Sent to your registered email</p>
-                    <input type="text" class="form-control" />
-                  </div>
                   <button class="btn btn-outline-primary btn-lg w-100">
                     <i class="bi bi-lock-fill me-2"></i>Change Password
                   </button>
@@ -2034,8 +2012,10 @@
                   .then(data => {
                       if (data.success) {
                           // Show success section
+                          const successMsg = data.message || "Appointment Booked Successfully!"
                           document.getElementById("summaryContent").style.display = "none";
                           document.getElementById("successContent").style.display = "block";
+                          alert(successMsg);
                       } else {
                           alert("Booking failed: " + data.error);
                       }

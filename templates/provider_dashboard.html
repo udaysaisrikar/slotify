@@ -759,7 +759,7 @@
               <div class="col-lg-8">
                 <h4 class="fw-semibold mb-3">Today's Schedule</h4>
                 {% if todays_appmnts %}
-                  {% for app in todays_appmnts %}
+                  {% for app in today_schedule %}
                   <div class="appointment-card">
                     <div class="d-flex justify-content-between align-items-start">
                       <div class="d-flex">
@@ -792,7 +792,12 @@
 
                 <div class="text-center mt-3">
                   <button class="btn btn-outline-primary">
+                    <span
+                    style="cursor: pointer"
+                    onclick="document.querySelector('[data-section=schedule]').click();"
+                    >
                     View Full Schedule
+                  </span>
                   </button>
                 </div>
               </div>
@@ -1255,42 +1260,22 @@
                       <h5 class="fw-semibold mb-0">Service Analytics</h5>
                     </div>
                     <div class="card-body">
+                      {% for service in service_analytics %}
                       <div class="mb-3">
                         <div class="d-flex justify-content-between">
-                          <span>Service-1</span>
-                          <span class="fw-semibold">0%</span>
+                          <span>{{ service.name }}</span>
+                          <span class="fw-semibold">{{ service.percentage }}%</span>
                         </div>
                         <div class="progress mt-1" style="height: 6px">
                           <div
                             class="progress-bar bg-primary"
-                            style="width: 0%"
+                            style="width: {{ service.percentage }}%"
                           ></div>
                         </div>
                       </div>
-                      <div class="mb-3">
-                        <div class="d-flex justify-content-between">
-                          <span>Service-2</span>
-                          <span class="fw-semibold">0%</span>
-                        </div>
-                        <div class="progress mt-1" style="height: 6px">
-                          <div
-                            class="progress-bar bg-success"
-                            style="width: 0%"
-                          ></div>
-                        </div>
-                      </div>
-                      <div class="mb-3">
-                        <div class="d-flex justify-content-between">
-                          <span>Service-3</span>
-                          <span class="fw-semibold">0%</span>
-                        </div>
-                        <div class="progress mt-1" style="height: 6px">
-                          <div
-                            class="progress-bar bg-warning"
-                            style="width: 0%"
-                          ></div>
-                        </div>
-                      </div>
+                      {% empty %}
+                        <p class="text-muted"> No Services Found. </p>
+                      {% endfor %}
                     </div>
                   </div>
 
@@ -1523,17 +1508,6 @@ Comprehensive health assessment and medical advice for various health concerns.<
                   <p class="text-muted">
                     Track your practice performance and growth.
                   </p>
-                </div>
-                <div class="d-flex gap-2">
-                  <select class="form-select" style="max-width: 200px">
-                    <option>Last 1 Week</option>
-                    <option>Last 2 Weeks</option>
-                    <option>Last 3 Weeks</option>
-                    <option>Last 4 Weeks</option>
-                  </select>
-                  <button class="btn btn-outline-primary">
-                    <i class="bi bi-download me-2"></i>Export Report
-                  </button>
                 </div>
               </div>
 
@@ -1772,9 +1746,9 @@ Comprehensive health assessment and medical advice for various health concerns.<
                     Manage customer feedback and improve your service.
                   </p>
                 </div>
-                <button class="btn btn-outline-primary">
+                {% comment %} <button class="btn btn-outline-primary">
                   <i class="bi bi-funnel me-2"></i>Filter Reviews
-                </button>
+                </button> {% endcomment %}
               </div>
               <div class="row">
                 <div class="col-lg-8">
@@ -1802,22 +1776,6 @@ Comprehensive health assessment and medical advice for various health concerns.<
                             >{{ review.service.service_name }} • {{ review.app_start_time|date:"F d, Y" }}</small
                           >
                         </div>
-                      </div>
-                      <div class="dropdown">
-                        <button
-                          class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                          type="button"
-                          data-bs-toggle="dropdown"
-                        >
-                          Actions
-                        </button>
-                        <ul class="dropdown-menu">
-                          <li>
-                            <a class="dropdown-item" href="#"
-                              ><i class="bi bi-reply me-2"></i>Reply</a
-                            >
-                          </li>
-                        </ul>
                       </div>
                     </div>
                   </div>
@@ -2076,19 +2034,19 @@ Dr. Sarah Smith is a dedicated General Practitioner with over 15 years of experi
                     <div class="card-body">
                       <div class="row text-center">
                         <div class="col-6 mb-3">
-                          <div class="fw-bold text-primary h5">0.0</div>
+                          <div class="fw-bold text-primary h5">{{ avg_rating }}</div>
                           <small class="text-muted">Average Rating</small>
                         </div>
                         <div class="col-6 mb-3">
-                          <div class="fw-bold text-success h5">0</div>
+                          <div class="fw-bold text-success h5">{{ reviews|length }}</div>
                           <small class="text-muted">Total Reviews</small>
                         </div>
                         <div class="col-6">
-                          <div class="fw-bold text-info h5">0.0k</div>
+                          <div class="fw-bold text-info h5">{{ profile_views }}</div>
                           <small class="text-muted">Profile Views</small>
                         </div>
                         <div class="col-6">
-                          <div class="fw-bold text-warning h5">0%</div>
+                          <div class="fw-bold text-warning h5">{{ response_rate }}%</div>
                           <small class="text-muted">Response Rate</small>
                         </div>
                       </div>

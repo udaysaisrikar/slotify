@@ -759,11 +759,6 @@ def provider_dashboard(request):
     ).order_by('-app_start_time')
 
 
-
-    # ---------------
-    # Handle Appointments Display
-    # ---------------
-
     # Automatically mark completed ones
     now = timezone.now()
     Appointments.objects.filter(
@@ -784,6 +779,7 @@ def provider_dashboard(request):
         provider=provider,
         app_start_time__date = today
     ).order_by('app_start_time')
+    today_schedule = todays_appmnts[:3]
 
     # Get recent reviews
     recent_reviews = Appointments.objects.filter(
@@ -807,6 +803,7 @@ def provider_dashboard(request):
     total_slots = len(first_schedule.available_time.split(',')) if schedule and first_schedule.available_time else 0
     stat_booked_slots = todays_appmnts.count()
     utilization = round((stat_booked_slots / total_slots) * 100) if total_slots > 0 else 0
+
     # Avg rating and change from last month
     avg_rating = Appointments.objects.filter(
         provider=provider, status='completed', rating__isnull=False
@@ -840,6 +837,32 @@ def provider_dashboard(request):
         .order_by('-app_start_time')[:3]
     )
 
+    # Calculating Response Rate
+    total_requests = Appointments.objects.filter(provider=provider).count()
+    responded = Appointments.objects.filter(provider=provider, status__in=["Confirmed","Cancelled"]).count()
+    response_rate = (responded / total_requests * 100) if total_requests > 0 else 0
+    response_rate = round(response_rate)
+
+    # Profile views
+    viewed_providers = request.session.get("viewed_providers", [])
+    if provider_id not in viewed_providers:
+        provider.profile_views += 1
+    provider.save(update_fields=["profile_views"])
+    viewed_providers.append(provider_id)
+    request.session["viewed_providers"] = viewed_providers
+
+    # Service Analytics 
+    services_analytics = Services.objects.filter(provider_id = provider)
+    total_appointments = Appointments.objects.filter(provider=provider).count()
+    service_analytics = []
+    for service in services_analytics:
+        service_count = Appointments.objects.filter(provider=provider, service=service).count()
+        percentage = round((service_count / total_appointments * 100), 2) if total_appointments > 0 else 0
+        service_analytics.append({
+            "name": service.service_name,
+            "percentage": percentage
+        })
+
     
     category = provider.category_name
     context = {
@@ -858,6 +881,7 @@ def provider_dashboard(request):
         "cancelled_apps": cancelled_apps,
         "reviews":reviews,
         "todays_appmnts":todays_appmnts,
+        "today_schedule":today_schedule,
         "recent_reviews":recent_reviews,
         "utilization":utilization,
         "appointment_change":appointment_change,
@@ -869,6 +893,9 @@ def provider_dashboard(request):
         "regular_customers":regular_customers,
         "retention_rate":retention_rate,
         "recent_activities":recent_activities,
+        "response_rate":response_rate,
+        "profile_views":provider.profile_views,
+        "service_analytics":service_analytics,
     }
 
     return render(request, 'provider_dashboard.html', context)
@@ -893,18 +920,60 @@ def get_time_slots(request):
         provider = get_object_or_404(ServiceProvider, provider_id=provider_id)
         weekday = datetime.strptime(selected_date, "%Y-%m-%d").strftime("%A")
         schedule = ProviderSchedule.objects.filter(provider=provider, service=selected_service, day_of_week=weekday).first()
+        print("Schedule",schedule)
 
         time_slots = []
         if schedule and schedule.available_time:
             try:
+                duration_min = timedelta(minutes=int(selected_service.duration))
                 start_str, end_str = schedule.available_time.split("-")
                 start = datetime.strptime(start_str, "%H:%M")
                 end = datetime.strptime(end_str, "%H:%M")
+
+                print("Duration", duration_min)
+
+                # ---- Booked times ----
+                booked_for_date = schedule.booked_slots.get(selected_date, [])
+                booked_intervals = []
+                for b in booked_for_date:
+                    try:
+                        b_start = datetime.strptime(b["start"], "%H:%M")
+                        b_end = datetime.strptime(b["end"], "%H:%M")
+                        booked_intervals.append((b_start, b_end))
+                    except Exception:
+                        continue
+                    
+                print("Booked:", booked_intervals)
+                
                 while start < end:
                     slot_time = start.strftime("%H:%M")
                     slot_st = start
-                    slot_end = start + timedelta(minutes=int(schedule.service.duration))
+                    slot_end = start + duration_min
+                    slot_end2 = start + timedelta(hours=1)
                     available = True
+
+                    # --- Check total booked minutes in this hour ---
+                    booked_minutes = 0
+                    for b_start, b_end in booked_intervals:
+                        # Only count bookings that overlap within this hour window
+                        if b_start < slot_end2 and b_end > slot_st:
+                            overlap_start = max(slot_st, b_start)
+                            overlap_end = min(slot_end2, b_end)
+                            booked_minutes += int((overlap_end - overlap_start).total_seconds() / 60)
+
+                    # --- Mark unavailable if fully booked ---
+                    # if not (slot_end2 <= b_start or slot_st >= b_end):
+                    #     available = False
+                        
+                    # if booked_minutes + (duration_min.total_seconds() / 60) > 60:
+                    #     available = False
+                    print("booked minutes",booked_minutes)
+                    free_minutes = 60 - booked_minutes
+                    if free_minutes < int(duration_min.total_seconds() / 60):
+                        available = False
+                    if free_minutes == 0:
+                        available = False
+                        
 
                     # ---- Blocked times ----
                     blocked_times = [b for b in schedule.blocked_time if b.get("date") == selected_date]
@@ -914,23 +983,16 @@ def get_time_slots(request):
                             available = False
                             break
 
-                    # ---- Booked times ----
-                    booked_for_date = schedule.booked_slots.get(selected_date, [])
-                    for booked in booked_for_date:
-                        booked_start = datetime.strptime(booked["start"], "%H:%M")
-                        booked_end = datetime.strptime(booked["end"], "%H:%M")
-                        # Overlap Check
-                        if not (slot_end <= booked_start or slot_st >= booked_end):
-                            available = False
-                            break
                     time_slots.append({"time":slot_time, "available":available})
                     
                     start += timedelta(hours=1)
+                print("Final ts:", time_slots)
+
             except Exception as e:
                 print("Error in get_time_slots:", e)
 
         
-        print(time_slots)
+        print("Final:",time_slots)
 
         return JsonResponse({"time_slots": time_slots})
 
