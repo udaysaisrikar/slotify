@@ -429,6 +429,7 @@
         <div class="search-container">
             <form id="filterForm" method="POST" action="{% url 'filter_providers' %}">
             {% csrf_token %}
+            <input type="hidden" name="category" value="{{ category_name }}">
             <div class="row g-3">
                 <div class="col-md-5">
                     <label class="form-label fw-semibold">
@@ -454,6 +455,7 @@
                     </button>
                 </div>
             </div>
+        </form>
         </div>
     </div>
 
@@ -512,6 +514,7 @@
                     </button>
                 </div>
             </div>
+        
 
             <!-- Providers List -->
             <div class="col-lg-9">
@@ -520,7 +523,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h4 class="mb-1" id="resultsCount">
-                                <i class="bi bi-people me-2"></i>24 Providers Found
+                                <i class="bi bi-people me-2"></i>{{ providers|length }} Providers Found
                             </h4>
                             <small class="text-muted" id="categoryBreadcrumb">{{ category_name }}</small>
                         </div>
@@ -551,20 +554,21 @@
                 <!-- Provider Cards -->
                 <div id="providersContainer">
                     <!-- Sample Provider Card 1 -->
+                     {% for provider in providers %}
                     <div class="provider-card">
                         <div class="row align-items-center">
                             <div class="col-md-2 text-center mb-3">
                                 <i class="bi bi-person-circle mb-2" style="font-size: 4rem;"></i>
                                 <div class="rating mb-1">
                                     <span class="stars">★★★★★</span>
-                                    <span class="rating-number">4.8</span>
+                                    <span class="rating-number">{{ provider.rating }}</span>
                                 </div>
-                                <small class="text-muted">156 reviews</small>
+                                <small class="text-muted">{{ provider.total_reviews }} reviews</small>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <h5 class="fw-bold mb-2">service provider title</h5>
+                                <h5 class="fw-bold mb-2">{{ provider.name }}</h5>
                                 <p class="text-muted mb-2">provider title • years of exp</p>
-                                <p class="small mb-3 text-muted">Description of the service provider</p>
+                                <p class="small mb-3 text-muted">{{ provider.business_name }}</p>
                                 <div class="mb-3">
                                     <span class="service-tag">tag-1</span>
                                     <span class="service-tag">tag-2</span>
@@ -576,13 +580,24 @@
                                     <button class="btn btn-book-now">
                                         <i class="bi bi-calendar-plus me-2"></i>Book Now
                                     </button>
-                                    <button class="btn btn-view-profile" data-bs-toggle="modal" data-bs-target="#provider-modal">
+                                    <button class="btn btn-view-profile" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#provider-modal"
+                                            data-provider-name="{{ provider.name }}"
+                                            data-service="{{ provider.category_name }}"
+                                            data-address="{{ provider.address }}"
+                                            data-email="{{ provider.email_id }}"
+                                            data-phone="{{ provider.phone_no }}"
+                                            >
                                         <i class="bi bi-person me-2"></i>View Profile
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {% empty %}
+                        <p class="text-center text-muted"> No providers match your filter </p>
+                    {% endfor %}
 
                 <!-- Load More Button -->
                 <div class="text-center mt-4">
@@ -625,41 +640,67 @@
     </footer>
 
     <!--provider-modal-->
-    <div class="modal fade provider-card" id="provider-modal" aria-labelledby="provider-modal-label" aria-hidden="true" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header modal-header-custom">
-                    <h3 class="modal-title" id="provider-modal-label">Provider Details</h3>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <h5 class="fw-bold fs-5">Service Provider Title</h5>
-                    <div class="details-element">
-                        <span>Provider name: </span>
-                        <span id="provider-name">Uday Sai Srikar</span>
-                    </div>
-                    <div class="details-element">
-                        <span>Category: </span>
-                        <span id="provider-category">IT & Technical support</span>
-                    </div>
-                    <div class="details-element">
-                        <span>E-mail: </span>
-                        <span id="provider-email">uday@gmail.com</span>
-                    </div>
-                    <div class="details-element">
-                        <span>Phone: </span>
-                        <span id="provider-phno">9618742368</span>
-                    </div>
-                    <div class="details-element">
-                        <span>Address: </span>
-                        <span id="provider-address">East Godavari-533343</span>
-                    </div>
-                    <button class="btn btn-secondary mt-3">
-                        View Services
-                    </button>
-                </div>
+    <div
+      class="modal fade provider-card"
+      id="provider-modal"
+      aria-labelledby="provider-modal-label"
+      aria-hidden="true"
+      tabindex="-1"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header modal-header-custom">
+            <h3 class="modal-title" id="provider-modal-label">
+              Provider Details
+            </h3>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body p-4">
+            <h5 class="fw-bold fs-5">Service Provider Title</h5>
+            <div class="details-element">
+              <span>Provider name: </span>
+              <span id="provider-name"></span>
             </div>
+            <div class="details-element">
+              <span>Category: </span>
+              <span id="provider-category"></span>
+            </div>
+            <div class="details-element">
+              <span>E-mail: </span>
+              <span id="provider-email"></span>
+            </div>
+            <div class="details-element">
+              <span>Phone: </span>
+              <span id="provider-phno"></span>
+            </div>
+            <div class="details-element">
+              <span>Address: </span>
+              <span id="provider-address"></span>
+            </div>
+            <br>
+          </div>
         </div>
+      </div>
     </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const providerModal = document.getElementById('provider-modal');
+          providerModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            document.getElementById('provider-name').textContent = button.getAttribute('data-provider-name');
+            document.getElementById('provider-category').textContent = button.getAttribute('data-service');
+            document.getElementById('provider-address').textContent = button.getAttribute('data-address');
+            document.getElementById('provider-email').textContent = button.getAttribute('data-email');
+            document.getElementById('provider-phno').textContent = button.getAttribute('data-phone');
+          });
+        });
+      </script>
 </body>
 </html>

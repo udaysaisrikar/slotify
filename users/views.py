@@ -779,7 +779,10 @@ def provider_dashboard(request):
         provider=provider,
         app_start_time__date = today
     ).order_by('app_start_time')
-    today_schedule = todays_appmnts[:3]
+    today_schedule = Appointments.objects.filter(
+        provider=provider,
+        app_start_time__date = today
+    ).order_by('app_start_time')[:3]
 
     # Get recent reviews
     recent_reviews = Appointments.objects.filter(

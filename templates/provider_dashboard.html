@@ -758,8 +758,13 @@
             <div class="row">
               <div class="col-lg-8">
                 <h4 class="fw-semibold mb-3">Today's Schedule</h4>
+<<<<<<< HEAD
                 {% if todays_appmnts %}
                   {% for app in todays_appmnts %}
+=======
+                {% if today_schedule %}
+                  {% for app in today_schedule %}
+>>>>>>> 5b385ca (Again almost done)
                   <div class="appointment-card">
                     <div class="d-flex justify-content-between align-items-start">
                       <div class="d-flex">
@@ -792,7 +797,14 @@
 
                 <div class="text-center mt-3">
                   <button class="btn btn-outline-primary">
+<<<<<<< HEAD
                     View Full Schedule
+=======
+                    <span
+                    style="cursor: pointer"
+                    onclick="document.querySelector('[data-section=schedule]').click();"
+                    >View Full Schedule</span>
+>>>>>>> 5b385ca (Again almost done)
                   </button>
                 </div>
               </div>
@@ -1114,6 +1126,7 @@
                     </div>
                   </div>
                   <div class="appointment-card">
+<<<<<<< HEAD
                     <div class="d-flex justify-content-between align-items-start">
                       <div class="d-flex">
                         <div>
@@ -1146,6 +1159,62 @@
                   <div class="text-center mt-3">
                     <button class="btn btn-outline-primary">View Full Schedule</button>
                   </div>
+=======
+                    {% if todays_appmnts %}
+                      {% for app in todays_appmnts %}
+                      <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex">
+                          <div>
+                            <h6 class="fw-semibold mb-1">{{ app.customer.first_name }}</h6>
+                            <p class="text-muted small mb-1">{{ app.service.service_name }}</p>
+                            <p class="text-muted small mb-0">{{ app.app_start_time|date:"d M" }}</p>
+                            <p class="text-muted small mb-0">
+                              <i class="bi bi-clock me-1"></i> {{ app.app_start_time|date:"h:i A" }} - {{ app.app_end_time|date:"h:i A" }}
+                              <i class="bi bi-telephone ms-3 me-1"></i>+91 {{ app.customer.phone_no }}
+                            </p>
+                          </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="appointment-status status-{{ app.status|lower }}">{{ app.status }}</span>
+                          {% if app.status == "Pending" %}
+                          <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                              Actions
+                            </button>
+                            <ul class="dropdown-menu">
+                              <li>
+                                <button
+                                  class="dropdown-item"
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#rescheduleModal"
+                                  data-appointment-id="{{ app.appointment_id }}"
+                                >
+                                  <i class="bi bi-calendar me-2"></i> Reschedule
+                                </button>
+                              </li>
+                              <li>
+                                <form method="POST" style="display:inline;">
+                                  {% csrf_token %}
+                                  <input type="hidden" name="cancel_app" value="{{ app.appointment_id }}">
+                                  <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-x-circle me-2"></i> Cancel
+                                  </button>
+                                </form>
+                                {% comment %} <a class="dropdown-item text-danger" href="#"><i class="bi bi-x-circle me-2"></i>Cancel</a></li> {% endcomment %}
+                            </ul>
+                          </div>
+                          {% endif %}
+                        </div>
+                      </div>
+                    {% endfor %}
+                  {% else %}
+                    <p class="text-muted"> No Schedule yet </p>
+                  {% endif %}
+                  </div>
+                  {% comment %} <div class="text-center mt-3">
+                    <button class="btn btn-outline-primary">View Full Schedule</button>
+                  </div> {% endcomment %}
+>>>>>>> 5b385ca (Again almost done)
                 </div>
               </div>
               <div class="col-lg-4">
@@ -1293,6 +1362,7 @@
                         </div>
                         <div class="progress mt-1" style="height: 6px">
                           <div
+<<<<<<< HEAD
                             class="progress-bar bg-primary"
                             style="width: 0%"
                           ></div>
@@ -1322,6 +1392,16 @@
                           ></div>
                         </div>
                       </div>
+=======
+                            class="progress-bar {% cycle 'bg-primary' 'bg-success' 'bg-warning' 'bg-info' 'bg-danger' %}"
+                            style="width: {{ service.percentage }}%"
+                          ></div>
+                        </div>
+                      </div>
+                      {% empty %}
+                        <p class="text-muted"> No Services Found </p>
+                      {% endfor %}
+>>>>>>> 5b385ca (Again almost done)
                     </div>
                   </div>
 
