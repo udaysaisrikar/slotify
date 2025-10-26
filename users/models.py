@@ -20,6 +20,7 @@ class ServiceProvider(models.Model):
     category_name = models.CharField(max_length=255)
     password = models.CharField(max_length=255)
     category_id = models.ForeignKey('services.ServiceCategory', on_delete=models.SET_NULL, null=True)
+    profile_views = models.PositiveIntegerField(default=0)
 
     # Business hours fields
     start_hours = models.TimeField(null=True, blank=True)

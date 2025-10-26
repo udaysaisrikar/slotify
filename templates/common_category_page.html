@@ -427,18 +427,20 @@
     <!-- Search Container -->
     <div class="container">
         <div class="search-container">
+            <form id="filterForm" method="POST" action="{% url 'filter_providers' %}">
+            {% csrf_token %}
             <div class="row g-3">
                 <div class="col-md-5">
                     <label class="form-label fw-semibold">
                         <i class="bi bi-calendar3 me-2 text-primary"></i>Date
                     </label>
-                    <input type="date" class="form-control" id="dateInput">
+                    <input type="date" class="form-control" name="date" id="dateInput">
                 </div>
                 <div class="col-md-5">
                     <label class="form-label fw-semibold">
                         <i class="bi bi-clock me-2 text-primary"></i>Time Slot
                     </label>
-                    <select class="form-select" id="timeSlotSelect">
+                    <select class="form-select" name="time" id="timeSlotSelect">
                         <option value="">Any Time</option>
                         <option value="morning">Morning (9 AM - 12 PM)</option>
                         <option value="afternoon">Afternoon (12 PM - 5 PM)</option>
@@ -447,7 +449,7 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label fw-semibold">&nbsp;</label>
-                    <button class="btn btn-primary w-100 fw-semibold">
+                    <button class="btn btn-primary w-100 fw-semibold" type="submit">
                         <i class="bi bi-search me-2"></i>Search
                     </button>
                 </div>
@@ -471,19 +473,19 @@
                             <i class="bi bi-star-fill me-2"></i>Rating
                         </h6>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="rating5">
+                            <input class="form-check-input" type="checkbox" name="rating" id="rating5">
                             <label class="form-check-label" for="rating5">
                                 ★★★★★ (5.0)
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="rating4">
+                            <input class="form-check-input" type="checkbox" name="rating" id="rating4">
                             <label class="form-check-label" for="rating4">
                                 ★★★★☆ (4.0+)
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="rating3">
+                            <input class="form-check-input" type="checkbox" name="rating" id="rating3">
                             <label class="form-check-label" for="rating3">
                                 ★★★☆☆ (3.0+)
                             </label>
@@ -496,11 +498,11 @@
                             <i class="bi bi-clock-history me-2"></i>Availability
                         </h6>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="availableToday">
+                            <input class="form-check-input" type="checkbox" name="availability" id="availableToday">
                             <label class="form-check-label" for="availableToday">Available Today</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="availableTmrw">
+                            <input class="form-check-input" type="checkbox" name="availability" id="availableTmrw">
                             <label class="form-check-label" for="availableTmrw">Available Tomorrow</label>
                         </div>
                     </div>
@@ -520,7 +522,7 @@
                             <h4 class="mb-1" id="resultsCount">
                                 <i class="bi bi-people me-2"></i>24 Providers Found
                             </h4>
-                            <small class="text-muted" id="categoryBreadcrumb">Healthcare > General Practitioners</small>
+                            <small class="text-muted" id="categoryBreadcrumb">{{ category_name }}</small>
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">

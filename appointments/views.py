@@ -46,12 +46,57 @@ def book_appointment_view(request):
         try:
             provider = get_object_or_404(ServiceProvider, provider_id=provider_id)
             service = Services.objects.get(service_id=service_id)
+            duration = timedelta(minutes=int(service.duration))
+
+            schedule, created = ProviderSchedule.objects.get_or_create(
+                provider = provider,
+                service = service, 
+                day_of_week = day_of_week
+            )
+
+            booked_slots = schedule.booked_slots or {}
+            booked_for_date = booked_slots.get(str(selected_date), [])
+
+            # Convert booked slots to datetime ranges
+            booked_intervals = [
+                (
+                    datetime.strptime(f"{selected_date} {slot['start']}", "%Y-%m-%d %H:%M"),
+                    datetime.strptime(f"{selected_date} {slot['end']}", "%Y-%m-%d %H:%M")
+                )
+                for slot in booked_for_date
+            ]
+
+            # ---- Find next available sub-slot inside selected hour ----
+            hour_start = datetime.strptime(f"{selected_date} {selected_time}", "%Y-%m-%d %H:%M")
+            hour_end = hour_start + timedelta(hours=1)
+            current = hour_start
+            booked_slot_found = False
+            booked_start, booked_end = None, None
+
+            while current + duration <= hour_end:
+                slot_start = current
+                slot_end = current + duration
+
+                overlap = any(not (slot_end <= s or slot_start >= e) for s, e in booked_intervals)
+                if not overlap:
+                    booked_start, booked_end = slot_start, slot_end
+                    booked_slot_found = True
+                    break
+                current += duration  # move to next possible sub-slot
+
+            if not booked_slot_found:
+                return JsonResponse({
+                    "success": False,
+                    "error": "No available slot found in this hour."
+                })
+            
 
             # ---- Calculate start and end times ----
-            start_str = f"{selected_date} {selected_time}"  # "2025-10-16 14:00"
-            naive_start = datetime.strptime(start_str, "%Y-%m-%d %H:%M")
-            app_start_time = timezone.make_aware(naive_start)
-            app_end_time = app_start_time + timedelta(minutes=int(service.duration))
+            # start_str = f"{selected_date} {selected_time}"  # "2025-10-16 14:00"
+            # naive_start = datetime.strptime(start_str, "%Y-%m-%d %H:%M")
+
+            app_start_time = timezone.make_aware(booked_start)
+            app_end_time = timezone.make_aware(booked_end)
 
             # ---- Create Appointment ----
             Appointments.objects.create(
@@ -64,24 +109,19 @@ def book_appointment_view(request):
                 service = service
             )
 
-            # Update Provider Schedule
-            schedule, created = ProviderSchedule.objects.get_or_create(
-                provider = provider,
-                service = service, 
-                day_of_week = day_of_week
-            )
-
             # Store Booked Slot
-            booked_slots = schedule.booked_slots or {}
             booked_slots[str(selected_date)] = booked_slots.get(str(selected_date), [])
             booked_slots[str(selected_date)].append({
-                "start":selected_time,
-                "end":app_end_time.strftime("%H:%M")
+                "start":booked_start.strftime("%H:%M"),
+                "end":booked_end.strftime("%H:%M")
             })
             schedule.booked_slots = booked_slots
             schedule.save()
 
-            return JsonResponse({"success": True, "message": "Appointment Booked Successfully!"})
+            msg = f"Your appointment is booked from {booked_start.strftime("%H:%M")} to {booked_end.strftime("%H:%M")}"
+
+            return JsonResponse({"success": True, "message": msg})
+        
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)})
 
@@ -126,7 +166,21 @@ def reschedule_app(request):
             if selected_time == blocked_start:
                 messages.error(request, "This time is blocked by the provider.")
                 return redirect('customer_dashboard')
-            
+
+        
+        # ---- Check Other Appointments for Conflicts ----
+        overlapping = Appointments.objects.filter(
+            provider=provider,
+            service=service,
+            app_start_time__lt=new_end,
+            app_end_time__gt=new_start
+        ).exclude(appointment_id=appointment.appointment_id)
+
+        if overlapping.exists():
+            messages.error(request, "Selected slot is already booked by another customer.")
+            return redirect(f"{user_type}_dashboard")
+        
+        
         # ---- Check Booked Slots ----
         booked_for_date = schedule.booked_slots.get(selected_date, [])
         for booked in booked_for_date:
