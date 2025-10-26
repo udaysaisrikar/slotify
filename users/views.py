@@ -11,7 +11,9 @@ from appointments.models import Appointments
 import json
 from django.utils import timezone
 from django.http import JsonResponse
-from django.db.models import Avg, Count
+from django.db.models import Avg, Count, Q
+from collections import Counter
+from notifications.models import Notifications
 # Create your views here.
 
 
@@ -172,7 +174,8 @@ def customer_dashboard(request):
 
     recent_appointments = Appointments.objects.filter(customer=customer).exclude(status__in=["Cancelled","Completed"]).order_by('-app_start_time')[:3]
 
-        
+    notifications = Notifications.objects.filter(user=customer).order_by('-created_at')
+    notification_length = Notifications.objects.filter(user=customer, is_read=False).order_by('-created_at')
     context = {
         'providers':providers,
         'customer':customer,
@@ -184,7 +187,9 @@ def customer_dashboard(request):
         'completed':completed,
         'cancelled':cancelled,
         'attendence_rate':attendence_rate,
-        'recent_appointments':recent_appointments
+        'recent_appointments':recent_appointments,
+        'notifications':notifications,
+        'notification_len':notification_length
     }
 
     return render(request, 'customer_dashboard.html', context)
@@ -695,7 +700,27 @@ def provider_dashboard(request):
                     schedule.booked_slots.pop(date_str, None)
 
                 schedule.save()
-                messages.success(request, "Appointment Cancelled Successfully!")
+            
+            # ✅ Send cancellation email
+            subject = "Your Appointment Has Been Cancelled"
+            message = (
+                f"Hi {appointment.customer.first_name},\n\n"
+                f"Your appointment for '{appointment.service.service_name}' with "
+                f"{appointment.provider.name} on "
+                f"{appointment.app_start_time.strftime('%d %b %Y, %I:%M %p')} has been cancelled.\n\n"
+                f"Please book another slot if needed.\n\n- Slotify Team"
+            )
+            send_mail(subject, message, 'slotify.notifications@gmail.com', [appointment.customer.email_id], fail_silently=False)
+
+            # ✅ Create notification for Customer
+            Notifications.objects.create(
+                user=appointment.customer,
+                provider=appointment.provider,
+                title="Appointment Cancelled",
+                message=f"Your appointment for '{appointment.service.service_name}' was cancelled by {appointment.provider.name}.",
+                created_at=timezone.now()
+            )
+            messages.success(request, "Appointment Cancelled Successfully!")
         except Appointments.DoesNotExist:
             pass
         return redirect('provider_dashboard')
@@ -742,8 +767,29 @@ def provider_dashboard(request):
     # Accept Appointment
     if request.method == "POST":
         app_id = request.POST.get("appointment_id")
+        appointment = Appointments.objects.get(appointment_id=app_id)
         if "accept_appointment" in request.POST:
                 Appointments.objects.filter(appointment_id=app_id).update(status="Confirmed")
+                # ✅ Send confirmation email
+                subject = "Your Appointment Has Been Confirmed!"
+                message = (
+                    f"Hi {appointment.customer.first_name},\n\n"
+                    f"Your appointment for '{appointment.service.service_name}' with "
+                    f"{appointment.provider.name} has been confirmed.\n\n"
+                    f"Date & Time: {appointment.app_start_time.strftime('%d %b %Y, %I:%M %p')}\n"
+                    f"Thank you for choosing Slotify!\n\n- Slotify Team"
+                )
+                send_mail(subject, message, 'slotify.notifications@gmail.com', [appointment.customer.email_id], fail_silently=False)
+
+                # ✅ Create notifications
+                Notifications.objects.create(
+                    user=appointment.customer,
+                    provider=appointment.provider,
+                    title="Appointment Confirmed",
+                    message=f"Your appointment for '{appointment.service.service_name}' has been confirmed by {appointment.provider.name}.",
+                    created_at=timezone.now()
+                )
+
                 messages.success(request, "Appointment Accepted Successsfully!")
 
     
@@ -866,6 +912,57 @@ def provider_dashboard(request):
             "percentage": percentage
         })
 
+    # ---- Calculating Peak Hours ----
+    peak_appointments = Appointments.objects.filter(provider=provider, status__in=["Confirmed", "Completed"])
+    peak_time_slots=[
+        ('06:00', '09:00'),
+        ('09:00', '12:00'),
+        ('12:00', '15:00'),
+        ('15:00', '18:00'),
+        ('18:00', '21:00'),
+        ('21:00', '23:59'),
+    ]
+    slot_counts = Counter()
+    for appt in peak_appointments:
+        start_time = appt.app_start_time.time()
+        for start, end in peak_time_slots:
+            start_t = datetime.strptime(start, "%H:%M").time()
+            end_t = datetime.strptime(end, "%H:%M").time()
+            if start_t <= start_time < end_t:
+                slot_counts[f"{start} - {end}"] += 1
+                break
+    sorted_slots = sorted(slot_counts.items(), key=lambda x: x[1], reverse=True)
+    total_bookings = sum(slot_counts.values()) or 1
+
+    peak_data = []
+    for i, (slot, count) in enumerate(sorted_slots[:3]):  # top 3 slots only
+        percent = (count / total_bookings) * 100
+        if i == 0:
+            label = "High"
+            color = "bg-danger"
+        elif i == 1:
+            label = "Medium"
+            color = "bg-warning"
+        else:
+            label = "Low"
+            color = "bg-success"
+
+        peak_data.append({
+            "time_range": slot,
+            "label": label,
+            "percentage": round(percent, 1),
+            "color": color,
+        })
+
+    while len(peak_data) < 3:
+        peak_data.append({
+            "time_range": "00:00 - 00:00",
+            "label": "Low",
+            "percentage": 0,
+            "color": "bg-secondary",
+        })
+
+    
     
     category = provider.category_name
     context = {
@@ -899,6 +996,8 @@ def provider_dashboard(request):
         "response_rate":response_rate,
         "profile_views":provider.profile_views,
         "service_analytics":service_analytics,
+        "total_appmts":total_appointments,
+        "peak_data":peak_data,
     }
 
     return render(request, 'provider_dashboard.html', context)

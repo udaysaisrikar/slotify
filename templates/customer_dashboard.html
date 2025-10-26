@@ -373,7 +373,7 @@
                 >
                   <i class="bi bi-bell"></i>
                   Notifications
-                  <span class="badge bg-danger rounded-pill ms-auto">3</span>
+                  <span class="badge bg-danger rounded-pill ms-auto">{% if notification_len|length > 0 %}{{ notification_len|length }} {% endif %}</span>
                 </a>
               </nav>
             </div>
@@ -1072,12 +1072,13 @@
                 <h3>Notifications</h3>
                 <p>Stay updated with your appointments and reminders.</p>
               </div>
-              <button class="btn btn-outline-secondary">
+              <button id="markAllReadBtn" class="btn btn-outline-secondary">
                 <i class="bi bi-check-all me-2"></i>Mark All as Read
               </button>
             </div>
 
             <div class="list-group">
+              {% for note in notifications %}
               <div
                 class="list-group-item list-group-item-action border-0 mb-2 rounded"
               >
@@ -1092,11 +1093,12 @@
                       </div>
                     </div>
                     <div>
-                      <h6 class="mb-1 fw-semibold">Remainder title</h6>
-                      <p class="mb-1 small">Description</p>
-                      <small class="text-muted">2 hours ago</small>
+                      <h6 class="mb-1 {% if not notification.is_read %}fw-semibold{% endif %} ">{{ note.title }}</h6>
+                      <p class="mb-1 small">{{ note.message }}</p>
+                      <small class="text-muted">{{ note.created_at|timesince }} ago</small>
                     </div>
                   </div>
+                  {% if not note.is_read %}
                   <span
                     class="badge bg-danger rounded-circle"
                     style="
@@ -1108,8 +1110,12 @@
                     "
                     >!</span
                   >
+                  {% endif %}
                 </div>
               </div>
+              {% empty %}
+                <p class="text-muted"> No new Notifications. </p>
+              {% endfor %}
             </div>
           </div>
         </div>
@@ -2128,6 +2134,28 @@
             });
           });
         </script>
+
+        <!-- Mark all as read -->
+        <script>
+          document.getElementById('markAllReadBtn').addEventListener('click', function() {
+            fetch("{% url 'mark_all_as_read' %}", {
+              method: "POST",
+              headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+              },
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                document.querySelectorAll('.list-group-item.unread').forEach(item => {
+                  item.classList.remove('unread');
+                  item.querySelector('h6').classList.remove('fw-semibold');
+                });
+              }
+            });
+          });
+          </script>
+
 
     {% if messages %}
     <script>

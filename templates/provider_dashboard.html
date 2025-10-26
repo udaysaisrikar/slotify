@@ -1581,7 +1581,7 @@ Comprehensive health assessment and medical advice for various health concerns.<
                       class="d-flex justify-content-between align-items-start mb-2"
                     >
                       <div>
-                        <div class="stat-number">0</div>
+                        <div class="stat-number">{{ total_appmts }}</div>
                         <div class="text-muted">Appointments</div>
                       </div>
                       <i class="bi bi-calendar-check h3 text-primary"></i>
@@ -1597,7 +1597,7 @@ Comprehensive health assessment and medical advice for various health concerns.<
                       class="d-flex justify-content-between align-items-start mb-2"
                     >
                       <div>
-                        <div class="stat-number">0</div>
+                        <div class="stat-number">{{ regular_customers }}</div>
                         <div class="text-muted">New Customers</div>
                       </div>
                       <i class="bi bi-person-plus h3 text-info"></i>
@@ -1613,7 +1613,7 @@ Comprehensive health assessment and medical advice for various health concerns.<
                       class="d-flex justify-content-between align-items-start mb-2"
                     >
                       <div>
-                        <div class="stat-number">0.0</div>
+                        <div class="stat-number">{{ avg_rating }}</div>
                         <div class="text-muted">Avg Rating</div>
                       </div>
                       <i class="bi bi-star-fill h3 text-warning"></i>
@@ -1632,42 +1632,22 @@ Comprehensive health assessment and medical advice for various health concerns.<
                     <h5 class="fw-semibold mb-3">Appointment Distribution</h5>
                     <div class="row">
                       <div class="col-md-6">
+                        {% for service in service_analytics %}
                         <div class="mb-3">
                           <div class="d-flex justify-content-between mb-1">
-                            <span>Service-1</span>
-                            <span class="fw-semibold">0%</span>
+                            <span>{{ service.name }}</span>
+                            <span class="fw-semibold">{{ service.percentage }}%</span>
                           </div>
                           <div class="progress" style="height: 8px">
                             <div
-                              class="progress-bar bg-primary"
-                              style="width: 0%"
+                              class="progress-bar {% cycle 'bg-primary' 'bg-success' 'bg-warning' 'bg-info' 'bg-danger' %}"
+                              style="width: {{ service.percentage }}%"
                             ></div>
                           </div>
                         </div>
-                        <div class="mb-3">
-                          <div class="d-flex justify-content-between mb-1">
-                            <span>Service-2</span>
-                            <span class="fw-semibold">0%</span>
-                          </div>
-                          <div class="progress" style="height: 8px">
-                            <div
-                              class="progress-bar bg-success"
-                              style="width: 0%"
-                            ></div>
-                          </div>
-                        </div>
-                        <div class="mb-3">
-                          <div class="d-flex justify-content-between mb-1">
-                            <span>Service-3</span>
-                            <span class="fw-semibold">0%</span>
-                          </div>
-                          <div class="progress" style="height: 8px">
-                            <div
-                              class="progress-bar bg-warning"
-                              style="width: 0%"
-                            ></div>
-                          </div>
-                        </div>
+                        {% empty %}
+                          <p class="text-muted"> No services found </p>
+                        {% endfor %}
                       </div>
                       <div class="col-md-6">
                         <div
@@ -1718,42 +1698,20 @@ Comprehensive health assessment and medical advice for various health concerns.<
                       <h5 class="fw-semibold mb-0">Peak Hours</h5>
                     </div>
                     <div class="card-body">
+                      {% for data in peak_data %}
                       <div class="mb-3">
                         <div class="d-flex justify-content-between">
-                          <span>00:00 - 00:00</span>
-                          <span class="fw-semibold">High</span>
+                          <span>{{ data.time_range }}</span>
+                          <span class="fw-semibold">{{ data.label }}</span>
                         </div>
                         <div class="progress mt-1" style="height: 4px">
                           <div
-                            class="progress-bar bg-danger"
-                            style="width: 0%"
+                            class="progress-bar {{ data.color }}"
+                            style="width: {{ data.percentage }}%"
                           ></div>
                         </div>
                       </div>
-                      <div class="mb-3">
-                        <div class="d-flex justify-content-between">
-                          <span>00:00 - 00:00 </span>
-                          <span class="fw-semibold">Medium</span>
-                        </div>
-                        <div class="progress mt-1" style="height: 4px">
-                          <div
-                            class="progress-bar bg-warning"
-                            style="width: 0%"
-                          ></div>
-                        </div>
-                      </div>
-                      <div class="mb-3">
-                        <div class="d-flex justify-content-between">
-                          <span>00:00 - 00:00 </span>
-                          <span class="fw-semibold">Low</span>
-                        </div>
-                        <div class="progress mt-1" style="height: 4px">
-                          <div
-                            class="progress-bar bg-success"
-                            style="width: 0%"
-                          ></div>
-                        </div>
-                      </div>
+                      {% endfor %}
                     </div>
                   </div>
                   <div class="card mb-4">
@@ -1808,9 +1766,6 @@ Comprehensive health assessment and medical advice for various health concerns.<
                     Manage customer feedback and improve your service.
                   </p>
                 </div>
-                <button class="btn btn-outline-primary">
-                  <i class="bi bi-funnel me-2"></i>Filter Reviews
-                </button>
               </div>
               <div class="row">
                 <div class="col-lg-8">
@@ -2112,19 +2067,19 @@ Dr. Sarah Smith is a dedicated General Practitioner with over 15 years of experi
                     <div class="card-body">
                       <div class="row text-center">
                         <div class="col-6 mb-3">
-                          <div class="fw-bold text-primary h5">0.0</div>
+                          <div class="fw-bold text-primary h5">{{ avg_rating }}</div>
                           <small class="text-muted">Average Rating</small>
                         </div>
                         <div class="col-6 mb-3">
-                          <div class="fw-bold text-success h5">0</div>
+                          <div class="fw-bold text-success h5">{{ reviews|length }}</div>
                           <small class="text-muted">Total Reviews</small>
                         </div>
                         <div class="col-6">
-                          <div class="fw-bold text-info h5">0.0k</div>
+                          <div class="fw-bold text-info h5">{{ profile_views }}</div>
                           <small class="text-muted">Profile Views</small>
                         </div>
                         <div class="col-6">
-                          <div class="fw-bold text-warning h5">0%</div>
+                          <div class="fw-bold text-warning h5">{{ response_rate }}%</div>
                           <small class="text-muted">Response Rate</small>
                         </div>
                       </div>
