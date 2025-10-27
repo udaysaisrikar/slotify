@@ -2965,8 +2965,10 @@ Comprehensive health assessment and medical advice for various health concerns.<
                   .then(data => {
                       if (data.success) {
                           // Show success section
+                          const successMsg = data.message || "Appointment Booked Successfully!"
                           document.getElementById("summaryContent").style.display = "none";
                           document.getElementById("successContent").style.display = "block";
+                          alert(successMsg);
                       } else {
                           alert("Booking failed: " + data.error);
                       }
