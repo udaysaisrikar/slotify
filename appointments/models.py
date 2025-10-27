@@ -21,7 +21,7 @@ class Appointments(models.Model):
     comments = models.TextField(blank=True, null=True)
 
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
-    provider = models.ForeignKey(ServiceProvider, on_delete=models.SET_NULL, null=True)
+    provider = models.ForeignKey(ServiceProvider, on_delete=models.SET_NULL, null=True, related_name="appointments")
     service = models.ForeignKey(Services, on_delete=models.SET_NULL, null=True)
 
 

@@ -634,19 +634,27 @@
                         style="font-size: 4rem; color: skyblue"
                       ></i>
                       <div class="rating">
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-half"></i>
-                        <span class="text-muted ms-1">(4.8)</span>
+                       {% if provider.avg_rating_now %}
+                          {% for i in "12345"|slice:":5" %}
+                            {% if provider.avg_rating_now|floatformat:1 >= i %}
+                              <i class="bi bi-star-fill"></i>
+                            {% elif provider.avg_rating_now|floatformat:1 >= i|add:"-0.5" %}
+                              <i class="bi bi-star-half"></i>
+                            {% else %}
+                              <i class="bi bi-star"></i>
+                            {% endif %}
+                          {% endfor %}
+                          <span class="text-muted ms-1">({{ provider.avg_rating_now|default:"0"|floatformat:1 }})</span>
+                        {% else %}
+                          <span class="text-muted">No ratings yet</span>
+                        {% endif %}
                       </div>
                     </div>
                     <div class="col-md-6 mb-3">
                       <h5 class="fw-semibold">{{provider.name}}</h5>
-                      <p class="text-muted small">
+                      {% comment %} <p class="text-muted small">
                         Specializes in Family Medicine
-                      </p>
+                      </p> {% endcomment %}
                       <p class="small">
                         <i class="bi bi-geo-alt me-1"></i>{{provider.address}}
                         <br />

@@ -113,6 +113,7 @@ def customer_dashboard(request):
             providers = providers.filter(business_name__icontains=query)
         if date:
             pass
+    providers = ServiceProvider.objects.annotate(avg_rating_now=Avg('appointments__rating'))
 
     # Fetching Services of Selected Provider to Book Appointment
     services = None
@@ -181,7 +182,7 @@ def customer_dashboard(request):
         attendence_rate = int((completed.count() / total_appointments) * 100)
 
     recent_appointments = Appointments.objects.filter(customer=customer).exclude(status__in=["Cancelled","Completed"]).order_by('-app_start_time')[:3]
-
+    
     notifications = Notifications.objects.filter(user=customer).order_by('-created_at')
     notification_length = Notifications.objects.filter(user=customer, is_read=False).order_by('-created_at')
     context = {
